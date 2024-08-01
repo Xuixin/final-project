@@ -31,7 +31,7 @@ export default function Login() {
                 <div className="grid gap-2">
                   <Input id="password" type="password" placeholder="Password" required />
                 </div>
-                <Link href={'/home'}>login</Link>
+                <Link href={'/POS'}>login</Link>
               </div>
             </div>
           </div>

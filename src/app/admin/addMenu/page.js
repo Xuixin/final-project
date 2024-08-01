@@ -1,0 +1,133 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectItem, SelectContent } from "@/components/ui/select"; // Adjust imports based on your UI library
+import { toast } from "@/components/ui/use-toast";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Label } from "@/components/ui/label"
+
+const FormSchema = z.object({
+  menuName: z.string().min(1, { message: "Menu name is required." }),
+  category: z.string().min(1, { message: "Category is required." }),
+  price: z.number().min(0, { message: "Price must be a positive number." }),
+  image: z.any().refine((value) => value?.length > 0, {
+    message: "Image is required.",
+  }),
+});
+
+export default function InputForm() {
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      menuName: "",
+      category: "",
+      price: "",
+      image: null,
+    },
+  });
+
+  const onSubmit = (data) => {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    });
+  };
+
+  return (
+    <Form {...form} >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 border py-10 px-56 rounded bg-white ">
+        {/* Menu Name Field */}
+        <FormField
+          control={form.control}
+          name="menuName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Menu Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter menu name" {...field} />
+              </FormControl>
+              <FormDescription>Provide the name of the menu item.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Category Field */}
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <Select {...field} placeholder="Select category">
+                  <SelectContent>
+                    <SelectItem value="Appetizer">Appetizer</SelectItem>
+                    <SelectItem value="Main Course">Main Course</SelectItem>
+                    <SelectItem value="Dessert">Dessert</SelectItem>
+                    <SelectItem value="Beverage">Beverage</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormDescription>Select the category of the menu item.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Price Field */}
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Enter price" {...field} />
+              </FormControl>
+              <FormDescription>Specify the price of the menu item.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Image Upload Field */}
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image</FormLabel>
+              <FormControl>
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="picture">Picture</Label>
+                  <Input type="file" {...field} />
+                </div>
+              </FormControl>
+              <FormDescription>Upload an image for the menu item.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  );
+}
