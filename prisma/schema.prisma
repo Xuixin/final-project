@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+// prisma/schema.prisma
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  lastname  String
+  email     String   @unique
+  address   String
+  tel       String
+  password  String
+  orders    Order[]
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  menus     Menu[]
+}
+
+model Discount {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  discount  Float
+  menus     Menu[]
+}
+
+model Menu {
+  id          Int        @id @default(autoincrement())
+  name        String
+  img         String
+  price       Float
+  categoryId  Int
+  discountId  Int?      // Optional
+  category    Category  @relation(fields: [categoryId], references: [id])
+  discount    Discount? @relation(fields: [discountId], references: [id])
+  menusetDetails MenuSetDetail[]
+  orderDetails  OrderDetail[]
+}
+
+model Table {
+  id        Int      @id @default(autoincrement())
+  table_NO  Int      @unique
+  status    String
+  orders    Order[]
+}
+
+model MenuSet {
+  id         Int             @id @default(autoincrement())
+  name       String
+  totalMenu  Int
+  price      Float
+  details    MenuSetDetail[]
+
+  OrderDetail OrderDetail[]
+}
+
+model MenuSetDetail {
+  id        Int      @id @default(autoincrement())
+  menusetId Int
+  menuId    Int
+  quantity  Int
+  menuset   MenuSet @relation(fields: [menusetId], references: [id])
+  menu      Menu    @relation(fields: [menuId], references: [id])
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement())
+  name      String
+  lastname  String
+  address   String
+  email     String   @unique
+  password  String
+  role      String
+  attendances Attendance[]
+  orders     Order[]
+  shipping   Shipping[]
+}
+
+model Attendance {
+  id         Int       @id @default(autoincrement())
+  employeeId Int
+  status     String
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+  wages      Wages[]
+}
+
+model Wages {
+  id          Int         @id @default(autoincrement())
+  attendanceId Int
+  amount      Float
+  attendance  Attendance @relation(fields: [attendanceId], references: [id])
+}
+
+model Expenses {
+  id       Int     @id @default(autoincrement())
+  category String
+  amount   Float
+}
+
+model Order {
+  id           Int           @id @default(autoincrement())
+  customerId   Int
+  tableId      Int?          // Optional
+  employeeId   Int?          // Optional
+  status       String
+  quantity     Int
+  totalPrice   Float
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  table        Table?        @relation(fields: [tableId], references: [id])
+  employee     Employee?     @relation(fields: [employeeId], references: [id])
+  orderDetails OrderDetail[]
+  payment      Payment?
+  shipping     Shipping?
+}
+
+model OrderDetail {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  menuId     Int?     // Optional
+  menusetId  Int?     // Optional
+  quantity   Int
+  price      Float
+  order      Order    @relation(fields: [orderId], references: [id])
+  menu       Menu?    @relation(fields: [menuId], references: [id])
+  menuset    MenuSet? @relation(fields: [menusetId], references: [id])
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  orderId   Int @unique
+  amount    Float
+  slip      String
+  status    String
+  order     Order    @relation(fields: [orderId], references: [id])
+}
+
+model Shipping {
+  id         Int      @id @default(autoincrement())
+  orderId    Int @unique
+  employeeId Int
+  status     String
+  order      Order    @relation(fields: [orderId], references: [id])
+  employee   Employee @relation(fields: [employeeId], references: [id])
+}
+
+model Income {
+  id    Int    @id @default(autoincrement())
+  price Float
+}
+

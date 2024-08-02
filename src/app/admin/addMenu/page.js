@@ -5,18 +5,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectItem, SelectContent } from "@/components/ui/select"; // Adjust imports based on your UI library
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   menuName: z.string().min(1, { message: "Menu name is required." }),
@@ -28,17 +28,20 @@ const FormSchema = z.object({
 });
 
 export default function InputForm() {
+const router = useRouter()
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       menuName: "",
       category: "",
-      price: "",
+      price: 0,
       image: null,
     },
   });
 
   const onSubmit = (data) => {
+    console.log("Submitted data:", data);
     toast({
       title: "You submitted the following values:",
       description: (
@@ -47,11 +50,15 @@ export default function InputForm() {
         </pre>
       ),
     });
-  };
+    router.back()
+   };
 
   return (
-    <Form {...form} >
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 border py-10 px-56 rounded bg-white ">
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full space-y-6 border py-10 px-56 rounded bg-white "
+      >
         {/* Menu Name Field */}
         <FormField
           control={form.control}
@@ -62,7 +69,6 @@ export default function InputForm() {
               <FormControl>
                 <Input placeholder="Enter menu name" {...field} />
               </FormControl>
-              <FormDescription>Provide the name of the menu item.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -76,7 +82,14 @@ export default function InputForm() {
             <FormItem>
               <FormLabel>Category</FormLabel>
               <FormControl>
-                <Select {...field} placeholder="Select category">
+                <Select
+                  onValueChange={(value) => field.onChange(value)}
+                  value={field.value}
+                  placeholder="Select category"
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Appetizer">Appetizer</SelectItem>
                     <SelectItem value="Main Course">Main Course</SelectItem>
@@ -85,7 +98,6 @@ export default function InputForm() {
                   </SelectContent>
                 </Select>
               </FormControl>
-              <FormDescription>Select the category of the menu item.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -99,9 +111,13 @@ export default function InputForm() {
             <FormItem>
               <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter price" {...field} />
+                <Input
+                  type="number"
+                  placeholder="Enter price"
+                  value={field.value}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
-              <FormDescription>Specify the price of the menu item.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -116,11 +132,9 @@ export default function InputForm() {
               <FormLabel>Image</FormLabel>
               <FormControl>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="picture">Picture</Label>
                   <Input type="file" {...field} />
                 </div>
               </FormControl>
-              <FormDescription>Upload an image for the menu item.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

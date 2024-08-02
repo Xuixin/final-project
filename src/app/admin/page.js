@@ -141,7 +141,7 @@ const TableLoop = ({ products }) => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                                    <Link href={`admin/addMenu/${product.id}`}><DropdownMenuItem className="cursor-pointer">Edit</DropdownMenuItem></Link>
                                     <DropdownMenuItem>Delete</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
