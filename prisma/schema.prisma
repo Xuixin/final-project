@@ -15,22 +15,23 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
-
 model Customer {
   id        Int      @id @default(autoincrement())
   name      String
   lastname  String
   email     String   @unique
-  address   String
-  tel       String
+  address   String?
+  tel       String?
   password  String
   orders    Order[]
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   menus     Menu[]
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Discount {
@@ -38,6 +39,7 @@ model Discount {
   name      String   @unique
   discount  Float
   menus     Menu[]
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Menu {
@@ -51,6 +53,7 @@ model Menu {
   discount    Discount? @relation(fields: [discountId], references: [id])
   menusetDetails MenuSetDetail[]
   orderDetails  OrderDetail[]
+  createdAt   DateTime @default(now()) // Add createdAt field
 }
 
 model Table {
@@ -58,6 +61,7 @@ model Table {
   table_NO  Int      @unique
   status    String
   orders    Order[]
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model MenuSet {
@@ -66,8 +70,8 @@ model MenuSet {
   totalMenu  Int
   price      Float
   details    MenuSetDetail[]
-
   OrderDetail OrderDetail[]
+  createdAt  DateTime @default(now()) // Add createdAt field
 }
 
 model MenuSetDetail {
@@ -77,6 +81,7 @@ model MenuSetDetail {
   quantity  Int
   menuset   MenuSet @relation(fields: [menusetId], references: [id])
   menu      Menu    @relation(fields: [menuId], references: [id])
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Employee {
@@ -90,6 +95,7 @@ model Employee {
   attendances Attendance[]
   orders     Order[]
   shipping   Shipping[]
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Attendance {
@@ -98,6 +104,7 @@ model Attendance {
   status     String
   employee   Employee  @relation(fields: [employeeId], references: [id])
   wages      Wages[]
+  createdAt  DateTime @default(now()) // Add createdAt field
 }
 
 model Wages {
@@ -105,12 +112,14 @@ model Wages {
   attendanceId Int
   amount      Float
   attendance  Attendance @relation(fields: [attendanceId], references: [id])
+  createdAt   DateTime @default(now()) // Add createdAt field
 }
 
 model Expenses {
   id       Int     @id @default(autoincrement())
   category String
   amount   Float
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Order {
@@ -127,6 +136,7 @@ model Order {
   orderDetails OrderDetail[]
   payment      Payment?
   shipping     Shipping?
+  createdAt    DateTime @default(now()) // Add createdAt field
 }
 
 model OrderDetail {
@@ -139,6 +149,7 @@ model OrderDetail {
   order      Order    @relation(fields: [orderId], references: [id])
   menu       Menu?    @relation(fields: [menuId], references: [id])
   menuset    MenuSet? @relation(fields: [menusetId], references: [id])
+  createdAt  DateTime @default(now()) // Add createdAt field
 }
 
 model Payment {
@@ -148,6 +159,7 @@ model Payment {
   slip      String
   status    String
   order     Order    @relation(fields: [orderId], references: [id])
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Shipping {
@@ -157,10 +169,11 @@ model Shipping {
   status     String
   order      Order    @relation(fields: [orderId], references: [id])
   employee   Employee @relation(fields: [employeeId], references: [id])
+  createdAt  DateTime @default(now()) // Add createdAt field
 }
 
 model Income {
   id    Int    @id @default(autoincrement())
   price Float
+  createdAt DateTime @default(now()) // Add createdAt field
 }
-

@@ -1,3 +1,4 @@
+"use client"
 import {
     File,
     ListFilter,
@@ -23,10 +24,7 @@ import {
 import {
     Tabs,
     TabsContent,
-    TabsList,
-    TabsTrigger,
 } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -39,6 +37,8 @@ import {
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
+import Selectpath from "@/components/select"
+import { usePathname } from "next/navigation"
 
 // data/products.js
 export const products = [
@@ -157,17 +157,11 @@ const TableLoop = ({ products }) => {
 
 
 export default function Admin() {
+    const path = usePathname()
     return (
         <Tabs defaultValue="all">
             <div className="flex items-center">
-                <TabsList>
-                    <TabsTrigger value="all">All</TabsTrigger>
-                    <TabsTrigger value="active">Active</TabsTrigger>
-                    <TabsTrigger value="draft">Draft</TabsTrigger>
-                    <TabsTrigger value="archived" className="hidden sm:flex">
-                        Archived
-                    </TabsTrigger>
-                </TabsList>
+                <Selectpath path={path} />
                 <div className="ml-auto flex items-center gap-2">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
