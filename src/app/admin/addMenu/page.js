@@ -5,7 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import {
   Form,
@@ -15,49 +21,88 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const FormSchema = z.object({
   menuName: z.string().min(1, { message: "Menu name is required." }),
-  category: z.string().min(1, { message: "Category is required." }),
+  category: z.string().min(1, { message: "Category is required." }), // category will store categoryId
   price: z.number().min(0, { message: "Price must be a positive number." }),
-  image: z.any().refine((value) => value?.length > 0, {
-    message: "Image is required.",
-  }),
+  image: z.any().optional(), // Image is now optional
 });
 
 export default function InputForm() {
-const router = useRouter()
-
+  const router = useRouter();
+  const [categories, setCategories] = useState([]);
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       menuName: "",
-      category: "",
+      category: "", // category will be initialized with an empty string
       price: 0,
       image: null,
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Submitted data:", data);
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-    router.back()
-   };
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("/api/menutype");
+        setCategories(response.data.data); // Assuming your API returns an array of categories
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const onSubmit = async (data) => {
+    const selectedCategory = categories.find((cat) => cat.name === data.category);
+    if (!selectedCategory) {
+      console.error("Selected category not found.");
+      return;
+    }
+
+    try {
+
+      console.log("Submitted data:", data);
+      const newData = {...data,
+        category: selectedCategory.id,
+        image: data.image[0]
+      }
+      console.log("NEW data:", newData);
+
+
+      await axios.post("/api/your-endpoint", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast({
+        title: "Submission successful!",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+      });
+
+      router.back();
+    } catch (error) {
+      console.error("Submission failed:", error);
+      toast({
+        title: "Submission failed.",
+        description: error.response?.data?.message || "Something went wrong.",
+      });
+    }
+  };
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-6 border py-10 px-56 rounded bg-white "
+        className="w-full space-y-6 border py-10 px-56 rounded bg-white"
       >
         {/* Menu Name Field */}
         <FormField
@@ -83,7 +128,9 @@ const router = useRouter()
               <FormLabel>Category</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={(value) => field.onChange(value)}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                  }}
                   value={field.value}
                   placeholder="Select category"
                 >
@@ -91,10 +138,11 @@ const router = useRouter()
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Appetizer">Appetizer</SelectItem>
-                    <SelectItem value="Main Course">Main Course</SelectItem>
-                    <SelectItem value="Dessert">Dessert</SelectItem>
-                    <SelectItem value="Beverage">Beverage</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.name}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -132,7 +180,11 @@ const router = useRouter()
               <FormLabel>Image</FormLabel>
               <FormControl>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Input type="file" {...field} />
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => field.onChange(e.target.files)}
+                  />
                 </div>
               </FormControl>
               <FormMessage />

@@ -1,25 +1,48 @@
 import { PrismaClient } from '@prisma/client';
+import { stringify } from 'postcss';
 
 const prisma = new PrismaClient();
 
+
 export async function POST(req) {
-    const { name, lastname, email, password } = await req.json();
+    const { name } = await req.json();
+    const response = new Response()
 
     try {
-        const newCustomer = await prisma.customer.create({
+        const newCategory = await prisma.category.create({
             data: {
                 name,
-                lastname,
-                email,
-                password,
             },
         });
-        return new Response(JSON.stringify({ message: "Register success", newCustomer }), { status: 201 });
+        return new Response(JSON.stringify({ message: "Add new Category successfully", newCategory }), { status: 201 });
     } catch (error) {
         console.error(error);
-        return new Response(JSON.stringify({ message: 'Error creating customer', error: error.message }), { status: 500 });
+        return new Response(JSON.stringify({ message: 'Error creating catergory', error: error.message }), { status: 500 });
     } finally {
-        await prisma.$disconnect(); // Disconnect Prisma Client
+        await prisma.$disconnect(); 
+    }
+}
+
+export async function GET() {
+    try {
+        const data = await prisma.category.findMany();
+        return new Response(
+            JSON.stringify({
+                message: 'Ok',
+                data,
+            }),
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error(error); // Use console.error for logging errors
+        return new Response(
+            JSON.stringify({
+                message: `Error: ${error.message || error}`,
+            }),
+            { status: 500 }
+        );
+    } finally {
+        await prisma.$disconnect();
     }
 }
 

@@ -1,6 +1,5 @@
-'use client'
-import * as React from 'react'
-
+"use client";
+import * as React from "react";
 import {
   Select,
   SelectContent,
@@ -8,43 +7,47 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
+} from "@/components/ui/select";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SelectPath({ path }) {
-  const [pathselect, setPathselect] = useState('')
+  const router = useRouter();
+  const [pathselect, setPathselect] = useState("");
 
   useEffect(() => {
-    // Log the path to check when and why useEffect is triggered
-    console.log('Current path:', path)
+    console.log("Current path:", path);
     switch (path) {
-      case '/admin':
-        setPathselect('menu')
-        break
-      case '/admin/menutype':
-        setPathselect('Menutype')
-        break
+      case "/admin":
+        setPathselect("menu");
+        break;
+      case "/admin/menutype":
+        setPathselect("menutype");
+        break;
       default:
-        setPathselect('') // Reset if path doesn't match
+        setPathselect(""); // Reset if path doesn't match
     }
-  }, []) // Only run this effect when 'path' changes
+  }, [path]);
+
+  const onValueChange = (value) => {
+    router.push(value);
+  };
 
   return (
-    <Select>
-      <SelectTrigger className='w-[180px]'>
+    <Select onValueChange={onValueChange} defaultValue={path}>
+      <SelectTrigger className="w-[180px] cursor-pointer"> {/* Add cursor-pointer here */}
         <SelectValue placeholder={pathselect} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <Link href={'/admin'}>
-            <SelectItem>menu</SelectItem>
-          </Link>
-          <Link href={'/admin/menutype'}>
-            <SelectItem>menutype</SelectItem>
-          </Link>
+          <SelectItem value="/admin" className="cursor-pointer"> {/* Add cursor-pointer here */}
+            menu
+          </SelectItem>
+          <SelectItem value="/admin/menutype" className="cursor-pointer"> {/* Add cursor-pointer here */}
+            menutype
+          </SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
-  )
+  );
 }

@@ -19,7 +19,8 @@ const Bread = () => {
     const pathnames = pathname.split('/').filter(x => x);
     const breadcrumbItems = pathnames.map((_, index) => {
         const href = `/${pathnames.slice(0, index + 1).join('/')}`;
-        const label = pathnames[index].replace(/-/g, ' ').toUpperCase();
+        // Convert to lowercase and capitalize each word for label
+        const label = pathnames[index].replace(/-/g, ' ').toLowerCase(); 
         return { href, label };
     });
 
