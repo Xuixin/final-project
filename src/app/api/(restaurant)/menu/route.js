@@ -1,49 +1,46 @@
-import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { PrismaClient } from '@prisma/client'
+import { NextResponse } from 'next/server'
 const prisma = new PrismaClient()
 export async function POST(req) {
-  const { menuName, category, price } = await req.json();
+  const { menu, category, price } = await req.json()
 
   const newData = await prisma.menu.create({
-    data:{
-        name: menuName,
-        categoryId: category,
-        price,
-        img: 'ok'
-    }
+    data: {
+      name: menu,
+      categoryId: category,
+      price,
+      img: 'ok',
+    },
   })
 
   return NextResponse.json({
-    status: true
+    status: true,
   })
-  
 }
 
 export async function GET() {
   try {
-      const data = await prisma.menu.findMany(
-        {
-          include: {
-            category: true
-          }
-        }
-      );
-      return new Response(
-          JSON.stringify({
-              message: 'Ok',
-              data,
-          }),
-          { status: 200 }
-      );
+    const data = await prisma.menu.findMany({
+      include: {
+        category: true,
+      },
+    })
+    return new Response(
+      JSON.stringify({
+        message: 'Ok',
+        data,
+      }),
+      { status: 200 }
+    )
   } catch (error) {
-      console.error(error); // Use console.error for logging errors
-      return new Response(
-          JSON.stringify({
-              message: `Error: ${error.message || error}`,
-          }),
-          { status: 500 }
-      );
+    console.error(error) // Use console.error for logging errors
+    return new Response(
+      JSON.stringify({
+        message: `Error: ${error.message || error}`,
+      }),
+      { status: 500 }
+    )
   } finally {
-      await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
