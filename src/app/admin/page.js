@@ -39,64 +39,9 @@ import Image from "next/image"
 import Link from "next/link"
 import Selectpath from "@/components/select"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
-// data/products.js
-export const products = [
-    {
-        id: 1,
-        image: "/placeholder.svg",
-        name: "Laser Lemonade Machine",
-        status: "Draft",
-        price: "$499.99",
-        sales: 25,
-        createdAt: "2023-07-12 10:42 AM",
-    },
-    {
-        id: 2,
-        image: "/placeholder.svg",
-        name: "Hypernova Headphones",
-        status: "Active",
-        price: "$129.99",
-        sales: 100,
-        createdAt: "2023-10-18 03:21 PM",
-    },
-    {
-        id: 3,
-        image: "/placeholder.svg",
-        name: "AeroGlow Desk Lamp",
-        status: "Active",
-        price: "$39.99",
-        sales: 50,
-        createdAt: "2023-11-29 08:15 AM",
-    },
-    {
-        id: 4,
-        image: "/placeholder.svg",
-        name: "TechTonic Energy Drink",
-        status: "Draft",
-        price: "$2.99",
-        sales: 0,
-        createdAt: "2023-12-25 11:59 PM",
-    },
-    {
-        id: 5,
-        image: "/placeholder.svg",
-        name: "Gamer Gear Pro Controller",
-        status: "Active",
-        price: "$59.99",
-        sales: 75,
-        createdAt: "2024-01-01 12:00 AM",
-    },
-    {
-        id: 6,
-        image: "/placeholder.svg",
-        name: "Luminous VR Headset",
-        status: "Active",
-        price: "$199.99",
-        sales: 30,
-        createdAt: "2024-02-14 02:14 PM",
-    },
-];
 
 const TableLoop = ({ products }) => {
     return (
@@ -128,7 +73,7 @@ const TableLoop = ({ products }) => {
                             />
                         </TableCell>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell className="hidden md:table-cell">{product.price}</TableCell>
+                        <TableCell className="hidden md:table-cell">{product.category.name}</TableCell>
                         <TableCell className="hidden md:table-cell">{product.price}</TableCell>
                         <TableCell className="hidden md:table-cell">{product.createdAt}</TableCell>
                         <TableCell>
@@ -158,6 +103,20 @@ const TableLoop = ({ products }) => {
 
 export default function Admin() {
     const path = usePathname()
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        const fetchMenu = async () => {
+            try {
+                const response = await axios.get('/api/menu')
+                setProducts(response.data.data)
+            } catch (error) {
+                console.log('Fail to fetch menu: ', error)
+            }
+        }
+
+        fetchMenu()
+    })
     return (
         <Tabs defaultValue="all">
             <div className="flex items-center">

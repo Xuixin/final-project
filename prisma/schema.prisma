@@ -45,7 +45,7 @@ model Discount {
 model Menu {
   id          Int        @id @default(autoincrement())
   name        String
-  img         String
+  img         String?
   price       Float
   categoryId  Int
   discountId  Int?      // Optional

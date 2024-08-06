@@ -39,9 +39,8 @@ export default function InputForm() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       menuName: "",
-      category: "", // category will be initialized with an empty string
+      category: "",
       price: 0,
-      image: null,
     },
   });
 
@@ -59,34 +58,22 @@ export default function InputForm() {
   }, []);
 
   const onSubmit = async (data) => {
-    const selectedCategory = categories.find((cat) => cat.name === data.category);
+    const selectedCategory = categories.find(
+      (cat) => cat.name === data.category
+    );
     if (!selectedCategory) {
       console.error("Selected category not found.");
       return;
     }
 
     try {
-
       console.log("Submitted data:", data);
-      const newData = {...data,
-        category: selectedCategory.id,
-        image: data.image[0]
-      }
-      console.log("NEW data:", newData);
+      const newData = { ...data, category: selectedCategory.id };
+      console.log(newData)
 
+      await axios.post("/api/menu", newData);
 
-      await axios.post("/api/your-endpoint", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      toast({
-        title: "Submission successful!",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      });
+      alert("Success");
 
       router.back();
     } catch (error) {
