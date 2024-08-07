@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 import { NextResponse } from 'next/server'
 const prisma = new PrismaClient()
+
 export async function POST(req) {
-  const { menu, category, price } = await req.json()
+  const { name, category, price } = await req.json()
 
   const newData = await prisma.menu.create({
     data: {
-      name: menu,
+      name: name,
       categoryId: category,
       price,
       img: 'ok',

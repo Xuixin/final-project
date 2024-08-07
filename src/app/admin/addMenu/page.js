@@ -26,7 +26,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const FormSchema = z.object({
-  menuName: z.string().min(1, { message: "Menu name is required." }),
+  name: z.string().min(1, { message: "Menu name is required." }),
   category: z.string().min(1, { message: "Category is required." }), // category will store categoryId
   price: z.number().min(0, { message: "Price must be a positive number." }),
   image: z.any().optional(), // Image is now optional
@@ -38,7 +38,7 @@ export default function InputForm() {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      menuName: "",
+      name: "",
       category: "",
       price: 0,
     },
@@ -94,7 +94,7 @@ export default function InputForm() {
         {/* Menu Name Field */}
         <FormField
           control={form.control}
-          name="menuName"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Menu Name</FormLabel>
