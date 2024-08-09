@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/components/ui/use-toast";
+import { useToast  } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
@@ -33,6 +33,7 @@ const FormSchema = z.object({
 });
 
 export default function InputForm() {
+  const { toast} = useToast();
   const router = useRouter();
   const [categories, setCategories] = useState([]);
   const form = useForm({
@@ -41,6 +42,7 @@ export default function InputForm() {
       name: "",
       category: "",
       price: 0,
+      image: null, // Image is initially set to null
     },
   });
 
@@ -67,13 +69,35 @@ export default function InputForm() {
     }
 
     try {
-      console.log("Submitted data:", data);
-      const newData = { ...data, category: selectedCategory.id };
-      console.log(newData)
+      const formData = new FormData();
+      
+      if (data.image && data.image[0]) { // data.image is a FileList object
+        formData.append("file", data.image[0]); // Assuming you want to upload the first file
+      }
 
+      // Upload the image
+      const imageResponse = await axios.post("http://localhost:3001/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Image upload response:", imageResponse.data);
+
+      // Prepare and send the rest of the form data
+      const newData = {
+        ...data,
+        category: selectedCategory.id,
+        image: imageResponse.data.filePath, // Add the image URL to your form data
+      };
+
+      // Send form data to the main API endpoint
       await axios.post("/api/menu", newData);
 
-      alert("Success");
+      toast({
+        title: "Submission successful.",
+        description: "Your data has been submitted successfully.",
+      });
 
       router.back();
     } catch (error) {

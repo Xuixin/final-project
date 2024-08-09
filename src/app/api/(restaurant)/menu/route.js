@@ -3,14 +3,14 @@ import { NextResponse } from 'next/server'
 const prisma = new PrismaClient()
 
 export async function POST(req) {
-  const { name, category, price } = await req.json()
+  const { name, category, price, image } = await req.json()
 
   const newData = await prisma.menu.create({
     data: {
       name: name,
       categoryId: category,
       price,
-      img: 'ok',
+      img: image ,
     },
   })
 
@@ -45,3 +45,4 @@ export async function GET() {
     await prisma.$disconnect()
   }
 }
+

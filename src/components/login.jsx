@@ -37,18 +37,16 @@ export default function SignIn() {
 
   const onSubmit = async (data) => {
     console.log("Submitted data:", data);
-    setIsLoading(true); // Set loading to true
-
+    setIsLoading(true);
     try {
       const response = await axios.post("/api/login", data);
       toast({
         title: "Success!",
         description: response.data.message || "Login successful!",
       });
-      router.push('/admin'); // Redirect to the home page or another route
+      router.push('/admin');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        // Handle specific error response from the API
         toast({
           title: "Error!",
           description: error.response.data.message || "Something went wrong.",
