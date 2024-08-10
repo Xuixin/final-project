@@ -19,7 +19,6 @@ import axios from 'axios'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -39,7 +38,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: 'Menu name is required.' }),
@@ -49,14 +48,23 @@ export default function InputForm() {
   const router = useRouter()
   const { toast } = useToast()
   const [menuData, setMenuData] = useState([])
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState('')
+  const [valueID, setValueID] = useState(0)
+  const [quantity, setQuantity] = useState(0)
+  const [selectedMenuData, setSelectedMenuData] = useState([])
 
   useEffect(() => {
-    try {
-      const fetchMenu = async () => {
+    const fetchMenu = async () => {
+      try {
         const response = await axios.get('/api/menu')
-        setMenuData(response.data)
+        setMenuData(response.data.data)
+      } catch (error) {
+        console.log('Fail to fetch menu: ', error)
       }
-    } catch (error) {}
+    }
+
+    fetchMenu()
   }, [])
 
   const form = useForm({
@@ -78,15 +86,13 @@ export default function InputForm() {
   })
 
   const onSubmit = async (data) => {
-    console.log('Submitted data:', data)
-
     try {
       await axios.post('/api/menutype', data)
       toast({
         title: 'Submission successful!',
-        description: 'Succcess',
+        description: 'Success',
       })
-      alert('sucess')
+      alert('success')
     } catch (error) {
       toast({
         title: 'Submission failed.',
@@ -96,8 +102,28 @@ export default function InputForm() {
     }
   }
 
-  const subminMenu = (data) => {
+  const submitMenu = (data) => {
     console.log('Submitted data:', data)
+
+    // หาเมนูที่ตรงกับชื่อใน `data.name`
+    const selectedMenu = menuData.find((menu) => menu.id === valueID)
+
+    // ตรวจสอบว่าเจอเมนูหรือไม่
+    if (!selectedMenu) {
+      console.error('Menu not found')
+      return
+    }
+
+    // เพิ่มเมนูที่เลือกเข้าไปใน array ของ `menu` ในฟอร์ม
+    form.setValue('menu', [
+      ...form.getValues('menu'),
+      { ...selectedMenu, quantity },
+    ])
+    setSelectedMenuData([...selectedMenu, { selectedMenu, quantity }])
+    console.log('data', selectedMenuData)
+    setQuantity(0)
+    setValue('')
+    setValueID(0)
   }
 
   return (
@@ -106,7 +132,6 @@ export default function InputForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className='w-full space-y-3 border py-10 px-56 rounded bg-white '
       >
-        {/* Menu Name Field */}
         <FormField
           control={form.control}
           name='name'
@@ -128,7 +153,7 @@ export default function InputForm() {
           name='price'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>price</FormLabel>
+              <FormLabel>Price</FormLabel>
               <FormControl>
                 <Input
                   placeholder='Enter price'
@@ -161,20 +186,18 @@ export default function InputForm() {
             <TableRow>
               <TableHead className='w-[100px]'>NO.</TableHead>
               <TableHead>Menu</TableHead>
-              <TableHead>Qauntity</TableHead>
+              <TableHead>Quantity</TableHead>
               <TableHead className='text-right'>Amount</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {menu && menu.length > 0 ? (
-              menu.map((item) => (
-                <TableRow key={item.menu}>
-                  <TableCell className='font-medium'>{item.menu}</TableCell>
-                  <TableCell>{item.paymentStatus}</TableCell>
-                  <TableCell>{item.paymentMethod}</TableCell>
-                  <TableCell className='text-right'>
-                    {item.totalAmount}
-                  </TableCell>
+            {menuData && menuData.length > 0 ? (
+              menuData.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell className='font-medium'>{index + 1}</TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell className='text-right'>{item.price}</TableCell>
                 </TableRow>
               ))
             ) : (
@@ -205,8 +228,49 @@ export default function InputForm() {
                 </div>
                 <div className='grid gap-2'>
                   <div className='grid grid-cols-3 items-center gap-4'>
-                    <Label htmlFor='width'>menu</Label>
-                    <Input className='col-span-2 h-8' />
+                    <Label htmlFor='width'>Menu</Label>
+                    <Popover
+                      open={open}
+                      onOpenChange={setOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant='outline'
+                          role='combobox'
+                          aria-expanded={open}
+                          className='w-[200px] justify-between'
+                        >
+                          {value
+                            ? menuData.find((menu) => menu.name === value)?.name
+                            : 'Select menu...'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-[200px] p-0'>
+                        <Command>
+                          <CommandInput placeholder='Search menu...' />
+                          <CommandList>
+                            <CommandEmpty>No menu found.</CommandEmpty>
+                            <CommandGroup>
+                              {menuData.map((menu) => (
+                                <CommandItem
+                                  key={menu.id}
+                                  value={menu.id}
+                                  onSelect={(currentValue) => {
+                                    setValue(
+                                      currentValue === value ? '' : currentValue
+                                    )
+                                    setValueID(menu.id)
+                                    setOpen(false)
+                                  }}
+                                >
+                                  {menu.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className='grid grid-cols-3 items-center gap-4'>
                     <Label htmlFor='maxHeight'>Quantity</Label>
@@ -214,6 +278,9 @@ export default function InputForm() {
                       defaultValue='0'
                       className='col-span-2 h-8'
                     />
+                  </div>
+                  <div className='grid grid-cols-3 items-center gap-4'>
+                    <Button onClick={submitMenu}>เพิ่มเมนู</Button>
                   </div>
                 </div>
               </div>
