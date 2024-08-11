@@ -39,6 +39,7 @@ const TableLoop = ({ menuSet, onDelete }) => {
         <TableRow>
           <TableHead className="w-[100px]">NO.</TableHead>
           <TableHead>Name</TableHead>
+          <TableHead>Menu</TableHead>
           <TableHead>Quantity</TableHead>
           <TableHead>Price</TableHead>
           <TableHead>
@@ -49,10 +50,18 @@ const TableLoop = ({ menuSet, onDelete }) => {
       <TableBody>
         {menuSet.map((set, index) => (
           <TableRow key={set.id}>
-            <TableCell className="font-medium">{index+1}</TableCell>
+            <TableCell className="font-medium">{index + 1}</TableCell>
             <TableCell>{set.name}</TableCell>
+            <TableCell>
+              {set.details.map((detail, index) => (
+                <div key={index}>
+                  {detail.menu.name} X {detail.quantity}
+                </div>
+              ))}
+            </TableCell>
+
             <TableCell>{set.totalMenu}</TableCell>
-            <TableCell>{set.price}</TableCell>
+            <TableCell>RM {set.price}</TableCell>
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -68,9 +77,7 @@ const TableLoop = ({ menuSet, onDelete }) => {
                       Edit
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuItem
-                    onClick={() => onDelete(set.id)} // Call onDelete with set.id
-                  >
+                  <DropdownMenuItem onClick={() => onDelete(set.id)}>
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -91,10 +98,10 @@ export default function MenuType() {
   useEffect(() => {
     const fetchMenuSet = async () => {
       try {
-        const response = await axios.get("/api/menutype");
-        setMenuset(response.data.data); // Assuming your API returns { data: [...] }
+        const response = await axios.get("/api/menuset");
+        setMenuset(response.data); // Assuming your API returns { data: [...] }
       } catch (error) {
-        console.error("Failed to fetch menu types:", error);
+        console.error("Failed to fetch menuset:", error);
         // Handle error (e.g., show an error message to the user)
       }
     };
@@ -109,12 +116,13 @@ export default function MenuType() {
 
     try {
       await axios.delete(`/api/menutype/${id}`);
-      setMenuset((prevMenuSet) =>
-        prevMenuSet.filter((set) => set.id !== id)
-      ); // Update the state to remove the deleted item
+      setMenuset((prevMenuSet) => prevMenuSet.filter((set) => set.id !== id)); // Update the state to remove the deleted item
       alert("Menu deleted successfully!");
     } catch (error) {
-      alert("Deletion failed: " + (error.response?.data?.message || "Something went wrong."));
+      alert(
+        "Deletion failed: " +
+          (error.response?.data?.message || "Something went wrong.")
+      );
     }
   };
 
