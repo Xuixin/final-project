@@ -10,7 +10,7 @@ export async function POST(req) {
       name: name,
       categoryId: category,
       price,
-      img: image ,
+      img: image,
     },
   })
 
@@ -45,4 +45,3 @@ export async function GET() {
     await prisma.$disconnect()
   }
 }
-
