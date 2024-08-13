@@ -33,7 +33,9 @@ const upload = multer({ storage })
 // API endpoints
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded.' })
+    return res
+      .status(200)
+      .json({ message: 'No file uploaded.', filePath: '/No Image Upload' })
   }
   res.json({
     message: 'File uploaded successfully',

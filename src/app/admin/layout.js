@@ -93,7 +93,6 @@ export default function AdminLayout({ children }) {
               <TooltipTrigger asChild>
                 <Link
                   href='/admin/employees'
-                  class
                   className='flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
                 >
                   <Users2 className='h-5 w-5' />
@@ -204,7 +203,7 @@ export default function AdminLayout({ children }) {
                 className='overflow-hidden rounded-full'
               >
                 <Image
-                  src='/placeholder-user.jpg'
+                  src='/no image founde'
                   width={36}
                   height={36}
                   alt='Avatar'

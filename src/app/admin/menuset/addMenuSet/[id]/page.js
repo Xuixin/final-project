@@ -179,7 +179,7 @@ export default function InputForm({ params }) {
     const newData = {
       name: data.name,
       totalMenu: totalQuantity,
-      price: totalPrice,
+      price: form.getValues('price'),
       menu: form.getValues('menu').map((item) => ({
         id: item.id,
         quantity: item.quantity,

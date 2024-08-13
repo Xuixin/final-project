@@ -4,7 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 // prisma/schema.prisma
 
 datasource db {
@@ -15,6 +14,7 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
 model Customer {
   id        Int      @id @default(autoincrement())
   name      String
@@ -43,17 +43,17 @@ model Discount {
 }
 
 model Menu {
-  id          Int        @id @default(autoincrement())
-  name        String
-  img         String?
-  price       Float
-  categoryId  Int
-  discountId  Int?      // Optional
-  category    Category  @relation(fields: [categoryId], references: [id])
-  discount    Discount? @relation(fields: [discountId], references: [id])
+  id             Int             @id @default(autoincrement())
+  name           String
+  img            String?
+  price          Float
+  categoryId     Int
+  discountId     Int? // Optional
+  category       Category        @relation(fields: [categoryId], references: [id])
+  discount       Discount?       @relation(fields: [discountId], references: [id])
   menusetDetails MenuSetDetail[]
-  orderDetails  OrderDetail[]
-  createdAt   DateTime @default(now()) // Add createdAt field
+  orderDetails   OrderDetail[]
+  createdAt      DateTime        @default(now()) // Add createdAt field
 }
 
 model Table {
@@ -65,13 +65,13 @@ model Table {
 }
 
 model MenuSet {
-  id         Int             @id @default(autoincrement())
-  name       String
-  totalMenu  Int
-  price      Float
-  details    MenuSetDetail[]
+  id          Int             @id @default(autoincrement())
+  name        String
+  totalMenu   Int
+  price       Float
+  details     MenuSetDetail[]
   OrderDetail OrderDetail[]
-  createdAt  DateTime @default(now()) // Add createdAt field
+  createdAt   DateTime        @default(now()) // Add createdAt field
 }
 
 model MenuSetDetail {
@@ -79,54 +79,63 @@ model MenuSetDetail {
   menusetId Int
   menuId    Int
   quantity  Int
-  menuset   MenuSet @relation(fields: [menusetId], references: [id])
-  menu      Menu    @relation(fields: [menuId], references: [id])
+  menuset   MenuSet  @relation(fields: [menusetId], references: [id])
+  menu      Menu     @relation(fields: [menuId], references: [id])
   createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Employee {
-  id        Int      @id @default(autoincrement())
-  name      String
-  lastname  String
-  address   String
-  email     String   @unique
-  password  String
-  role      String
+  id          Int          @id @default(autoincrement())
+  name        String
+  lastname    String
+  address     String?
+  email       String       @unique
+  password    String
+  roleId      Int // Foreign key to Role model
+  roles       Role         @relation(fields: [roleId], references: [id])
   attendances Attendance[]
-  orders     Order[]
-  shipping   Shipping[]
-  createdAt DateTime @default(now()) // Add createdAt field
+  orders      Order[]
+  shipping    Shipping[]
+  createdAt   DateTime     @default(now())
+}
+
+model Role {
+  id           Int        @id @default(autoincrement())
+  name         String
+  wagepermonth Int
+  wageperday   Int
+  employees    Employee[] // Use the plural form to reflect the one-to-many relationship
 }
 
 model Attendance {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   employeeId Int
   status     String
-  employee   Employee  @relation(fields: [employeeId], references: [id])
+  employee   Employee @relation(fields: [employeeId], references: [id])
   wages      Wages[]
   createdAt  DateTime @default(now()) // Add createdAt field
 }
 
 model Wages {
-  id          Int         @id @default(autoincrement())
+  id           Int        @id @default(autoincrement())
   attendanceId Int
-  amount      Float
-  attendance  Attendance @relation(fields: [attendanceId], references: [id])
-  createdAt   DateTime @default(now()) // Add createdAt field
+  amount       Float
+  attendance   Attendance @relation(fields: [attendanceId], references: [id])
+  createdAt    DateTime   @default(now()) // Add createdAt field
 }
 
 model Expenses {
-  id       Int     @id @default(autoincrement())
-  category String
-  amount   Float
+  id        Int      @id @default(autoincrement())
+  category  String
+  amount    Float
   createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Order {
   id           Int           @id @default(autoincrement())
   customerId   Int
-  tableId      Int?          // Optional
-  employeeId   Int?          // Optional
+  tableId      Int? // Optional
+  employeeId   Int? // Optional
   status       String
   quantity     Int
   totalPrice   Float
@@ -136,25 +145,25 @@ model Order {
   orderDetails OrderDetail[]
   payment      Payment?
   shipping     Shipping?
-  createdAt    DateTime @default(now()) // Add createdAt field
+  createdAt    DateTime      @default(now()) // Add createdAt field
 }
 
 model OrderDetail {
-  id         Int      @id @default(autoincrement())
-  orderId    Int
-  menuId     Int?     // Optional
-  menusetId  Int?     // Optional
-  quantity   Int
-  price      Float
-  order      Order    @relation(fields: [orderId], references: [id])
-  menu       Menu?    @relation(fields: [menuId], references: [id])
-  menuset    MenuSet? @relation(fields: [menusetId], references: [id])
-  createdAt  DateTime @default(now()) // Add createdAt field
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  menuId    Int? // Optional
+  menusetId Int? // Optional
+  quantity  Int
+  price     Float
+  order     Order    @relation(fields: [orderId], references: [id])
+  menu      Menu?    @relation(fields: [menuId], references: [id])
+  menuset   MenuSet? @relation(fields: [menusetId], references: [id])
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Payment {
   id        Int      @id @default(autoincrement())
-  orderId   Int @unique
+  orderId   Int      @unique
   amount    Float
   slip      String
   status    String
@@ -164,7 +173,7 @@ model Payment {
 
 model Shipping {
   id         Int      @id @default(autoincrement())
-  orderId    Int @unique
+  orderId    Int      @unique
   employeeId Int
   status     String
   order      Order    @relation(fields: [orderId], references: [id])
@@ -173,7 +182,7 @@ model Shipping {
 }
 
 model Income {
-  id    Int    @id @default(autoincrement())
-  price Float
+  id        Int      @id @default(autoincrement())
+  price     Float
   createdAt DateTime @default(now()) // Add createdAt field
 }
