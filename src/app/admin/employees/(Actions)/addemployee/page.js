@@ -31,7 +31,6 @@ const FormSchema = z.object({
   address: z.string().min(1, { message: 'address is required.' }),
   email: z.string().min(1, { message: 'email is required.' }),
   roleId: z.string().min(0, { message: 'role is required.' }),
-  image: z.any().optional(),
 })
 
 export default function InputForm() {
@@ -46,7 +45,6 @@ export default function InputForm() {
       email: '',
       address: '',
       roleId: '',
-      image: null, // Image is initially set to null
     },
   })
 
@@ -71,52 +69,24 @@ export default function InputForm() {
       return
     }
 
-    console.log('role', selectedRoles)
+    console.log('role', selectedRoles.id)
 
-    // try {
-    //   const formData = new FormData()
+    try {
+      const formData = new FormData()
+      // Prepare and send the rest of the form data
+      const newData = {
+        ...data,
+        roleId: selectedRoles.id,
+      }
 
-    //   if (data.image && data.image[0]) {
-    //     // data.image is a FileList object
-    //     formData.append('file', data.image[0]) // Assuming you want to upload the first file
-    //   }
+      // Send form data to the main API endpoint
+      await axios.post('/api/employee/emp', newData)
 
-    //   // Upload the image
-    //   const imageResponse = await axios.post(
-    //     'http://localhost:3001/api/upload',
-    //     formData,
-    //     {
-    //       headers: {
-    //         'Content-Type': 'multipart/form-data',
-    //       },
-    //     }
-    //   )
-
-    //   console.log('Image upload response:', imageResponse.data)
-
-    //   // Prepare and send the rest of the form data
-    //   const newData = {
-    //     ...data,
-    //     roleId: selectedRoles.id,
-    //     image: imageResponse.data.filePath, // Add the image URL to your form data
-    //   }
-
-    //   // Send form data to the main API endpoint
-    //   await axios.post('/api/menu', newData)
-
-    //   toast({
-    //     title: 'Submission successful.',
-    //     description: 'Your data has been submitted successfully.',
-    //   })
-
-    //   router.back()
-    // } catch (error) {
-    //   console.error('Submission failed:', error)
-    //   toast({
-    //     title: 'Submission failed.',
-    //     description: error.response?.data?.message || 'Something went wrong.',
-    //   })
-    // }
+      alert('success')
+      router.back()
+    } catch (error) {
+      console.error('Submission failed:', error)
+    }
   }
 
   return (
@@ -221,27 +191,6 @@ export default function InputForm() {
                     ))}
                   </SelectContent>
                 </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Image Upload Field */}
-        <FormField
-          control={form.control}
-          name='image'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image</FormLabel>
-              <FormControl>
-                <div className='grid w-full max-w-sm items-center gap-1.5'>
-                  <Input
-                    type='file'
-                    accept='image/*'
-                    onChange={(e) => field.onChange(e.target.files)}
-                  />
-                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

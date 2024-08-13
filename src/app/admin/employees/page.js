@@ -29,9 +29,9 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 // Component for displaying table rows
-const TableLoop = () => {
+const TableLoop = ({ emp }) => {
   return (
-    <Card className='w-[300px] ring-1 ring-gray-300'>
+    <Card className='w-[300px]'>
       <CardContent>
         <div className='grid w-full items-center gap-4'>
           <div className='flex space-x-2 space-y-1.5 pt-5'>
@@ -42,9 +42,9 @@ const TableLoop = () => {
 
             <div className='space-y-1'>
               <h4 className='text-sm font-medium leading-none'>
-                Radix Primitives
+                {emp.name} {emp.lastname}
               </h4>
-              <p className='text-sm text-muted-foreground'>Web dev</p>
+              <p className='text-sm text-muted-foreground'>emp.role.name</p>
             </div>
             <div>
               <DropdownMenu>
@@ -76,7 +76,7 @@ const TableLoop = () => {
               <Mail />
             </div>
             <div>
-              <p>imrom@email.com</p>
+              <p>emp.email</p>
             </div>
           </div>
           <div className='flex space-x-4 text-muted-foreground'>
@@ -97,20 +97,19 @@ const TableLoop = () => {
 // Main MenuType component
 export default function Employee() {
   const path = usePathname()
-  const [menutypes, setMenutypes] = useState([])
+  const [employees, seEmployees] = useState([])
 
   useEffect(() => {
-    const fetchMenutypes = async () => {
+    const fetchEmployees = async () => {
       try {
-        const response = await axios.get('/api/menutype')
-        setMenutypes(response.data.data) // Assuming your API returns { data: [...] }
+        const response = await axios.get('/api/employee/emp')
+        seEmployees(response.data)
+        console.log(response.data)
       } catch (error) {
-        console.error('Failed to fetch menu types:', error)
-        // Handle error (e.g., show an error message to the user)
+        console.error('Failed to fetch employees:', error)
       }
     }
-
-    fetchMenutypes()
+    fetchEmployees()
   }, [])
 
   const handleDelete = async (id) => {
@@ -141,7 +140,7 @@ export default function Employee() {
               <CardTitle>Employees</CardTitle>
             </CardHeader>
           </Card>
-          <Link href='/admin/menutype/addMenutype'>
+          <Link href='/admin/employees/addemployee'>
             <Button
               size='sm'
               className='h-8 gap-1'
@@ -156,15 +155,11 @@ export default function Employee() {
       </div>
       <TabsContent
         value='all'
-        className='ring-1 ring-gray-300 min-h-[500px]'
+        className=' min-h-[500px]'
       >
         <Card x-chunk='dashboard-06-chunk-0'>
           <CardContent className={'m-5'}>
-            {/* <TableLoop
-              menutypes={menutypes}
-              onDelete={handleDelete}
-            /> */}
-            <TableLoop />
+            {/* <TableLoop emp={employees} /> */}
           </CardContent>
         </Card>
       </TabsContent>

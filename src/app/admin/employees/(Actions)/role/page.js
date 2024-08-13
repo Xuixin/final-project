@@ -80,7 +80,7 @@ export default function InputForm() {
           name='name'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Menu Name</FormLabel>
+              <FormLabel>Role Name</FormLabel>
               <FormControl>
                 <Input
                   placeholder='Enter role name'
