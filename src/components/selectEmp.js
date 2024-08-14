@@ -11,15 +11,15 @@ import {
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function SelectPath({ path }) {
+export default function SelectPathEmp({ path }) {
   const router = useRouter();
   const [pathselect, setPathselect] = useState("");
 
   useEffect(() => {
     console.log("Current path:", path);
     switch (path) {
-      case "/admin":
-        setPathselect("menu");
+      case "/admin/employees":
+        setPathselect("employee");
         break;
       case "/admin/menutype":
         setPathselect("menutype");
@@ -27,9 +27,7 @@ export default function SelectPath({ path }) {
       case "/admin/menuset":
         setPathselect("menuset");
         break;
-      case "/admin/discount":
-        setPathselect("discount");
-        break;
+      case "/admin/menuitem": 
       default:
         setPathselect(""); // Reset if path doesn't match
     }
@@ -41,29 +39,18 @@ export default function SelectPath({ path }) {
 
   return (
     <Select onValueChange={onValueChange} defaultValue={path}>
-      <SelectTrigger className="w-[180px] cursor-pointer">
-        {" "}
-        {/* Add cursor-pointer here */}
+      <SelectTrigger className="w-[180px] cursor-pointer"> {/* Add cursor-pointer here */}
         <SelectValue placeholder={pathselect} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="/admin" className="cursor-pointer">
-            {/* Add cursor-pointer here */}
-            menu
+          <SelectItem value="/admin/employees" className="cursor-pointer"> {/* Add cursor-pointer here */}
+            employee
           </SelectItem>
-          <SelectItem value="/admin/menutype" className="cursor-pointer">
-            {/* Add cursor-pointer here */}
-            menutype
-          </SelectItem>
-          <SelectItem value="/admin/menuset" className="cursor-pointer">
-            {/* Add cursor-pointer here */}
-            menuset
-          </SelectItem>
-          <SelectItem value="/admin/discount" className="cursor-pointer">
-            {/* Add cursor-pointer here */}
+          <SelectItem value="/admin/discount" className="cursor-pointer"> {/* Add cursor-pointer here */}
             discount
           </SelectItem>
+
         </SelectGroup>
       </SelectContent>
     </Select>

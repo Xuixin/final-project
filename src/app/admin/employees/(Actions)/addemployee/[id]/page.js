@@ -35,9 +35,9 @@ const FormSchema = z.object({
 
 export default function EmployeeUpdateForm({ params }) {
   const { toast } = useToast()
+  const { id } = params
   const router = useRouter()
   const [roles, setRoles] = useState([])
-  const [defaultValues, setDefaultValues] = useState(null)
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -50,15 +50,32 @@ export default function EmployeeUpdateForm({ params }) {
   })
 
   useEffect(() => {
-    const fetchRolesAndEmployee = async () => {
+    console.log(id)
+    const fetchEmp = async () => {
       try {
-        // Fetch roles
-        const rolesResponse = await axios.get('/api/employee/role')
-        setRoles(rolesResponse.data)
-
         // Fetch employee data based on ID
-        const employeeResponse = await axios.get(`/api/employee/emp/${params.id}`)
-        setDefaultValues(employeeResponse.data)
+        const employeeResponse = await axios.get(`/api/employee/role`)
+        setRoles(employeeResponse.data) // Assuming your API returns an array of categories
+        
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      }
+    }
+
+    fetchEmp()
+  }, [params.id])
+  useEffect(() => {
+    console.log(id)
+    const fetchEmp = async () => {
+      try {
+        // Fetch employee data based on ID
+        const employeeResponse = await axios.get(`/api/employee/emp/${id}`)
+        console.log(employeeResponse.data.data.name)
+        form.setValue('name', employeeResponse.data.data.name)
+        form.setValue('lastname', employeeResponse.data.data.lastname)
+        form.setValue('email', employeeResponse.data.data.email)
+        form.setValue('address', employeeResponse.data.data.address)
+        form.setValue('roleId', employeeResponse.data.data.role.name)
 
         // Set form default values
         form.reset(employeeResponse.data)
@@ -67,7 +84,7 @@ export default function EmployeeUpdateForm({ params }) {
       }
     }
 
-    fetchRolesAndEmployee()
+    fetchEmp()
   }, [params.id])
 
   const onSubmit = async (data) => {
@@ -86,10 +103,10 @@ export default function EmployeeUpdateForm({ params }) {
         roleId: selectedRole.id,
       }
 
-      await axios.put(`/api/employee/emp/${params.id}`, updatedData)
+      await axios.post(`/api/employee/emp/${params.id}`, updatedData)
 
-      toast({ title: 'Update successful!' })
-      router.push('/employee') // Redirect to the employee list or a specific page
+      alert('Update successful!')
+      router.push('/admin/employees') // Redirect to the employee list or a specific page
     } catch (error) {
       console.error('Update failed:', error)
     }
