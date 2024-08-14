@@ -30,13 +30,14 @@ const FormSchema = z.object({
   lastname: z.string().min(1, { message: 'lastname is required.' }),
   address: z.string().min(1, { message: 'address is required.' }),
   email: z.string().min(1, { message: 'email is required.' }),
-  roleId: z.string().min(0, { message: 'role is required.' }),
+  roleId: z.string().min(1, { message: 'role is required.' }),
 })
 
-export default function InputForm() {
+export default function EmployeeUpdateForm({ params }) {
   const { toast } = useToast()
   const router = useRouter()
   const [roles, setRoles] = useState([])
+  const [defaultValues, setDefaultValues] = useState(null)
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -49,42 +50,48 @@ export default function InputForm() {
   })
 
   useEffect(() => {
-    const fetchRole = async () => {
+    const fetchRolesAndEmployee = async () => {
       try {
-        const response = await axios.get('/api/employee/role')
-        setRoles(response.data) // Assuming your API returns an array of categories
+        // Fetch roles
+        const rolesResponse = await axios.get('/api/employee/role')
+        setRoles(rolesResponse.data)
+
+        // Fetch employee data based on ID
+        const employeeResponse = await axios.get(`/api/employee/emp/${params.id}`)
+        setDefaultValues(employeeResponse.data)
+
+        // Set form default values
+        form.reset(employeeResponse.data)
       } catch (error) {
-        console.error('Failed to fetch role:', error)
+        console.error('Failed to fetch data:', error)
       }
     }
 
-    fetchRole()
-  }, [])
+    fetchRolesAndEmployee()
+  }, [params.id])
 
   const onSubmit = async (data) => {
     console.log(data)
-    const selectedRoles = roles.find((role) => role.name === data.roleId)
-    if (!selectedRoles) {
+    const selectedRole = roles.find((role) => role.name === data.roleId)
+    if (!selectedRole) {
       console.error('Selected role not found.')
       return
     }
 
-    console.log('role', selectedRoles.id)
+    console.log('role', selectedRole.id)
 
     try {
-      const formData = new FormData()
-      // Prepare and send the rest of the form data
-      const newData = {
+      const updatedData = {
         ...data,
-        roleId: selectedRoles.id,
+        roleId: selectedRole.id,
       }
 
-      await axios.post('/api/employee/emp', newData)
+      await axios.put(`/api/employee/emp/${params.id}`, updatedData)
 
-      alert('success')
-      router.back()
+      toast({ title: 'Update successful!' })
+      router.push('/employee') // Redirect to the employee list or a specific page
     } catch (error) {
-      console.error('Submission failed:', error)
+      console.error('Update failed:', error)
     }
   }
 
@@ -119,7 +126,7 @@ export default function InputForm() {
               <FormLabel>Lastname</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='Enter  lastname'
+                  placeholder='Enter lastname'
                   {...field}
                 />
               </FormControl>
@@ -133,7 +140,7 @@ export default function InputForm() {
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder='Enter email'
@@ -149,10 +156,10 @@ export default function InputForm() {
           name='address'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>address</FormLabel>
+              <FormLabel>Address</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='Enter  address'
+                  placeholder='Enter address'
                   {...field}
                 />
               </FormControl>
@@ -161,13 +168,13 @@ export default function InputForm() {
           )}
         />
 
-        {/* Category Field */}
+        {/* Role Field */}
         <FormField
           control={form.control}
           name='roleId'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Role</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={(value) => {
@@ -196,7 +203,7 @@ export default function InputForm() {
           )}
         />
 
-        <Button type='submit'>Submit</Button>
+        <Button type='submit'>Update</Button>
       </form>
     </Form>
   )
