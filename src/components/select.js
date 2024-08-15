@@ -27,9 +27,6 @@ export default function SelectPath({ path }) {
       case "/admin/menuset":
         setPathselect("menuset");
         break;
-      case "/admin/discount":
-        setPathselect("discount");
-        break;
       default:
         setPathselect(""); // Reset if path doesn't match
     }
@@ -59,10 +56,6 @@ export default function SelectPath({ path }) {
           <SelectItem value="/admin/menuset" className="cursor-pointer">
             {/* Add cursor-pointer here */}
             menuset
-          </SelectItem>
-          <SelectItem value="/admin/discount" className="cursor-pointer">
-            {/* Add cursor-pointer here */}
-            discount
           </SelectItem>
         </SelectGroup>
       </SelectContent>

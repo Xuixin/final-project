@@ -35,23 +35,27 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 // Component for displaying table rows
-const TableLoop = ({ menutypes, onDelete }) => {
+const TableLoop = ({ promotions, onDelete }) => {
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">ID</TableHead>
           <TableHead>Name</TableHead>
+          <TableHead>Discount</TableHead>
+          <TableHead>Menu</TableHead>
           <TableHead>
             <span className="sr-only">Actions</span>
           </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {menutypes.map((type, index) => (
-          <TableRow key={type.id}>
+        {promotions.map((pro, index) => (
+          <TableRow key={pro.id}>
             <TableCell className="font-medium">{index + 1}</TableCell>
-            <TableCell>{type.name}</TableCell>
+            <TableCell>{pro.name}</TableCell>
+            <TableCell> ลด <span className="text-red-500">{pro.discount}</span></TableCell>
+            <TableCell>Menu</TableCell>
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -62,13 +66,13 @@ const TableLoop = ({ menutypes, onDelete }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <Link href={`/admin/menutype/addMenutype/${type.id}`}>
+                  <Link href={`/admin/menupro/addMenupro/${pro.id}`}>
                     <DropdownMenuItem className="cursor-pointer">
                       Edit
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem
-                    onClick={() => onDelete(type.id)} // Call onDelete with type.id
+                    onClick={() => onDelete(pro.id)} // Call onDelete with pro.id
                   >
                     Delete
                   </DropdownMenuItem>
@@ -82,23 +86,22 @@ const TableLoop = ({ menutypes, onDelete }) => {
   );
 };
 
-// Main MenuType component
-export default function MenuType() {
-  const path = usePathname();
-  const [menutypes, setMenutypes] = useState([]);
+// Main Menupro component
+export default function Menupro() {
+  const [promotion, setPromotions] = useState([]);
 
   useEffect(() => {
-    const fetchMenutypes = async () => {
+    const fetchMenupros = async () => {
       try {
-        const response = await axios.get("/api/menutype");
-        setMenutypes(response.data.data); // Assuming your API returns { data: [...] }
+        const response = await axios.get("/api/promotion");
+        setPromotions(response.data); // Assuming your API returns { data: [...] }
       } catch (error) {
-        console.error("Failed to fetch menu types:", error);
+        console.error("Failed to fetch menu pros:", error);
         // Handle error (e.g., show an error message to the user)
       }
     };
 
-    fetchMenutypes();
+    fetchMenupros();
   }, []);
 
   const handleDelete = async (id) => {
@@ -107,9 +110,9 @@ export default function MenuType() {
     }
 
     try {
-      await axios.delete(`/api/menutype/${id}`);
-      setMenutypes((prevMenutypes) =>
-        prevMenutypes.filter((type) => type.id !== id)
+      await axios.delete(`/api/menupro/${id}`);
+      setPromotions((prevMenupros) =>
+        prevMenupros.filter((pro) => pro.id !== id)
       ); // Update the state to remove the deleted item
       alert("Category deleted successfully!");
     } catch (error) {
@@ -123,7 +126,6 @@ export default function MenuType() {
   return (
     <Tabs defaultValue="all">
       <div className="flex items-center">
-        <Selectpath path={path} />
         <div className="ml-auto flex items-center gap-2">
           <Link href="/admin/discount/adddiscount">
             <Button size="sm" className="h-8 gap-1">
@@ -141,7 +143,7 @@ export default function MenuType() {
             <CardTitle>Discount</CardTitle>
           </CardHeader>
           <CardContent className={"mx-56"}>
-            <TableLoop menutypes={menutypes} onDelete={handleDelete} />
+            <TableLoop promotions={promotion} onDelete={handleDelete} />
           </CardContent>
           <CardFooter>
             {/* <div className="text-xs text-muted-foreground">

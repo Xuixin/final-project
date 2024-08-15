@@ -16,15 +16,16 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useEffect } from "react";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Menu name is required." }),
   discount: z.string().min(1, { message: "discount is required." }),
 });
 
-export default function InputForm() {
+export default function InputForm({params}) {
   const router = useRouter();
-  const { toast } = useToast();
+  const { id } = params;
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -34,15 +35,30 @@ export default function InputForm() {
     },
   });
 
+  useEffect(() => {
+    const fetchdiscount = async () => {
+        try {
+          const response = await axios.get(`/api/promotion/${id}`);
+          form.setValue("name", response.data.name);
+          form.setValue("discount", response.data.discount);
+        } catch (error) {
+          console.error("discount get fail", error);
+        }
+      };
+
+      fetchdiscount();
+
+    }, [id]); // fetch discount when id changes
+
   const onSubmit = async (data) => {
     console.log("Submitted data:", data);
 
     try {
-      await axios.post("/api/promotion", data);
+      await axios.post(`/api/promotion/${id}`, data);
       alert('sucess')
       router.back()
     } catch (error) {
-      console.error("discount create fail",error)
+      console.error("discount update fail",error)
     }
   };
 
@@ -58,7 +74,7 @@ export default function InputForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Menu Name</FormLabel>
+              <FormLabel>Discount Name</FormLabel>
               <FormControl>
                 <Input placeholder="Enter menu name" {...field} />
               </FormControl>

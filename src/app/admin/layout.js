@@ -9,8 +9,7 @@ import {
   Package,
   Package2,
   PanelLeft,
-  PlusCircle,
-  Search,
+  CirclePercent,
   Settings,
   ShoppingCart,
   Users2,
@@ -104,6 +103,18 @@ export default function AdminLayout({ children }) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
+                  href='/admin/discount'
+                  className='flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
+                >
+                  <CirclePercent className='h-5 w-5' />
+                  <span className='sr-only'>Promotions</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side='right'>Promotions</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
                   href='#'
                   className='flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
                 >
@@ -113,6 +124,7 @@ export default function AdminLayout({ children }) {
               </TooltipTrigger>
               <TooltipContent side='right'>Analytics</TooltipContent>
             </Tooltip>
+            
           </nav>
           <nav className='mt-auto flex flex-col items-center gap-4 px-2 sm:py-5'>
             <Tooltip>
@@ -182,6 +194,13 @@ export default function AdminLayout({ children }) {
                 >
                   <Users2 className='h-5 w-5' />
                   employees
+                </Link>
+                <Link
+                  href='#'
+                  className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
+                >
+                  <CirclePercent className="h-5 w-5" />
+                  Discount
                 </Link>
                 <Link
                   href='#'
