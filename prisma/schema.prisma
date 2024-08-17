@@ -187,7 +187,7 @@ model Income {
   createdAt DateTime @default(now()) // Add createdAt field
 }
 
-model Baner {
+model Banner {
   id    Int    @id @default(autoincrement())
   Image String
 }

@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 export async function GET(request, { params }) {
   try {
-    const response = await prisma.baner.findMany()
+    const response = await prisma.banner.findMany()
     return new Response(JSON.stringify(response))
   } catch (error) {
     console.error(error)
