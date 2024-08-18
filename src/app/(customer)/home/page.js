@@ -43,7 +43,8 @@ export default function Home() {
 
   return (
     <div className='w-full flex flex-col space-y-8'>
-      <div className='w-full max-h-48 relative lg:h-80 lg:max-h-96 overflow-hidden rounded'>
+      {banners.length > 0 ? (
+        <div className='w-full max-h-48 relative lg:h-80 lg:max-h-96 overflow-hidden rounded'>
         <Button
           className='absolute left-0 top-1/2 transform -translate-y-1/2 z-10'
           onClick={handlePrevious}
@@ -68,6 +69,9 @@ export default function Home() {
           <ChevronRight />
         </Button>
       </div>
+      ): (
+        ''
+      )}
       <hr/>
       <div className={'w-full'}>
         <h1><strong className="text-2xl">Discount</strong></h1>
