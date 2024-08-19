@@ -66,7 +66,7 @@ const TableLoop = ({ promotions, onDelete }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <Link href={`/admin/menupro/addMenupro/${pro.id}`}>
+                  <Link href={`/admin/discount/adddiscount/${pro.id}`}>
                     <DropdownMenuItem className="cursor-pointer">
                       Edit
                     </DropdownMenuItem>

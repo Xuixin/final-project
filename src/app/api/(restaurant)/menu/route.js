@@ -24,6 +24,7 @@ export async function GET() {
     const data = await prisma.menu.findMany({
       include: {
         category: true,
+        discount: true,
       },
     })
     return new Response(

@@ -40,7 +40,7 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
   const id = params.id;
-  const { name, category, price, img } = await request.json();
+  const { name, category, discountId, price, img } = await request.json();
 
   console.log(name);
   try {
@@ -49,6 +49,7 @@ export async function POST(request, { params }) {
       data: {
         name,
         categoryId: category,
+        discountId,
         price,
         img,
       },

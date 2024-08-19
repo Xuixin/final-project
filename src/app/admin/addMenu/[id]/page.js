@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,6 +28,7 @@ import Image from "next/image";
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Menu name is required." }),
   category: z.string().min(1, { message: "Category is required." }), // category will store categoryId
+  discount: z.string().min(1, { message: "Discount is required." }), // category will store categoryId
   price: z.number().min(0, { message: "Price must be a positive number." }),
   image: z.any().optional(), // Image is now optional
 });
@@ -36,13 +37,15 @@ export default function InputForm({ params }) {
   const router = useRouter();
   const { id } = params;
   const [categories, setCategories] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null); 
-  
+  const [discounts, setDiscounts] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
       category: "",
+      discount: "",
       price: 0,
       image: null,
     },
@@ -55,6 +58,16 @@ export default function InputForm({ params }) {
         setCategories(response.data.data); // Assuming your API returns an array of categories
       } catch (error) {
         console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    const fetchDiscount = async () => {
+      try {
+        const response = await axios.get("/api/promotion");
+        setDiscounts(response.data);
+        console.log(response.data)
+      } catch (error) {
+        console.error("Failed to fetch discount :", error);
       }
     };
 
@@ -72,30 +85,50 @@ export default function InputForm({ params }) {
 
     fetchCategories();
     fetchData();
+    fetchDiscount();
   }, [id]);
 
-  const onSubmit = async (data) => {
-    const selectedCategory = categories.find(
-      (cat) => cat.name === data.category
-    );
-    if (!selectedCategory) {
-      console.error("Selected category not found.");
-      return;
-    }
+  useEffect(() => {
+    const test = discounts.find((discount) => discount.id === 1)
+    console.log("test ", test)
+  },[discounts])
 
+  const onSubmit = async (data) => {
     try {
-      const formData = new FormData();
+      const selectedCategory = categories.find(
+        (cat) => cat.name === data.category
+      );
+      if (!selectedCategory) {
+        console.error("Selected category not found.");
+        return;
+      }
       
-      if (data.image && data.image[0]) { // data.image is a FileList object
+      const selectedDiscount = discounts.find(
+        (discount) => discount.discount === data.discount
+      );
+      if (!selectedDiscount) {
+        console.error("Selected discount not found.");
+        return;
+      }
+      alert("hi submit");
+
+      const formData = new FormData();
+
+      if (data.image && data.image[0]) {
+        // data.image is a FileList object
         formData.append("file", data.image[0]); // Assuming you want to upload the first file
       }
 
       // Upload the image
-      const imageResponse = await axios.post("http://localhost:3001/api/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const imageResponse = await axios.post(
+        "http://localhost:3001/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       console.log("Image upload response:", imageResponse.data);
 
@@ -103,6 +136,7 @@ export default function InputForm({ params }) {
       const newData = {
         ...data,
         category: selectedCategory.id,
+        discountId: selectedDiscount.id,
         img: imageResponse.data.filePath, // Add the image URL to your form data
       };
 
@@ -168,9 +202,39 @@ export default function InputForm({ params }) {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.name}>
-                        {cat.name}
+                    {categories.map((discount) => (
+                      <SelectItem key={discount.id} value={discount.name}>
+                        {discount.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="discount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Discount</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                  }}
+                  value={field.value}
+                  placeholder="Select discount"
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select discount" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {discounts.map((discount) => (
+                      <SelectItem key={discount.id} value={discount.discount}>
+                        {discount.discount}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -210,7 +274,7 @@ export default function InputForm({ params }) {
               <FormLabel>Image</FormLabel>
               <FormControl>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  {selectedImage &&(
+                  {selectedImage && (
                     <Image
                       src={selectedImage}
                       alt="Selected"

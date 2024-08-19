@@ -51,7 +51,7 @@ const TableLoop = ({ products, handleDelete }) => {
           <TableHead>Name</TableHead>
           <TableHead className="hidden md:table-cell">Category</TableHead>
           <TableHead className="hidden md:table-cell">Price</TableHead>
-          <TableHead className="hidden md:table-cell">Created at</TableHead>
+          <TableHead className="hidden md:table-cell">Discount</TableHead>
           <TableHead>
             <span className="sr-only">Actions</span>
           </TableHead>
@@ -76,8 +76,12 @@ const TableLoop = ({ products, handleDelete }) => {
             <TableCell className="hidden md:table-cell">
               RM {product.price.toFixed(2)}
             </TableCell>
-            <TableCell className="hidden md:table-cell">
-              {product.createdAt}
+            <TableCell className="hidden md:table-cell text-red-500">
+              {product.discount ? (
+                `RM ${product.discount.discount.toFixed(2)}% off`
+              ): (
+                "0"
+              )}
             </TableCell>
             <TableCell>
               <DropdownMenu>
