@@ -78,7 +78,7 @@ const TableLoop = ({ products, handleDelete }) => {
             </TableCell>
             <TableCell className="hidden md:table-cell text-red-500">
               {product.discount ? (
-                `RM ${product.discount.discount.toFixed(2)}% off`
+                `RM ${product.discount.discount.toFixed(2)} off`
               ): (
                 "0"
               )}

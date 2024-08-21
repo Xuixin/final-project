@@ -25,10 +25,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 
+// Zod Schema for validation
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Menu name is required." }),
   category: z.string().min(1, { message: "Category is required." }), // category will store categoryId
-  discount: z.string().min(1, { message: "Discount is required." }), // category will store categoryId
+  discount: z.string().min(1, { message: "Discount is required." }),
   price: z.number().min(0, { message: "Price must be a positive number." }),
   image: z.any().optional(), // Image is now optional
 });
@@ -61,13 +62,12 @@ export default function InputForm({ params }) {
       }
     };
 
-    const fetchDiscount = async () => {
+    const fetchDiscounts = async () => {
       try {
         const response = await axios.get("/api/promotion");
         setDiscounts(response.data);
-        console.log(response.data)
       } catch (error) {
-        console.error("Failed to fetch discount :", error);
+        console.error("Failed to fetch discounts:", error);
       }
     };
 
@@ -75,50 +75,29 @@ export default function InputForm({ params }) {
       try {
         const response = await axios.get(`/api/menu/${id}`);
         form.setValue("name", response.data.data.name);
-        form.setValue("category", response.data.data.category.name);
+        form.setValue("category", response.data.data.category.id); // Updated to use ID
+        form.setValue("discount", response.data.data.discountId); // Updated to use discount ID
         form.setValue("price", response.data.data.price);
         setSelectedImage(response.data.data.img); // Update state with the current image URL
       } catch (error) {
-        console.error("Failed to fetch Menu :", error);
+        console.error("Failed to fetch Menu:", error);
       }
     };
 
     fetchCategories();
     fetchData();
-    fetchDiscount();
+    fetchDiscounts();
   }, [id]);
 
-  useEffect(() => {
-    const test = discounts.find((discount) => discount.id === 1)
-    console.log("test ", test)
-  },[discounts])
-
   const onSubmit = async (data) => {
+    console.log("Form Data Submitted:", data); // Log form data to check values
+
     try {
-      const selectedCategory = categories.find(
-        (cat) => cat.name === data.category
-      );
-      if (!selectedCategory) {
-        console.error("Selected category not found.");
-        return;
-      }
-      
-      const selectedDiscount = discounts.find(
-        (discount) => discount.discount === data.discount
-      );
-      if (!selectedDiscount) {
-        console.error("Selected discount not found.");
-        return;
-      }
-      alert("hi submit");
-
       const formData = new FormData();
-
       if (data.image && data.image[0]) {
-        // data.image is a FileList object
-        formData.append("file", data.image[0]); // Assuming you want to upload the first file
+        formData.append("file", data.image[0]);
       }
-
+      console.log("Form Data for Image Upload:", formData); // Log FormData for debugging
       // Upload the image
       const imageResponse = await axios.post(
         "http://localhost:3001/api/upload",
@@ -129,20 +108,19 @@ export default function InputForm({ params }) {
           },
         }
       );
-
-      console.log("Image upload response:", imageResponse.data);
-
-      // Prepare and send the rest of the form data
+  
+      console.log("Image Upload Response:", imageResponse.data); // Log response from image upload
       const newData = {
         ...data,
-        category: selectedCategory.id,
-        discountId: selectedDiscount.id,
-        img: imageResponse.data.filePath, // Add the image URL to your form data
+        category: data.category,
+        discountId: data.discount,
+        img: imageResponse.data.filePath,
       };
-
-      // Send form data to the main API endpoint
-      await axios.post(`/api/menu/${id}`, newData);
-
+  
+      console.log("Final Data to Send:", newData); // Log final data being sent to the server
+  
+      await axios.put(`/api/menu/${id}`, newData);
+  
       router.back();
     } catch (error) {
       console.error("Submission failed:", error);
@@ -152,8 +130,8 @@ export default function InputForm({ params }) {
       });
     }
   };
+  
 
-  // Handler for file input change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -165,7 +143,7 @@ export default function InputForm({ params }) {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit)} // Ensure this is bound correctly
         className="w-full space-y-6 border py-10 px-56 rounded bg-white"
       >
         {/* Menu Name Field */}
@@ -192,9 +170,7 @@ export default function InputForm({ params }) {
               <FormLabel>Category</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                  }}
+                  onValueChange={(value) => field.onChange(value)}
                   value={field.value}
                   placeholder="Select category"
                 >
@@ -202,9 +178,9 @@ export default function InputForm({ params }) {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((discount) => (
-                      <SelectItem key={discount.id} value={discount.name}>
-                        {discount.name}
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -214,6 +190,8 @@ export default function InputForm({ params }) {
             </FormItem>
           )}
         />
+
+        {/* Discount Field */}
         <FormField
           control={form.control}
           name="discount"
@@ -222,9 +200,7 @@ export default function InputForm({ params }) {
               <FormLabel>Discount</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                  }}
+                  onValueChange={(value) => field.onChange(value)}
                   value={field.value}
                   placeholder="Select discount"
                 >
@@ -233,7 +209,7 @@ export default function InputForm({ params }) {
                   </SelectTrigger>
                   <SelectContent>
                     {discounts.map((discount) => (
-                      <SelectItem key={discount.id} value={discount.discount}>
+                      <SelectItem key={discount.id} value={discount.id}>
                         {discount.discount}
                       </SelectItem>
                     ))}

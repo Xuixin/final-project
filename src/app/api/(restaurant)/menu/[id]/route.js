@@ -38,7 +38,7 @@ export async function GET(request, { params }) {
   }
 }
 
-export async function POST(request, { params }) {
+export async function PUT(request, { params }) {
   const id = params.id;
   const { name, category, discountId, price, img } = await request.json();
 
@@ -48,8 +48,8 @@ export async function POST(request, { params }) {
       where: { id: parseInt(id) },
       data: {
         name,
-        categoryId: category,
-        discountId,
+        categoryId: parseInt(category),
+        discountId: parseInt(discountId),
         price,
         img,
       },
