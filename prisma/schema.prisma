@@ -53,6 +53,7 @@ model Menu {
   discount       Discount?       @relation(fields: [discountId], references: [id])
   menusetDetails MenuSetDetail[]
   orderDetails   OrderDetail[]
+  soldQuantity   Int  @default(0)
   createdAt      DateTime        @default(now()) // Add createdAt field
 }
 
@@ -71,6 +72,7 @@ model MenuSet {
   price       Float
   details     MenuSetDetail[]
   OrderDetail OrderDetail[]
+  soldQuantity Int  @default(0)
   createdAt   DateTime        @default(now()) // Add createdAt field
 }
 

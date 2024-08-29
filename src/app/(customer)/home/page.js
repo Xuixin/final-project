@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 // Import componants
-import MenuWithPro from '@/components/homeCmponant/loopMenuWithPro/loopMenuwithPro'
-
+import { BestSellerMenu, MenuWithPro } from '@/components/homeCmponant/loopMenuWithPro/loopMenuwithPro'
 export default function Home() {
   const [banners, setBanners] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -25,11 +24,6 @@ export default function Home() {
 
     fetchBanners()
   }, [])
-
-  useEffect(() => {
-    console.log('Banners updated:', banners)
-    // console.log(banners[currentIndex].image)
-  }, [banners])
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % banners.length)
@@ -76,6 +70,10 @@ export default function Home() {
       <div className={'w-full'}>
         <h1><strong className="text-2xl">Discount</strong></h1>
         <MenuWithPro />
+      </div>
+      <div className="w-fill">
+        <h1><strong className="text-2xl">Best seller </strong></h1>
+        <BestSellerMenu />
       </div>
     </div>
   )

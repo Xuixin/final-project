@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-export default function MenuWithPro() {
+export function MenuWithPro() {
   const [menusDiscount, setMenusDiscount] = useState([]);
   const [discounts, setDiscounts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -89,6 +89,73 @@ export default function MenuWithPro() {
           <Button
             onClick={handleNext}
             disabled={currentIndex >= menusDiscount.length - 4}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10"
+            variant={"outline"}
+          >
+            <ChevronRight />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BestSellerMenu() {
+  const [menu, setMenu] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const response = await axios.get("/api/menu/bestSeller");
+        setMenu(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchMenu();
+  }, []);
+
+  const handlePrevious = () => {
+    setCurrentIndex((prevIndex) => Math.max(prevIndex - 4, 0));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      Math.min(prevIndex + 4, menu.length - 4)
+    );
+  };
+
+  return (
+    <div className="relative">
+      <div className="relative overflow-hidden">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 relative px-10">
+          <Button
+            onClick={handlePrevious}
+            disabled={currentIndex === 0}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10"
+            variant={"outline"}
+          >
+            <ChevronLeft />
+          </Button>
+          {menu.slice(currentIndex, currentIndex + 4).map((item) => (
+            <div key={item.id} className="border rounded p-4">
+              <div className="relative w-full h-24">
+                <Image
+                  src={item.img}
+                  alt={item.name}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded"
+                />
+              </div>
+              <h2 className="text-lg font-semibold">{item.name}</h2>
+              <p className="text-green-500 font-bold">RM {item.price.toFixed(2)}</p>
+            </div>
+          ))}
+          <Button
+            onClick={handleNext}
+            disabled={currentIndex >= menu.length - 4}
             className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10"
             variant={"outline"}
           >
