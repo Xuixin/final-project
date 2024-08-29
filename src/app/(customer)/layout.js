@@ -14,10 +14,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
+//Componant
+import Footer from '@/components/Footer'
+
 export default function Customerlayout({ children }) {
   return (
     <div className='flex min-h-screen w-full flex-col'>
       <header className='sticky top-0 flex h-16 items-center gap-4 border-b bg-background lg:px-32 '>
+        {/* web */}
         <nav className='hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6'>
           <Link
             href='#'
@@ -42,21 +46,16 @@ export default function Customerlayout({ children }) {
             href='#'
             className='text-muted-foreground transition-colors hover:text-foreground'
           >
-            Orders
+            About
           </Link>
           <Link
             href='#'
             className='text-muted-foreground transition-colors hover:text-foreground'
           >
-            Customers
-          </Link>
-          <Link
-            href='#'
-            className='text-foreground transition-colors hover:text-foreground'
-          >
-            Settings
+            Contact
           </Link>
         </nav>
+        {/* mobile */}
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -81,35 +80,30 @@ export default function Customerlayout({ children }) {
                 href='#'
                 className='text-muted-foreground hover:text-foreground'
               >
-                Dashboard
+                Home
               </Link>
               <Link
                 href='#'
                 className='text-muted-foreground hover:text-foreground'
               >
-                Orders
+                Menu
               </Link>
               <Link
                 href='#'
                 className='text-muted-foreground hover:text-foreground'
               >
-                Products
+                About
               </Link>
               <Link
                 href='#'
                 className='text-muted-foreground hover:text-foreground'
               >
-                Customers
-              </Link>
-              <Link
-                href='#'
-                className='hover:text-foreground'
-              >
-                Settings
+                Contact
               </Link>
             </nav>
           </SheetContent>
         </Sheet>
+        
         <div className='flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4'>
           <form className='ml-auto flex-1 sm:flex-initial'>
             <div className='relative'>
@@ -145,6 +139,7 @@ export default function Customerlayout({ children }) {
       </header>
       <main className='flex min-h-[calc(100vh_-_theme(spacing.16))] border flex-1 flex-col gap-4 bg-muted/40 px-4 md:gap-8 md:py-5 lg:px-32 bg-white'>
         {children}
+      <Footer />
       </main>
     </div>
   )

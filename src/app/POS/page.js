@@ -1,4 +1,4 @@
-import Tables from "@/components/homeCmponant/tableNo"
+import Tables from "@/components/homeCmponant/home_Componant"
 export default function hel() {
     return (
         <main className="flex items-start p-10 pl-15 gap-2">

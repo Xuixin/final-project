@@ -75,3 +75,13 @@ body {
   }
 }
 
+section.hear {
+  display: grid;
+  grid-template-columns: 0.4fr 0.6fr; /* ค่าเริ่มต้นสำหรับหน้าจอขนาดใหญ่ */
+}
+
+@media screen and (max-width: 768px) { /* สำหรับโทรศัพท์มือถือ */
+  section.hear {
+    grid-template-columns: 1fr; /* เปลี่ยนเป็น 1 คอลัมน์ */
+  }
+}
