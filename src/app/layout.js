@@ -1,9 +1,7 @@
 import { Roboto } from "next/font/google";
-import {} from "next/font/google";
 import "./globals.css";
 
-import { getServerSession } from "next-auth";
-import SessionProvider from "./../components/SessionProvider";
+import AppProvider from './Context/AppContext'
 
 const RobotoBold = Roboto({
   subsets: ["latin"],
@@ -16,11 +14,10 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const session = await getServerSession();
   return (
     <html lang="en">
       <body className={RobotoBold.className}>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );

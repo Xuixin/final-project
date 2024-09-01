@@ -1,73 +1,46 @@
-"use client";
-import Link from "next/link";
-import { signIn } from "next-auth/react";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+"use client"
+import Link from "next/link"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAppContext } from "../Context/AppContext"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 //alert
-import { AlertCircle } from "lucide-react";
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress } from '@/components/ui/progress'
+import { AlertCircle } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import axios from "axios"
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [progress, setProgress] = useState(100);
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const { login } = useAppContext()
 
-  const router = useRouter();
+  const router = useRouter()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
+      const response = await axios.post('/api/auth/signin', JSON.stringify({email, password}))
 
-      if(result.error){
-        console.error(result.error)
-        setError(result.error)
-        return false
-      }
+      const { token } = await response.data
+      login(token)
 
-      router.push('/home')
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
-      setProgress(100)
+    }catch(err){
+      console.error(err)
+      setError('Invalid email or password')
     }
-  };
-
-  useEffect(() => {
-    let timer;
-    if (error) {
-      timer = setInterval(() => {
-        setProgress((prevProgress) => {
-          if (prevProgress <= 0) {
-            clearInterval(timer);
-            setError(""); 
-            return 0;
-          }
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(timer);
-  }, [error]);
+  }
 
   return (
     <section className="flex justify-center items-center min-h-screen relative">
@@ -130,7 +103,7 @@ export default function LoginForm() {
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
+              Don&apost have an account?{" "}
               <Link href="#" className="underline">
                 Sign up
               </Link>
@@ -139,5 +112,5 @@ export default function LoginForm() {
         </CardContent>
       </Card>
     </section>
-  );
+  )
 }

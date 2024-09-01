@@ -24,7 +24,7 @@ model Customer {
   tel       String?
   password  String
   orders    Order[]
-  createdAt DateTime @default(now()) // Add createdAt field
+  createdAt DateTime @default(now()) 
 }
 
 model Category {

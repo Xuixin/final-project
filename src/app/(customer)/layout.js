@@ -1,8 +1,9 @@
-import Link from 'next/link'
-import { CircleUser, Menu, Package2, Search } from 'lucide-react'
+"use client";
+import Link from "next/link";
+import { CircleUser, Menu, Package2, Search } from "lucide-react";
+import BestSeller from "@/components/ui/bestseller";
 
-import { Button } from '@/components/ui/button'
-
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,47 +11,90 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 //Componant
-import Footer from '@/components/Footer'
+import Footer from "@/components/Footer";
+
+//context
+import { useAppContext } from "../Context/AppContext";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function Customerlayout({ children }) {
+  const { user, logout } = useAppContext();
+  const [index, setIndex] = useState(0);
+  const pathName = usePathname();
+
+  useEffect(() => {
+    changePath(pathName);
+  }, [pathName]);
+
+  const changePath = (path) => {
+    switch (path) {
+      case "/home":
+        setIndex(1);
+        break;
+      case "/menu":
+        setIndex(2);
+        break;
+      case "/about":
+        setIndex(3);
+        break;
+      case "/contact":
+        setIndex(4);
+        break;
+      default:
+        setIndex(0);
+        break;
+    }
+  };
+
   return (
-    <div className='flex min-h-screen w-full flex-col'>
-      <header className='sticky top-0 flex h-16 items-center gap-4 border-b bg-background lg:px-32 '>
+    <div className="flex min-h-screen w-full flex-col">
+      <header className="sticky top-0 flex h-16 z-50 items-center gap-4 border-b bg-background lg:px-32 ">
         {/* web */}
-        <nav className='hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6'>
+        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link
-            href='#'
-            className='flex items-center gap-2 text-lg font-semibold md:text-base'
+            href="/home"
+            className={`flex items-center gap-2 text-lg font-semibold ${
+              index === 1 ? "text-foreground" : "text-muted-foreground"
+            }`}
           >
-            <Package2 className='h-6 w-6' />
-            <span className='sr-only'>Acme Inc</span>
+            <Package2 className="h-6 w-6" />
+            <span className="sr-only">Acme Inc</span>
           </Link>
           <Link
-            href='#'
-            className='text-muted-foreground transition-colors hover:text-foreground'
+            href="/home"
+            className={`transition-colors hover:text-foreground ${
+              index === 1 ? "text-foreground" : "text-muted-foreground"
+            }`}
           >
             Home
           </Link>
           <Link
-            href='#'
-            className='text-muted-foreground transition-colors hover:text-foreground'
+            href="/menu"
+            className={`text-muted-foreground transition-colors hover:text-foreground ${
+              index === 2 ? "text-foreground" : "text-muted-foreground"
+            }`}
           >
             Menu
           </Link>
           <Link
-            href='#'
-            className='text-muted-foreground transition-colors hover:text-foreground'
+            href="/about"
+            className={`text-muted-foreground transition-colors hover:text-foreground ${
+              index === 3 ? "text-foreground" : "text-muted-foreground"
+            }`}
           >
             About
           </Link>
           <Link
-            href='#'
-            className='text-muted-foreground transition-colors hover:text-foreground'
+            href="/contact"
+            className={`text-muted-foreground transition-colors hover:text-foreground ${
+              index === 4 ? "text-foreground" : "text-muted-foreground"
+            }`}
           >
             Contact
           </Link>
@@ -59,88 +103,84 @@ export default function Customerlayout({ children }) {
         <Sheet>
           <SheetTrigger asChild>
             <Button
-              variant='outline'
-              size='icon'
-              className='shrink-0 md:hidden'
+              variant="outline"
+              size="icon"
+              className="shrink-0 md:hidden"
             >
-              <Menu className='h-5 w-5' />
-              <span className='sr-only'>Toggle navigation menu</span>
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side='left'>
-            <nav className='grid gap-6 text-lg font-medium'>
+          <SheetContent side="left">
+            <nav className="grid gap-6 text-lg font-medium">
               <Link
-                href='#'
-                className='flex items-center gap-2 text-lg font-semibold'
+                href="#"
+                className="flex items-center gap-2 text-lg font-semibold"
               >
-                <Package2 className='h-6 w-6' />
-                <span className='sr-only'>Acme Inc</span>
+                <Package2 className="h-6 w-6" />
+                <span className="sr-only">Acme Inc</span>
               </Link>
               <Link
-                href='#'
-                className='text-muted-foreground hover:text-foreground'
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
               >
                 Home
               </Link>
               <Link
-                href='#'
-                className='text-muted-foreground hover:text-foreground'
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
               >
                 Menu
               </Link>
               <Link
-                href='#'
-                className='text-muted-foreground hover:text-foreground'
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
               >
                 About
               </Link>
               <Link
-                href='#'
-                className='text-muted-foreground hover:text-foreground'
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
               >
                 Contact
               </Link>
             </nav>
           </SheetContent>
         </Sheet>
-        
-        <div className='flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4'>
-          <form className='ml-auto flex-1 sm:flex-initial'>
-            <div className='relative'>
-              <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
+
+        <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+          <form className="ml-auto flex-1 sm:flex-initial">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                type='search'
-                placeholder='Search products...'
-                className='pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]'
+                type="search"
+                placeholder="Search products..."
+                className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
               />
             </div>
           </form>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant='secondary'
-                size='icon'
-                className='rounded-full'
-              >
-                <CircleUser className='h-5 w-5' />
-                <span className='sr-only'>Toggle user menu</span>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <CircleUser className="h-5 w-5" />
+                <span className="sr-only">Toggle user menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
+            <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </header>
-      <main className='flex min-h-[calc(100vh_-_theme(spacing.16))] border flex-1 flex-col gap-4 bg-muted/40 px-4 md:gap-8 md:py-5 lg:px-32 bg-white'>
+      <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] border flex-1 flex-col gap-4 pt-16 bg-primary-foreground px-4 md:gap-8 md:py-5 lg:px-32 ">
         {children}
-      <Footer />
+        <Footer />
       </main>
     </div>
-  )
+  );
 }

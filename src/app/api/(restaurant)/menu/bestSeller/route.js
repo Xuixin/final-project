@@ -2,19 +2,18 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(request, { params }) {
+export async function GET(request) {
     try {
-        const response =await prisma.menu.findMany({
-            orderBy:{
-                soldQuantity: 'desc'
+        const bestSeller = await prisma.menu.findFirst({
+            orderBy: {
+                soldQuantity: 'desc',
             },
-            take: 10,
-        })
+        });
 
-        return new Response(JSON.stringify(response));
+        return new Response(JSON.stringify(bestSeller));
     } catch (error) {
-        console.error("fail to fetch menu : ", error)
-        return new Response(JSON.stringify({ error: 'An error occurred' }), {
+        console.error("Failed to fetch best seller menu:", error);
+        return new Response(JSON.stringify({ error: 'An error occurred while fetching the best seller menu' }), {
             status: 500,
         });
     }

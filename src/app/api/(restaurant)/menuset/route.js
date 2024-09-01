@@ -55,7 +55,6 @@ export async function GET(request) {
           },
         },
       });
-      console.log(data)
       return new Response(JSON.stringify(data), { status: 200 });
     } catch (error) {
       console.error("Error fetching menu sets:", error);
