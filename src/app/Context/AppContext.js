@@ -73,6 +73,15 @@ export default function AppProvider({ children }) {
     })
   }
 
+  const minusfromCart = (item) => {
+    const newCart = [...cart]
+    const index = newCart.findIndex((i) => i.id === item.id)
+    if (index !== -1 && newCart[index].quantity > 1) {
+      newCart[index].quantity--
+    }
+    setCart(newCart)
+  }
+
   useEffect(() => {
     console.log('cart', cart)
   }, [cart])
@@ -100,6 +109,7 @@ export default function AppProvider({ children }) {
         removeFromCart,
         clearCart,
         cartCount,
+        minusfromCart,
       }}
     >
       {children}
