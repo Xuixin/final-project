@@ -65,7 +65,6 @@ body {
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -80,8 +79,17 @@ section.hear {
   grid-template-columns: 0.4fr 0.6fr; /* ค่าเริ่มต้นสำหรับหน้าจอขนาดใหญ่ */
 }
 
-@media screen and (max-width: 768px) { /* สำหรับโทรศัพท์มือถือ */
+section.hearCart {
+  display: grid;
+  grid-template-columns: 0.6fr 0.4fr;
+}
+
+@media screen and (max-width: 768px) {
+  /* สำหรับโทรศัพท์มือถือ */
   section.hear {
     grid-template-columns: 1fr; /* เปลี่ยนเป็น 1 คอลัมน์ */
+  }
+  section.hearCart {
+    grid-template-columns: 1fr;
   }
 }

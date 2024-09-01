@@ -24,7 +24,7 @@ model Customer {
   tel       String?
   password  String
   orders    Order[]
-  createdAt DateTime @default(now()) 
+  createdAt DateTime @default(now())
 }
 
 model Category {
@@ -53,7 +53,7 @@ model Menu {
   discount       Discount?       @relation(fields: [discountId], references: [id])
   menusetDetails MenuSetDetail[]
   orderDetails   OrderDetail[]
-  soldQuantity   Int  @default(0)
+  soldQuantity   Int             @default(0)
   createdAt      DateTime        @default(now()) // Add createdAt field
 }
 
@@ -66,14 +66,14 @@ model Table {
 }
 
 model MenuSet {
-  id          Int             @id @default(autoincrement())
-  name        String
-  totalMenu   Int
-  price       Float
-  details     MenuSetDetail[]
-  OrderDetail OrderDetail[]
-  soldQuantity Int  @default(0)
-  createdAt   DateTime        @default(now()) // Add createdAt field
+  id           Int             @id @default(autoincrement())
+  name         String
+  totalMenu    Int
+  price        Float
+  details      MenuSetDetail[]
+  OrderDetail  OrderDetail[]
+  soldQuantity Int             @default(0)
+  createdAt    DateTime        @default(now()) // Add createdAt field
 }
 
 model MenuSetDetail {
@@ -133,21 +133,30 @@ model Expenses {
   createdAt DateTime @default(now()) // Add createdAt field
 }
 
+model Order_source {
+  id          Int     @id @default(autoincrement())
+  source_name String  @unique
+  orders      Order[]
+}
+
 model Order {
-  id           Int           @id @default(autoincrement())
-  customerId   Int
-  tableId      Int? // Optional
-  employeeId   Int? // Optional
-  status       String
-  quantity     Int
-  totalPrice   Float
-  customer     Customer      @relation(fields: [customerId], references: [id])
-  table        Table?        @relation(fields: [tableId], references: [id])
-  employee     Employee?     @relation(fields: [employeeId], references: [id])
-  orderDetails OrderDetail[]
-  payment      Payment?
-  shipping     Shipping?
-  createdAt    DateTime      @default(now()) // Add createdAt field
+  id             Int           @id @default(autoincrement())
+  customerId     Int
+  tableId        Int? // Optional
+  employeeId     Int? // Optional
+  order_sourceId Int
+  status         String
+  quantity       Int
+  totalPrice     Float
+  customer       Customer      @relation(fields: [customerId], references: [id])
+  table          Table?        @relation(fields: [tableId], references: [id])
+  employee       Employee?     @relation(fields: [employeeId], references: [id])
+  orderSource    Order_source  @relation(fields: [order_sourceId], references: [id])
+  orderDetails   OrderDetail[]
+  payment        Payment?
+  shipping       Shipping?
+
+  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model OrderDetail {
