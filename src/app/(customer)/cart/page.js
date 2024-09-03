@@ -9,6 +9,7 @@ import { Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import CheckoutButton from '@/components/menuComponant/checkout'
 
 //import
 
@@ -51,7 +52,6 @@ export default function Cart() {
   useEffect(() => {
     try {
       const token = localStorage.getItem('token')
-      console.log(token)
       const userId = parseJwt(token).userId
 
       const fetchUser = async () => {
@@ -62,10 +62,6 @@ export default function Cart() {
     } catch (error) {
       console.error(error)
     }
-  }, [])
-
-  useEffect(() => {
-    console.log(user)
   }, [])
 
   const handleDecreaseQuantity = (item) => {
@@ -80,8 +76,8 @@ export default function Cart() {
   return (
     <>
       <h3 className='w-full text-4xl font-thin'>Your Cart</h3>
-      <section className='hearCart min-h-96 bg-white space-x-5'>
-        <div className='flex flex-col'>
+      <section className='hearCart min-h-96 space-x-5'>
+        <div className='flex flex-col bg-white rounded-lg py-5 px-5'>
           <div className='flex justify-between items-start pr-20 mb-6'>
             <Button
               variant='ghost'
@@ -163,7 +159,7 @@ export default function Cart() {
             )}
           </div>
         </div>
-        <div>
+        <div className="w-full bg-white rounded-e-lg py-5 px-5 max-h-[30rem]"> 
           <h3>Order Summary</h3>
           <div className='w-full py-5 px-8 grid grid-cols-2 gap-4'>
             <div>
@@ -195,7 +191,7 @@ export default function Cart() {
             <p className='textlg font-thin text-end'>RM {calculateTotal()}</p>
           </div>
           <div className='w-full flex justify-center'>
-            <Button className='uppercase '>Checkout</Button>
+            <CheckoutButton customerId={user.id} />
           </div>
         </div>
       </section>

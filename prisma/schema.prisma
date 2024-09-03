@@ -176,7 +176,7 @@ model Payment {
   id        Int      @id @default(autoincrement())
   orderId   Int      @unique
   amount    Float
-  slip      String
+  transactionId String?
   status    String
   order     Order    @relation(fields: [orderId], references: [id])
   createdAt DateTime @default(now()) // Add createdAt field
