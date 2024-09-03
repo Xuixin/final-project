@@ -1,12 +1,33 @@
 'use client'
 import { useAppContext } from '@/app/Context/AppContext'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 //import ui
 import { Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
+//import
+
+function parseJwt(token) {
+  const base64Url = token.split('.')[1]
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      })
+      .join('')
+  )
+
+  return JSON.parse(jsonPayload)
+}
 export default function Cart() {
+  const [user, setUser] = useState([])
   const {
     cartCount,
     cart,
@@ -21,6 +42,32 @@ export default function Cart() {
     addToCart(updatedItem)
   }
 
+  const calculateTotal = () => {
+    return cart
+      .reduce((total, item) => total + item.quantity * item.price, 0)
+      .toFixed(2)
+  }
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem('token')
+      console.log(token)
+      const userId = parseJwt(token).userId
+
+      const fetchUser = async () => {
+        const response = await axios.get(`/api/customer/${userId}`)
+        setUser(response.data)
+      }
+      fetchUser()
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log(user)
+  }, [])
+
   const handleDecreaseQuantity = (item) => {
     if (item.quantity > 1) {
       const updatedItem = { ...item, quantity: item.quantity - 1 }
@@ -33,7 +80,7 @@ export default function Cart() {
   return (
     <>
       <h3 className='w-full text-4xl font-thin'>Your Cart</h3>
-      <section className='hearCart min-h-96 bg-white'>
+      <section className='hearCart min-h-96 bg-white space-x-5'>
         <div className='flex flex-col'>
           <div className='flex justify-between items-start pr-20 mb-6'>
             <Button
@@ -114,6 +161,41 @@ export default function Cart() {
                 </Button>
               </div>
             )}
+          </div>
+        </div>
+        <div>
+          <h3>Order Summary</h3>
+          <div className='w-full py-5 px-8 grid grid-cols-2 gap-4'>
+            <div>
+              <Input
+                type='text'
+                value={user.name || ''}
+              />
+            </div>
+            <div>
+              <Input
+                type='text'
+                value={user.lastname || ''}
+              />
+            </div>
+            <div>
+              <Input
+                type='text'
+                value={user.tel || ''}
+                placeholder='012-012-0123'
+              />
+            </div>
+            <div></div>
+            <div className='col-span-2'>
+              <Textarea placeholder='Type your address here.' />
+            </div>
+          </div>
+          <div className='w-full grid grid-cols-2 space-x-2 items-center p-4 mb-5'>
+            <p className='font-semibold text-lg'>Summary</p>
+            <p className='textlg font-thin text-end'>RM {calculateTotal()}</p>
+          </div>
+          <div className='w-full flex justify-center'>
+            <Button className='uppercase '>Checkout</Button>
           </div>
         </div>
       </section>
