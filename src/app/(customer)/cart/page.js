@@ -28,7 +28,7 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload)
 }
 export default function Cart() {
-  const [user, setUser] = useState([])
+  const [user, setUser] = useState({})
   const {
     cartCount,
     cart,
@@ -56,13 +56,17 @@ export default function Cart() {
 
       const fetchUser = async () => {
         const response = await axios.get(`/api/customer/${userId}`)
-        setUser(response.data)
+        await setUser(response.data)
       }
       fetchUser()
     } catch (error) {
       console.error(error)
     }
   }, [])
+
+  useEffect(() => {
+    console.log(user)
+  }, [user])
 
   const handleDecreaseQuantity = (item) => {
     if (item.quantity > 1) {
@@ -159,7 +163,7 @@ export default function Cart() {
             )}
           </div>
         </div>
-        <div className="w-full bg-white rounded-e-lg py-5 px-5 max-h-[30rem]"> 
+        <div className='w-full bg-white rounded-e-lg py-5 px-5 max-h-[30rem]'>
           <h3>Order Summary</h3>
           <div className='w-full py-5 px-8 grid grid-cols-2 gap-4'>
             <div>
@@ -178,12 +182,16 @@ export default function Cart() {
               <Input
                 type='text'
                 value={user.tel || ''}
+                onChange={(e) => setUser({ ...user, tel: e.target.value })}
                 placeholder='012-012-0123'
               />
             </div>
             <div></div>
             <div className='col-span-2'>
-              <Textarea placeholder='Type your address here.' />
+              <Textarea
+                placeholder='Type your address here.'
+                onChange={(e) => setUser({ ...user, address: e.target.value })}
+              />
             </div>
           </div>
           <div className='w-full grid grid-cols-2 space-x-2 items-center p-4 mb-5'>
@@ -191,7 +199,10 @@ export default function Cart() {
             <p className='textlg font-thin text-end'>RM {calculateTotal()}</p>
           </div>
           <div className='w-full flex justify-center'>
-            <CheckoutButton customerId={user.id} />
+            <CheckoutButton
+              customerId={user.id}
+              userData={user}
+            />
           </div>
         </div>
       </section>
