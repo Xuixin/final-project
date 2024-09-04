@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { usePathname } from 'next/navigation'
 
+
 export function MenuWithPro() {
   const [menusDiscount, setMenusDiscount] = useState([])
   const [bestSeller, setBestSeller] = useState(null)
@@ -114,7 +115,7 @@ export function MenuWithPro() {
               <div className='w-full px-4'>
                 <Button
                   className='w-full text-center'
-                  onClick={() => addToCart(bestSeller)}
+                  onClick={() => addToCart({...bestSeller, quantity: 1})}
                 >
                   Add to cart
                 </Button>
@@ -180,6 +181,8 @@ export function MenuWithPro() {
 
 export const Menuset = () => {
   const [menuSet, setMenuSet] = useState([])
+  const { addToCartSet } = useAppContext() // เรียกใช้ addToCartSet จาก context
+
   useEffect(() => {
     const fetchMenuSet = async () => {
       try {
@@ -204,12 +207,15 @@ export const Menuset = () => {
                 className='h-72 w-full  rounded-md border bg-white'
               >
                 <div>
-                  <div className='sticky top-0 flex bg-white justify-between items-center px-4 h-14 mb-15 '>
-                    <h4 className='mb-4 text-lg  font-semibold leading-none'>
+                  <div className='sticky top-0 flex bg-white justify-between items-center px-4 h-14 mb-15'>
+                    <h4 className='mb-4 text-lg font-semibold leading-none'>
                       {item.name}
                     </h4>
                     <div className='flex items-center'>
-                      <Button className='ml-2'>
+                      <Button
+                        className='ml-2'
+                        onClick={() => addToCartSet(item)} // เรียกใช้ฟังก์ชันเพิ่ม MenuSet เข้า cartSet
+                      >
                         Add to cart {'( RM ' + item.price.toFixed(2) + ' )'}
                       </Button>
                     </div>
@@ -217,7 +223,7 @@ export const Menuset = () => {
                   <div className='space-y-2 px-3 mt-2'>
                     {item.details.map((menu, index) => {
                       return (
-                        <div className='max-h-16 border-2 border-orange-100 rounded-lg'>
+                        <div key={index} className='max-h-16 border-2 border-orange-100 rounded-lg'>
                           <div className='grid grid-cols-4 gap-2 px-2'>
                             <Image
                               src={menu.menu.img}
@@ -226,11 +232,10 @@ export const Menuset = () => {
                               height={48}
                               className='rounded'
                             />
-
-                            <h6 className='text-sm font-medium leading-none  flex  items-center'>
+                            <h6 className='text-sm font-medium leading-none flex items-center'>
                               {menu.menu.name}
                             </h6>
-                            <p className='text-sm  flex  items-center'>
+                            <p className='text-sm flex items-center'>
                               {menu.quantity} unit
                             </p>
                             <p className='text-sm flex justify-center items-center'>

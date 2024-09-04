@@ -41,7 +41,7 @@ export async function createOrder(orderId, amount) {
         ],
         application_context: {
           shipping_preference: 'NO_SHIPPING', // หรือ 'SET_PROVIDED_ADDRESS' ถ้าต้องการที่อยู่จัดส่ง
-          return_url: 'http://localhost:3000/cart',
+          return_url: 'http://localhost:3000/cart/complete',
           cancel_url: 'http://localhost:3000/cart',
         }
       },
@@ -57,5 +57,29 @@ export async function createOrder(orderId, amount) {
   } catch (error) {
     console.error('PayPal API Error:', error.response?.data || error.message);
     throw new Error('Failed to create PayPal order');
+  }
+}
+
+export async function captureOrder(orderId) {
+  const accessToken = await getAccessToken();
+
+  try {
+    const response = await axios.post(
+      `https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // ดึง transactionId หรือ captureId จาก response
+    const captureId = response.data.purchase_units[0].payments.captures[0].id;
+    return captureId;
+  } catch (error) {
+    console.error('PayPal Capture API Error:', error.response?.data || error.message);
+    throw new Error('Failed to capture PayPal order');
   }
 }

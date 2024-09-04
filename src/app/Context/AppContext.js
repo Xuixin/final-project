@@ -8,8 +8,10 @@ const AppContext = createContext()
 export default function AppProvider({ children }) {
   const [user, setUser] = useState(null)
   const [cart, setCart] = useState([])
+  const [cartSet, setCartSet] = useState([]) // สำหรับจัดการ MenuSet
   const router = useRouter()
 
+  // ดึงข้อมูลผู้ใช้เมื่อมี token
   useEffect(() => {
     const token = localStorage.getItem('token')
 
@@ -57,9 +59,16 @@ export default function AppProvider({ children }) {
     localStorage.removeItem('token')
     setUser(null)
     setCart([])
+    setCartSet([]) // ล้าง MenuSet เมื่อออกจากระบบ
     router.push('/login')
   }
 
+  useEffect(() => {
+    console.log('cart', cart);
+    console.log('cartSet', cartSet);
+  }, [cart, cartSet])
+
+  // ฟังก์ชันสำหรับจัดการ Cart ปกติ
   const addToCart = (item) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((i) => i.id === item.id)
@@ -73,6 +82,7 @@ export default function AppProvider({ children }) {
     })
   }
 
+  // ฟังก์ชันสำหรับลบจาก Cart ปกติ
   const minusfromCart = (item) => {
     const newCart = [...cart]
     const index = newCart.findIndex((i) => i.id === item.id)
@@ -82,20 +92,87 @@ export default function AppProvider({ children }) {
     setCart(newCart)
   }
 
-  useEffect(() => {
-    console.log('cart', cart)
-  }, [cart])
-
   const removeFromCart = (itemId) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== itemId))
   }
 
+  // ฟังก์ชันสำหรับจัดการ MenuSet
+  const addToCartSet = (item) => {
+    const newCartSet = [...cartSet]
+    const existingItem = newCartSet.find((i) => i.id === item.id)
+
+    if (existingItem) {
+      newCartSet.forEach((i) => {
+        if (i.id === item.id) {
+          i.details = i.details.map((detail) => {
+            const existingDetail = item.details.find(
+              (newDetail) => newDetail.menuId === detail.menuId
+            )
+            if (existingDetail) {
+              return {
+                ...detail,
+                quantity: detail.quantity + existingDetail.quantity,
+              }
+            } else {
+              return detail
+            }
+          })
+
+          // อัปเดต totalMenu ตามจำนวนเมนูที่เพิ่มเข้ามา
+          i.totalMenu = i.details.reduce(
+            (total, detail) => total + detail.quantity,
+            0
+          )
+
+          i.price = i.price + item.price
+        }
+      })
+    } else {
+      // ถ้าไม่มีอยู่ใน cartSet ให้เพิ่ม item และคำนวณ totalMenu
+      newCartSet.push({
+        ...item,
+        totalMenu: item.details.reduce(
+          (total, detail) => total + detail.quantity,
+          0
+        ),
+      })
+    }
+
+    setCartSet(newCartSet)
+  }
+
+
+  const minusfromCartSet = (item) => {
+    const newCartSet = [...cartSet]
+    const index = newCartSet.findIndex((i) => i.id === item.id)
+    if (index !== -1) {
+      const detailIndex = newCartSet[index].details.findIndex((detail) => detail.id === item.details[0].id)
+      if (detailIndex !== -1 && newCartSet[index].details[detailIndex].quantity > 1) {
+        newCartSet[index].details[detailIndex].quantity--
+      } else {
+        newCartSet.splice(index, 1)
+      }
+    }
+    setCartSet(newCartSet)
+  }
+
+  const removeFromCartSet = (itemid) => {
+    const newCartSet = [...cartSet]
+    newCartSet.splice(newCartSet.findIndex((item) => item.id === itemid), 1)
+    setCartSet(newCartSet)
+  }
+
+  // นับจำนวนสินค้าใน Cart ทั้งแบบปกติและ MenuSet
   const cartCount = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0)
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0)
+    const cartSetCount = cartSet.reduce((total, item) => total + item.details.reduce((total, detail) => total + detail.quantity, 0), 0)
+
+    return cartCount + cartSetCount
   }
 
   const clearCart = () => {
     setCart([])
+    setCartSet([]) // ล้าง MenuSet เมื่อเคลียร์ Cart
   }
 
   return (
@@ -103,13 +180,17 @@ export default function AppProvider({ children }) {
       value={{
         user,
         cart,
+        cartSet,
         login,
         logout,
         addToCart,
+        addToCartSet,
         removeFromCart,
+        removeFromCartSet,
         clearCart,
         cartCount,
         minusfromCart,
+        minusfromCartSet,
       }}
     >
       {children}

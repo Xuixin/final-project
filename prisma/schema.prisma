@@ -155,8 +155,7 @@ model Order {
   orderDetails   OrderDetail[]
   payment        Payment?
   shipping       Shipping?
-
-  createdAt DateTime @default(now()) // Add createdAt field
+  createdAt      DateTime      @default(now()) // Add createdAt field
 }
 
 model OrderDetail {
@@ -165,7 +164,7 @@ model OrderDetail {
   menuId    Int? // Optional
   menusetId Int? // Optional
   quantity  Int
-  price     Float
+  price     Float?
   order     Order    @relation(fields: [orderId], references: [id])
   menu      Menu?    @relation(fields: [menuId], references: [id])
   menuset   MenuSet? @relation(fields: [menusetId], references: [id])
@@ -173,13 +172,13 @@ model OrderDetail {
 }
 
 model Payment {
-  id        Int      @id @default(autoincrement())
-  orderId   Int      @unique
-  amount    Float
+  id            Int      @id @default(autoincrement())
+  orderId       Int      @unique
+  amount        Float
   transactionId String?
-  status    String
-  order     Order    @relation(fields: [orderId], references: [id])
-  createdAt DateTime @default(now()) // Add createdAt field
+  status        String
+  order         Order    @relation(fields: [orderId], references: [id])
+  createdAt     DateTime @default(now()) // Add createdAt field
 }
 
 model Shipping {
