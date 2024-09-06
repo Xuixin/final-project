@@ -1,5 +1,7 @@
 import { Roboto } from 'next/font/google'
 import './globals.css'
+import { Toaster } from "@/components/ui/toaster"
+
 
 import AppProvider from './Context/AppContext'
 
@@ -18,6 +20,7 @@ export default async function RootLayout({ children }) {
     <html lang='en'>
       <body className={`${RobotoBold.className}`}>
         <AppProvider>{children}</AppProvider>
+        <Toaster />
       </body>
     </html>
   )

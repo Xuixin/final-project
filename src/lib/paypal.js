@@ -25,6 +25,8 @@ export async function getAccessToken() {
 export async function createOrder(orderId, amount) {
   const accessToken = await getAccessToken();
 
+  const newAmount = amount * 0.25
+
   try {
     const response = await axios.post(
       'https://api-m.sandbox.paypal.com/v2/checkout/orders',
@@ -35,7 +37,7 @@ export async function createOrder(orderId, amount) {
             reference_id: orderId.toString(),
             amount: {
               currency_code: 'USD', // หรือ MYR หากคุณต้องการ
-              value: amount.toFixed(2),
+              value: newAmount.toFixed(2),
             },
           },
         ],
@@ -60,26 +62,3 @@ export async function createOrder(orderId, amount) {
   }
 }
 
-export async function captureOrder(orderId) {
-  const accessToken = await getAccessToken();
-
-  try {
-    const response = await axios.post(
-      `https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`,
-      {},
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    // ดึง transactionId หรือ captureId จาก response
-    const captureId = response.data.purchase_units[0].payments.captures[0].id;
-    return captureId;
-  } catch (error) {
-    console.error('PayPal Capture API Error:', error.response?.data || error.message);
-    throw new Error('Failed to capture PayPal order');
-  }
-}

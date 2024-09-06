@@ -5,7 +5,7 @@ import axios from 'axios';
 
 export default function CheckoutButton({ customerId, userData, totalPrice }) {
   const [error, setError] = useState(null);
-  const { cart, cartSet } = useAppContext();
+  const { cart, cartSet, setOrderId } = useAppContext();
 
   const items = cart.map(({ id, name, price, quantity }) => ({
     id,
@@ -35,10 +35,10 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
 
       if (!orderId) throw new Error('Failed to create order.');
 
-      await axios.post('/api/payment/create', {
+      const paymentCreate = await axios.post('/api/payment/create', {
         orderId,
         amount: orderTotalPrice,
-        status: 'ยังไม่ชำระ',
+        status: 'completed',
       });
 
       // 3. สร้างการชำระเงินกับ PayPal

@@ -19,7 +19,7 @@ export function Menu() {
   const [menu, setMenu] = useState([])
   const [discounts, setDiscounts] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 16
+  const itemsPerPage = 12
   const { addToCart } = useAppContext()
 
   useEffect(() => {
@@ -59,12 +59,7 @@ export function Menu() {
   const totalPages = Math.ceil(menu.length / itemsPerPage)
 
   return (
-    <div className='relative bg-white'>
-      <div className='flex justify-between items-center py-4 px-10'>
-        <h1 className='text-4xl font-bold '>
-          D<span className='text-red-600'>e</span>als{' '}
-        </h1>
-      </div>
+    <div className='relative bg-white pt-5'>
       <div className='relative overflow-hidden'>
         <div className='grid grid-cols-2 md:grid-cols-4 gap-4 p-4 relative px-10'>
           {/* Display Paginated Menu Items */}

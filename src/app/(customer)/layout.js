@@ -60,42 +60,37 @@ export default function Customerlayout({ children }) {
         <nav className='hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6'>
           <Link
             href='/home'
-            className={`flex items-center gap-2 text-lg font-semibold ${
-              index === 1 ? 'text-foreground' : 'text-muted-foreground'
-            }`}
+            className={`flex items-center gap-2 text-lg font-semibold ${index === 1 ? 'text-foreground' : 'text-muted-foreground'
+              }`}
           >
             <Package2 className='h-6 w-6' />
             <span className='sr-only'>Acme Inc</span>
           </Link>
           <Link
             href='/home'
-            className={`transition-colors hover:text-foreground ${
-              index === 1 ? 'text-foreground' : 'text-muted-foreground'
-            }`}
+            className={`transition-colors hover:text-foreground ${index === 1 ? 'text-foreground' : 'text-muted-foreground'
+              }`}
           >
             Home
           </Link>
           <Link
             href='/menu'
-            className={`text-muted-foreground transition-colors hover:text-foreground ${
-              index === 2 ? 'text-foreground' : 'text-muted-foreground'
-            }`}
+            className={`text-muted-foreground transition-colors hover:text-foreground ${index === 2 ? 'text-foreground' : 'text-muted-foreground'
+              }`}
           >
             Menu
           </Link>
           <Link
-            href='/about'
-            className={`text-muted-foreground transition-colors hover:text-foreground ${
-              index === 3 ? 'text-foreground' : 'text-muted-foreground'
-            }`}
+            href='/order'
+            className={`text-muted-foreground transition-colors hover:text-foreground ${index === 3 ? 'text-foreground' : 'text-muted-foreground'
+              }`}
           >
-            About
+            Order
           </Link>
           <Link
             href='/contact'
-            className={`text-muted-foreground transition-colors hover:text-foreground ${
-              index === 4 ? 'text-foreground' : 'text-muted-foreground'
-            }`}
+            className={`text-muted-foreground transition-colors hover:text-foreground ${index === 4 ? 'text-foreground' : 'text-muted-foreground'
+              }`}
           >
             Contact
           </Link>
@@ -122,22 +117,22 @@ export default function Customerlayout({ children }) {
                 <span className='sr-only'>Acme Inc</span>
               </Link>
               <Link
-                href='#'
+                href='/home'
                 className='text-muted-foreground hover:text-foreground'
               >
                 Home
               </Link>
               <Link
-                href='#'
+                href='/menu'
                 className='text-muted-foreground hover:text-foreground'
               >
                 Menu
               </Link>
               <Link
-                href='#'
+                href='/order'
                 className='text-muted-foreground hover:text-foreground'
               >
-                About
+                Order
               </Link>
               <Link
                 href='#'

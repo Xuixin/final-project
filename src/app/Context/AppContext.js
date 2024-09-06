@@ -9,6 +9,7 @@ export default function AppProvider({ children }) {
   const [user, setUser] = useState(null)
   const [cart, setCart] = useState([])
   const [cartSet, setCartSet] = useState([]) // สำหรับจัดการ MenuSet
+  const [orderId, setOrderId] = useState(null)
   const router = useRouter()
 
   // ดึงข้อมูลผู้ใช้เมื่อมี token
@@ -53,6 +54,10 @@ export default function AppProvider({ children }) {
       })
 
     router.push('/home')
+  }
+
+  const clearOrderId = () => {
+    setOrderId(null)
   }
 
   const logout = () => {
@@ -141,7 +146,6 @@ export default function AppProvider({ children }) {
     setCartSet(newCartSet)
   }
 
-
   const minusfromCartSet = (item) => {
     const newCartSet = [...cartSet]
     const index = newCartSet.findIndex((i) => i.id === item.id)
@@ -191,6 +195,9 @@ export default function AppProvider({ children }) {
         cartCount,
         minusfromCart,
         minusfromCartSet,
+        orderId,
+        setOrderId,
+        clearOrderId
       }}
     >
       {children}
