@@ -14,9 +14,20 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from '@/components/ui/label'
 
 //Componant
 import Footer from '@/components/Footer'
+import { EditProfile } from '@/components/menuComponant/ordereDetails'
 
 //context
 import { useAppContext } from '../Context/AppContext'
@@ -173,7 +184,13 @@ export default function Customerlayout({ children }) {
             <DropdownMenuContent align='end'>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className='w-full flex justify-start items-center border-none px-2'>Profile</Button>
+                </DialogTrigger>
+                <EditProfile />
+              </Dialog>
+
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>

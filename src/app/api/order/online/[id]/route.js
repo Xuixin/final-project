@@ -27,7 +27,7 @@ export async function GET(request, { params }) {
                 },
             },
             orderBy: {
-                createdAt: 'asc',
+                createdAt: 'desc',
             },
         });
 
@@ -57,7 +57,7 @@ export async function GET(request, { params }) {
                         details: detail.menuset.details.map(d => ({
                             id: d.menu.id,
                             name: d.menu.name,
-                            quantity: d.quantity
+                            quantity: detail.quantity
                         }))
                     });
                 }

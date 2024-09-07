@@ -24,7 +24,8 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
   const { id } = params
-  const { name, lastname, tel, address } = request.json()
+
+  const { name, lastname, tel, address } = await request.json()
 
   try {
     const updateResponse = await prisma.customer.update({
@@ -39,7 +40,7 @@ export async function POST(request, { params }) {
       },
     })
 
-    return new Response(JSON.stringify({ updateResponse, ok: true }), {
+    return new Response(JSON.stringify({ updateResponse }), {
       status: 200,
     })
   } catch (err) {

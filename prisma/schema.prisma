@@ -141,14 +141,14 @@ model Order_source {
 
 model Order {
   id             Int           @id @default(autoincrement())
-  customerId     Int
+  customerId     Int?
   tableId        Int? // Optional
   employeeId     Int? // Optional
   order_sourceId Int
   status         String
   quantity       Int
   totalPrice     Float
-  customer       Customer      @relation(fields: [customerId], references: [id])
+  customer       Customer?     @relation(fields: [customerId], references: [id])
   table          Table?        @relation(fields: [tableId], references: [id])
   employee       Employee?     @relation(fields: [employeeId], references: [id])
   orderSource    Order_source  @relation(fields: [order_sourceId], references: [id])

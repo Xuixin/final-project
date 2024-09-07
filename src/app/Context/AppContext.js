@@ -71,6 +71,18 @@ export default function AppProvider({ children }) {
   useEffect(() => {
     console.log('cart', cart);
     console.log('cartSet', cartSet);
+    const test = [
+      ...cartSet.flatMap(set =>
+        set.details.map(detail => ({
+          menuId: detail.menuId,
+          menusetId: set.id,
+          quantity: detail.quantity,
+          price: null, // ไม่มีราคาเพราะเป็น menuset
+        }))
+      )
+    ]
+
+    console.log("test", test);
   }, [cart, cartSet])
 
   // ฟังก์ชันสำหรับจัดการ Cart ปกติ
@@ -183,6 +195,7 @@ export default function AppProvider({ children }) {
     <AppContext.Provider
       value={{
         user,
+        setUser,
         cart,
         cartSet,
         login,

@@ -10,7 +10,7 @@ export async function POST(req) {
     // 1. สร้างคำสั่งซื้อใหม่
     const order = await prisma.order.create({
       data: {
-        status: 'รับออเดอร์แล้ว',
+        status: 'กำลังดำเนินการ',
         quantity: 0, // จะอัปเดตหลังจากสร้าง OrderDetail
         totalPrice: parseFloat(totalPrice), // totalPrice รวมเฉพาะ items
         customer: {
@@ -21,6 +21,7 @@ export async function POST(req) {
         }
       },
     });
+
 
     // 2. คำนวณจำนวนรวมจาก items
     const allItems = [
@@ -52,6 +53,30 @@ export async function POST(req) {
       where: { id: order.id },
       data: { quantity: totalQuantity },
     });
+
+    // 5. อัปเดต soldQuantity สำหรับ normal menu
+    for (const item of items) {
+      await prisma.menu.update({
+        where: { id: item.id },
+        data: {
+          soldQuantity: {
+            increment: item.quantity, // เพิ่มจำนวนตามที่สั่งซื้อ
+          },
+        },
+      });
+    }
+
+    // 6. อัปเดต soldQuantity สำหรับ set menu ตามจำนวนเซ็ตที่ขาย
+    for (const set of itemsSet) {
+      await prisma.menuSet.update({
+        where: { id: set.id },
+        data: {
+          soldQuantity: {
+            increment: 1, // เพิ่มจำนวนเซ็ตที่ขาย
+          },
+        },
+      });
+    }
 
     return new Response(
       JSON.stringify({ orderId: order.id, totalPrice: order.totalPrice }),
