@@ -10,7 +10,7 @@ export async function POST(req) {
     // 1. สร้างคำสั่งซื้อใหม่
     const order = await prisma.order.create({
       data: {
-        status: 'กำลังดำเนินการ',
+        status: 'อยู่ในคิว',
         quantity: 0, // จะอัปเดตหลังจากสร้าง OrderDetail
         totalPrice: parseFloat(totalPrice), // totalPrice รวมเฉพาะ items
         customer: {

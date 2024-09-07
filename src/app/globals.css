@@ -5,7 +5,8 @@
 
 body {
   margin: 0;
-  font-family: 'Moderustic', sans-serif; /* Default font */
+  font-family: 'Moderustic', sans-serif;
+  /* Default font */
 }
 
 @layer base {
@@ -20,6 +21,7 @@ body {
     --primary-foreground: 60 9.1% 97.8%;
     --secondary: 60 4.8% 95.9%;
     --secondary-foreground: 24 9.8% 10%;
+    --warning: 47.9 95.8% 53.1%;
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;
     --accent: 60 4.8% 95.9%;
@@ -69,6 +71,7 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -76,7 +79,8 @@ body {
 
 section.hear {
   display: grid;
-  grid-template-columns: 0.4fr 0.6fr; /* ค่าเริ่มต้นสำหรับหน้าจอขนาดใหญ่ */
+  grid-template-columns: 0.4fr 0.6fr;
+  /* ค่าเริ่มต้นสำหรับหน้าจอขนาดใหญ่ */
 }
 
 section.hearCart {
@@ -85,10 +89,13 @@ section.hearCart {
 }
 
 @media screen and (max-width: 768px) {
+
   /* สำหรับโทรศัพท์มือถือ */
   section.hear {
-    grid-template-columns: 1fr; /* เปลี่ยนเป็น 1 คอลัมน์ */
+    grid-template-columns: 1fr;
+    /* เปลี่ยนเป็น 1 คอลัมน์ */
   }
+
   section.hearCart {
     grid-template-columns: 1fr;
   }

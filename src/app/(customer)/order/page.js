@@ -4,54 +4,59 @@ import { useState, useEffect } from "react"
 import { useAppContext } from "@/app/Context/AppContext"
 import axios from "axios"
 
-//ui
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+// ui
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
 
-//componant
+// component
 import { OrderDetails } from "@/components/menuComponant/ordereDetails"
-
 
 export default function OrderPage() {
     const { toast } = useToast()
-    const [order, setOrder] = useState()
+    const [order, setOrder] = useState([]) // ตั้งค่าเริ่มต้นเป็น array ว่าง
     const { user } = useAppContext()
 
-    useEffect(() => {
-        const fetchOrder = async () => {
-            try {
-                const response = await axios.get(`/api/order/online/${user.id}`)
-                setOrder(response.data)
-                console.log(response.data);
-            } catch (error) {
-                console.log("Fail to fetch order: ", error)
-            }
+    // Fetch order data from API
+    const fetchOrder = async () => {
+        try {
+            const response = await axios.get(`/api/order/online/${user.id}`)
+            setOrder(response.data)
+            console.log(response.data)
+        } catch (error) {
+            console.log("Fail to fetch order: ", error)
         }
-        fetchOrder()
-    }, [user]);
+    }
+
+    useEffect(() => {
+        if (user?.id) {
+            fetchOrder()
+        }
+    }, [user])
 
     return (
         <section>
-
-            <h1 className="font-semibold text-2xl mb-5">my order</h1>
-            <div className="w-full min-h-10  px-6">
-                {order && order.map((item) => {
-                    return (
-                        <Dialog>
+            <h1 className="font-semibold text-2xl mb-5">My Orders</h1>
+            <div className="w-full min-h-10 px-6">
+                {order.length > 0 ? ( // ตรวจสอบว่า order มีข้อมูลหรือไม่
+                    order.map((item) => (
+                        <Dialog key={item.orderId}> {/* เพิ่ม key เพื่อการ render ที่ถูกต้อง */}
                             <DialogTrigger asChild>
                                 <div className="w-full px-12 rounded-xl bg-white cursor-pointer py-2 mb-3">
-                                    <div className="grid grid-cols-3 py-5">
-                                        <a variant="outline" className="cursor-pointer hover:underline">OL{item.orderId}</a>
+                                    <div className="grid grid-cols-4 py-5">
+                                        <a className="cursor-pointer hover:underline">OL{item.orderId}</a>
                                         <h1 className="text-md font-medium text-end">{item.status}</h1>
                                         <p className="text-end text-sm font-light "> RM {item.totalPrice.toFixed(2)}</p>
                                     </div>
                                 </div>
                             </DialogTrigger>
-                            <OrderDetails order={item} />
+                            <DialogContent>
+                                {/* ส่ง fetchOrder ไปที่ OrderDetails */}
+                                <OrderDetails order={item} setOrder={setOrder} fetchOrder={fetchOrder} />
+                            </DialogContent>
                         </Dialog>
-                    )
-                })}
-
+                    ))
+                ) : (
+                    <p>No orders available.</p>
+                )}
             </div>
         </section>
     )

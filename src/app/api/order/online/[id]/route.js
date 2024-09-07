@@ -68,6 +68,7 @@ export async function GET(request, { params }) {
                 status: order.status,
                 createdAt: order.createdAt,
                 totalPrice: order.totalPrice,
+                userId: order.customer.id,
                 normalmenu,
                 setmenu
             };
@@ -81,5 +82,41 @@ export async function GET(request, { params }) {
         });
     } finally {
         await prisma.$disconnect();
+    }
+}
+
+//Delete
+export async function DELETE(request, { params }) {
+    const { id } = params;
+
+    try {
+        // ลบ orderDetail ที่เกี่ยวข้องกับ order
+        const orderDetail = await prisma.orderDetail.deleteMany({
+            where: {
+                orderId: parseInt(id),
+            },
+        });
+
+        const paymentOrder = await prisma.payment.delete({
+            where: {
+                orderId: parseInt(id),
+            },
+        })
+
+        // ลบ order
+        const order = await prisma.order.delete({
+            where: {
+                id: parseInt(id),
+            },
+        });
+
+        return new Response(JSON.stringify({ message: 'Order and order details deleted successfully' }), {
+            status: 200,
+        });
+    } catch (err) {
+        console.error(err.message);
+        return new Response(JSON.stringify({ error: err.message }), {
+            status: 500,
+        });
     }
 }

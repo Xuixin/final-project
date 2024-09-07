@@ -21,19 +21,56 @@ import { ToastAction } from "@/components/ui/toast"
 import { useRouter } from 'next/navigation'
 
 
-export function OrderDetails({ order }) {
+export function OrderDetails({ order, fetchOrder }) { // เพิ่ม fetchOrder
+    const { toast } = useToast()
+    const router = useRouter()
+
+    const deleteOrder = async () => {
+        if (order.status === 'กำลังดำเนินการ') {
+            toast({
+                variant: 'destructive',
+                title: "ยกเลิกไม่สำเร็จ",
+                description: "เนื่องจากออเดอร์กำลังปรุงแล้ว",
+            })
+            return
+        }
+        try {
+            await axios.delete(`/api/order/online/${order.orderId}`)
+            toast({
+                variant: 'success',
+                title: 'ยกเลิกออเดอร์แล้ว.',
+            })
+            // Refresh the order list after deleting
+            await fetchOrder() // เรียก fetchOrder เพื่อรีเฟรชข้อมูลในหน้า parent
+            router.refresh()
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Failed to delete order.',
+            })
+        }
+    }
+
     return (
         <>
             <DialogContent className='max-w-[425px] lg:max-h-[425px] lg:overflow-auto'>
-                <DialogHeader>
-                    <DialogTitle>OL{order.orderId}</DialogTitle>
-                    <DialogDescription>
-                        Order At {new Date(order.createdAt).toLocaleDateString('en-US', {
-                            month: 'short', // ใช้ 'short' เพื่อแสดงชื่อเดือนย่อ (เช่น Feb)
-                            day: '2-digit', // แสดงวันเป็น 2 หลัก (เช่น 04)
-                            year: 'numeric', // แสดงปีแบบเต็ม (เช่น 2024)
-                        })}
-                    </DialogDescription>
+                <DialogHeader className={'grid grid-cols-2'}>
+                    <div>
+                        <DialogTitle>OL{order.orderId}</DialogTitle>
+                        <DialogDescription>
+                            Order At {new Date(order.createdAt).toLocaleDateString('en-US', {
+                                month: 'short', // ใช้ 'short' เพื่อแสดงชื่อเดือนย่อ (เช่น Feb)
+                                day: '2-digit', // แสดงวันเป็น 2 หลัก (เช่น 04)
+                                year: 'numeric', // แสดงปีแบบเต็ม (เช่น 2024)
+                            })}
+                        </DialogDescription>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button variant="destructive" className="w-[40%]" onClick={() => deleteOrder()}>
+                            Cancel
+                        </Button>
+                    </div>
                 </DialogHeader>
                 {order.normalmenu.length > 0 && <DialogDescription>Menu</DialogDescription>}
 
