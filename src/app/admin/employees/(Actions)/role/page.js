@@ -5,13 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import {
   Form,
@@ -61,8 +54,14 @@ export default function InputForm() {
 
     try {
       const response = await axios.post('/api/employee/role', newData)
-      alert('success')
+      toast({
+        variant: 'success',
+        title: 'Success',
+        description: 'New role created successfully',
+      });
+
       router.push('/admin/employees')
+
     } catch (error) {
       console.log('Fail to create new role: ' + error.message)
     }

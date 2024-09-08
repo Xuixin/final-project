@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
@@ -29,12 +30,14 @@ import Image from "next/image";
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Menu name is required." }),
   category: z.string().min(1, { message: "Category is required." }), // category will store categoryId
-  discount: z.string().min(1, { message: "Discount is required." }),
+  discount: z.string().nullable().optional(), // Discount can be null or undefined
   price: z.number().min(0, { message: "Price must be a positive number." }),
-  image: z.any().optional(), // Image is now optional
+  image: z.any().optional(), // Image is optional
 });
 
+
 export default function InputForm({ params }) {
+  const { toast } = useToast();
   const router = useRouter();
   const { id } = params;
   const [categories, setCategories] = useState([]);
@@ -76,7 +79,7 @@ export default function InputForm({ params }) {
         const response = await axios.get(`/api/menu/${id}`);
         form.setValue("name", response.data.data.name);
         form.setValue("category", response.data.data.category.id); // Updated to use ID
-        form.setValue("discount", response.data.data.discountId); // Updated to use discount ID
+        form.setValue("discount", response.data.data.discountId);
         form.setValue("price", response.data.data.price);
         setSelectedImage(response.data.data.img); // Update state with the current image URL
       } catch (error) {
@@ -108,29 +111,35 @@ export default function InputForm({ params }) {
           },
         }
       );
-  
-      console.log("Image Upload Response:", imageResponse.data); // Log response from image upload
+
       const newData = {
         ...data,
         category: data.category,
         discountId: data.discount,
         img: imageResponse.data.filePath,
       };
-  
-      console.log("Final Data to Send:", newData); // Log final data being sent to the server
-  
+
+
       await axios.put(`/api/menu/${id}`, newData);
-  
-      router.back();
+
+      toast({
+        title: "Submission successful.",
+        description: "Your data has been submitted successfully.",
+      });
+
+      setTimeout(() => {
+        router.back();
+      }, 3000);
     } catch (error) {
       console.error("Submission failed:", error);
       toast({
+        variant: 'success',
         title: "Submission failed.",
         description: error.response?.data?.message || "Something went wrong.",
       });
     }
   };
-  
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -208,6 +217,9 @@ export default function InputForm({ params }) {
                     <SelectValue placeholder="Select discount" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value={null}>
+                      ไม่มีส่วนลด
+                    </SelectItem>
                     {discounts.map((discount) => (
                       <SelectItem key={discount.id} value={discount.id}>
                         {discount.discount}

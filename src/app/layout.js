@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 
 
 import AppProvider from './Context/AppContext'
+import AdminContext from './Context/adminContext'
 
 const RobotoBold = Roboto({
   subsets: ['latin'],
@@ -19,7 +20,11 @@ export default async function RootLayout({ children }) {
   return (
     <html lang='en'>
       <body className={`${RobotoBold.className}`}>
-        <AppProvider>{children}</AppProvider>
+        <AppProvider>
+          <AdminContext>
+            {children}
+          </AdminContext>
+        </AppProvider>
         <Toaster />
       </body>
     </html>

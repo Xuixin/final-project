@@ -79,9 +79,13 @@ export default function InputForm() {
         roleId: selectedRoles.id,
       }
 
-      await axios.post('/api/employee/emp', newData)
+      await axios.post('/api/auth/admin_signup', newData)
 
-      alert('success')
+      toast({
+        variant: 'success',
+        title: 'Submission successful.',
+        description: 'Your data has been submitted successfully.',
+      })
       router.back()
     } catch (error) {
       console.error('Submission failed:', error)
@@ -167,25 +171,28 @@ export default function InputForm() {
           name='roleId'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Role</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
+                    field.onChange(value); // ส่งค่า id ของ role ไปยังฟอร์ม
                   }}
-                  value={field.value}
+                  value={field.value} // ค่า id ที่ถูกเลือก
                   placeholder='Select role'
                 >
                   <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Select role' />
+                    <SelectValue
+                      placeholder='Select role'
+                      value={roles.find(role => role.id === field.value)?.name} // แสดงชื่อ role ที่ถูกเลือก
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (
                       <SelectItem
                         key={role.id}
-                        value={role.name}
+                        value={role.id} // ส่ง id ของ role
                       >
-                        {role.name}
+                        {role.name} {/* แสดงชื่อ role */}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -198,6 +205,6 @@ export default function InputForm() {
 
         <Button type='submit'>Submit</Button>
       </form>
-    </Form>
+    </Form >
   )
 }

@@ -12,11 +12,7 @@ export async function GET(request, { params }) {
       },
     });
 
-    return new Response(
-      JSON.stringify({
-        data,
-      })
-    );
+    return new Response(JSON.stringify(data));
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: "Failed to get employee" }), {
@@ -59,7 +55,7 @@ export async function DELETE(request, { params }) {
   try {
     const response = await prisma.employee.delete({
       where: {
-        id:intId, 
+        id: intId,
       },
     });
 

@@ -38,7 +38,7 @@ export default function OrderPage() {
             <div className="w-full min-h-10 px-6">
                 {order.length > 0 ? ( // ตรวจสอบว่า order มีข้อมูลหรือไม่
                     order.map((item) => (
-                        <Dialog key={item.orderId}> {/* เพิ่ม key เพื่อการ render ที่ถูกต้อง */}
+                        <Dialog key={item.orderId}>
                             <DialogTrigger asChild>
                                 <div className="w-full px-12 rounded-xl bg-white cursor-pointer py-2 mb-3">
                                     <div className="grid grid-cols-4 py-5">
