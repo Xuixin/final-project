@@ -49,6 +49,7 @@ model Menu {
   price          Float
   categoryId     Int
   discountId     Int? // Optional
+  status         MenuStatus      @default(Draft)
   category       Category        @relation(fields: [categoryId], references: [id])
   discount       Discount?       @relation(fields: [discountId], references: [id])
   menusetDetails MenuSetDetail[]
@@ -65,6 +66,13 @@ model Table {
   createdAt DateTime @default(now()) // Add createdAt field
 }
 
+// สร้าง Enum สำหรับ status
+enum MenuStatus {
+  Draft
+  Published
+  Archived
+}
+
 model MenuSet {
   id           Int             @id @default(autoincrement())
   name         String
@@ -73,7 +81,7 @@ model MenuSet {
   details      MenuSetDetail[]
   OrderDetail  OrderDetail[]
   soldQuantity Int             @default(0)
-  createdAt    DateTime        @default(now()) // Add createdAt field
+  createdAt    DateTime        @default(now())
 }
 
 model MenuSetDetail {
@@ -112,10 +120,10 @@ model Role {
 model Attendance {
   id         Int      @id @default(autoincrement())
   employeeId Int
-  status     String
+  status     Boolean
   employee   Employee @relation(fields: [employeeId], references: [id])
   wages      Wages[]
-  createdAt  DateTime @default(now()) // Add createdAt field
+  createdAt  DateTime @default(now())
 }
 
 model Wages {
@@ -124,13 +132,6 @@ model Wages {
   amount       Float
   attendance   Attendance @relation(fields: [attendanceId], references: [id])
   createdAt    DateTime   @default(now()) // Add createdAt field
-}
-
-model Expenses {
-  id        Int      @id @default(autoincrement())
-  category  String
-  amount    Float
-  createdAt DateTime @default(now()) // Add createdAt field
 }
 
 model Order_source {
@@ -182,22 +183,11 @@ model Payment {
 }
 
 model Shipping {
-  id         Int      @id @default(autoincrement())
-  orderId    Int      @unique
-  employeeId Int
+  id         Int       @id @default(autoincrement())
+  orderId    Int       @unique
+  employeeId Int?
   status     String
-  order      Order    @relation(fields: [orderId], references: [id])
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  createdAt  DateTime @default(now()) // Add createdAt field
-}
-
-model Income {
-  id        Int      @id @default(autoincrement())
-  price     Float
-  createdAt DateTime @default(now()) // Add createdAt field
-}
-
-model Banner {
-  id    Int    @id @default(autoincrement())
-  Image String
+  order      Order     @relation(fields: [orderId], references: [id])
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  createdAt  DateTime  @default(now()) // Add createdAt field
 }

@@ -20,18 +20,13 @@ const Bread = () => {
     const breadcrumbItems = pathnames.map((_, index) => {
         const href = `/${pathnames.slice(0, index + 1).join('/')}`;
         // Convert to lowercase and capitalize each word for label
-        const label = pathnames[index].replace(/-/g, ' ').toLowerCase(); 
+        const label = pathnames[index].replace(/-/g, ' ').toLowerCase();
         return { href, label };
     });
 
     return (
         <Breadcrumb className="hidden md:flex">
             <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                        <Link href="/">Home</Link>
-                    </BreadcrumbLink>
-                </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 {breadcrumbItems.map(({ href, label }, index) => (
                     <React.Fragment key={href}>

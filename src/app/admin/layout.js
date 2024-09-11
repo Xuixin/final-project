@@ -57,7 +57,7 @@ export default function AdminLayout({ children }) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href='#'
+                  href='/admin/dashboard'
                   className='flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
                 >
                   <Home className='h-5 w-5' />
@@ -172,7 +172,7 @@ export default function AdminLayout({ children }) {
                   <span className='sr-only'>Acme Inc</span>
                 </Link>
                 <Link
-                  href='#'
+                  href='/admin/dashboard'
                   className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
                 >
                   <Home className='h-5 w-5' />
@@ -245,7 +245,7 @@ export default function AdminLayout({ children }) {
           </DropdownMenu>
         </header>
 
-        <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
+        <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 md:gap-8'>
           {children}
         </main>
       </div>

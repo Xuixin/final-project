@@ -41,6 +41,9 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
         status: 'completed',
       });
 
+      const createShipping = await axios.post(`/api/shipping`, { orderId, status: 'กำลังดำเนินการ' })
+
+
       // 3. สร้างการชำระเงินกับ PayPal
       const paymentResponse = await fetch('/api/payment/paypal', {
         method: 'POST',

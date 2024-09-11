@@ -63,13 +63,12 @@ export default function InputForm() {
 
   const onSubmit = async (data) => {
     console.log(data)
-    const selectedRoles = roles.find((role) => role.name === data.roleId)
+    const selectedRoles = roles.find((role) => role.id === parseInt(data.roleId))
     if (!selectedRoles) {
       console.error('Selected role not found.')
       return
     }
 
-    console.log('role', selectedRoles.id)
 
     try {
       const formData = new FormData()

@@ -23,6 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { DropdownEmpPath } from './componant'
 
 // Component for displaying table rows
 const TableLoop = ({ employee, func }) => {
@@ -119,13 +120,9 @@ export default function Employee() {
   };
 
   return (
-    <Tabs defaultValue="all">
+    <>
       <div className="flex">
-        <Card x-chunk="dashboard-06-chunk-0">
-          <CardHeader>
-            <CardTitle>Employees</CardTitle>
-          </CardHeader>
-        </Card>
+        <DropdownEmpPath />
         <div className="w-full flex items-center justify-end gap-2">
           <Link href="/admin/employees/role">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -147,11 +144,11 @@ export default function Employee() {
       </div>
       <TabsContent value="all" className="min-h-[500px]">
         <Card x-chunk="dashboard-06-chunk-0">
-          <CardContent className="m-5 grid grid-cols-3">
+          <CardContent className="m-5 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 ">
             <TableLoop employee={employees} func={onDelete} />
           </CardContent>
         </Card>
       </TabsContent>
-    </Tabs>
+    </>
   );
 }
