@@ -48,8 +48,8 @@ export default function AdminLayout({ children }) {
             </Link>
 
             <Link
-              href='/ad/menu'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/ad/menu' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
+              href='/menu/allmenu'
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/menu/allmenu' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
             >
               <Package className='h-5 w-5' />
               <span className='sr-only'>Products</span>

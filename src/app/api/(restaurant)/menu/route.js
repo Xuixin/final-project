@@ -1,23 +1,73 @@
 import { PrismaClient } from '@prisma/client'
 import { NextResponse } from 'next/server'
+
 const prisma = new PrismaClient()
 
 export async function POST(req) {
-  const { name, category, price, image } = await req.json()
+  try {
+    const { name, category, price, image, status, discountId } = await req.json()
+    console.log({
+      name,
+      category,
+      price,
+      image,
+      status,
+      discountId,
+    });
 
-  const newData = await prisma.menu.create({
-    data: {
-      name: name,
-      categoryId: category,
+    // ตรวจสอบว่าข้อมูลสำคัญไม่เป็นค่าว่าง
+    if (!name || !category || !price || !image || !status) {
+      return NextResponse.json(
+        { status: false, message: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    // เตรียมข้อมูลสำหรับ Prisma
+    const data = {
+      name,
       price,
       img: image,
-    },
-  })
+      status,
+      category: {
+        connect: {
+          id: category,
+        },
+      },
+    }
 
-  return NextResponse.json({
-    status: true,
-  })
+    // ตรวจสอบว่า discountId มีค่าหรือไม่ก่อนเชื่อมต่อ discount
+    if (discountId) {
+      data.discount = {
+        connect: {
+          id: discountId,
+        }
+      }
+    }
+
+    // สร้างเมนูใหม่ในฐานข้อมูล
+    const newData = await prisma.menu.create({
+      data: data,
+    })
+
+    return NextResponse.json({
+      status: true,
+      message: 'Menu created successfully',
+      data: newData,  // ส่งข้อมูลที่สร้างกลับไปด้วย
+    })
+
+  } catch (error) {
+    console.error('Error creating menu:', error)
+
+    // จัดการข้อผิดพลาดด้วยการส่ง response กลับไปยัง client
+    return NextResponse.json(
+      { status: false, message: 'Failed to create menu' },
+      { status: 500 }
+    )
+  }
 }
+
+
 
 export async function GET() {
   try {
@@ -28,10 +78,7 @@ export async function GET() {
       },
     })
     return new Response(
-      JSON.stringify({
-        message: 'Ok',
-        data,
-      }),
+      JSON.stringify(data),
       { status: 200 }
     )
   } catch (error) {

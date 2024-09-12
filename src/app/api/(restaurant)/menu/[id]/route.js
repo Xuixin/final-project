@@ -21,7 +21,7 @@ export async function GET(request, { params }) {
     }
 
     return new Response(
-      JSON.stringify({ message: "Menu fetched successfully", data }),
+      JSON.stringify(data),
       { status: 200 }
     );
   } catch (error) {
@@ -40,19 +40,40 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const id = params.id;
-  const { name, category, discountId, price, img } = await request.json();
+  const { name, category, discountId, price, img, status } = await request.json();
 
-  console.log(name);
   try {
+    // เตรียมข้อมูลที่จะอัปเดต
+    const dataToUpdate = {
+      name,
+      price,
+      img,
+      status,
+      category: {
+        connect: {
+          id: category,
+        },
+      },
+    };
+
+    // ตรวจสอบว่า discountId มีค่าหรือไม่
+    if (discountId) {
+      dataToUpdate.discount = {
+        connect: {
+          id: discountId,
+        },
+      };
+    } else {
+      // ถ้าไม่มี discountId ให้ทำการลบ discount ที่เชื่อมต่ออยู่ก่อนหน้าออก
+      dataToUpdate.discount = {
+        disconnect: true,
+      };
+    }
+
+    // ทำการอัปเดตเมนู
     const updateMenu = await prisma.menu.update({
       where: { id: parseInt(id) },
-      data: {
-        name,
-        categoryId: parseInt(category),
-        discountId: parseInt(discountId),
-        price,
-        img,
-      },
+      data: dataToUpdate,
     });
 
     return new Response(
@@ -75,6 +96,7 @@ export async function PUT(request, { params }) {
     await prisma.$disconnect();
   }
 }
+
 
 export async function DELETE(request, { params }) {
   const { id } = params;
