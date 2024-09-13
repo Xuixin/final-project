@@ -26,6 +26,16 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from '@/components/ui/tooltip'
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarTrigger,
+} from "@/components/ui/menubar"
+
 import { usePathname } from 'next/navigation'
 
 import Bread from '../../components/breadcrump'
@@ -47,16 +57,31 @@ export default function AdminLayout({ children }) {
               <span className='sr-only'>Dashboard</span>
             </Link>
 
-            <Link
-              href='/menu/allmenu'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/menu/allmenu' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
-            >
-              <Package className='h-5 w-5' />
-              <span className='sr-only'>Products</span>
-            </Link>
+            <Menubar className="border-none">
+              <MenubarMenu>
+                <MenubarTrigger className="border-none">
+                  <Package className='h-5 w-5 cursor-pointer' />
+                  <span className='sr-only'>Products</span>
+                </MenubarTrigger>
+                <MenubarContent side={'right'}>
+                  <MenubarItem>
+                    <Link href="/menu/allmenu">
+                      Menu
+                    </Link>
+                  </MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem>
+                    <Link href="/menuset/allmenuset">
+                      Menuset
+                    </Link>
+                  </MenubarItem>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
+
 
             <Link
-              href='/ad/employee'
+              href='/employees'
               className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/ad/employee' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
             >
               <Users2 className='h-5 w-5' />

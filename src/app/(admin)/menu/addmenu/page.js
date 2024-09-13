@@ -122,7 +122,7 @@ export default function AllMenu() {
                         Add Menu
                     </h1>
                     <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                        <Button variant="outline" size="sm" onClick={() => router.back()}>
+                        <Button variant="outline" size="sm" onClick={() => router.push('/menu/allmenu')}>
                             Discard
                         </Button>
                         <Button size="sm" type="submit">Save Product</Button>

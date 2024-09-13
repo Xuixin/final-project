@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export async function POST(request, { params }) {
   try {
-    const { name, totalMenu, price, menu } = await request.json();
+    const { name, totalMenu, price, status, menu } = await request.json();
 
     console.log({ name, totalMenu, price, menu });
     const floatprice = parseFloat(price)
@@ -14,6 +14,7 @@ export async function POST(request, { params }) {
       data: {
         name,
         totalMenu,
+        status,
         price: floatprice,
       },
     });
@@ -45,22 +46,22 @@ export async function POST(request, { params }) {
 }
 
 export async function GET(request) {
-    try {
-      const data = await prisma.menuSet.findMany({
-        include: {
-          details: {
-            include: {
-              menu: true, // This assumes there's a relation between menuSetDetail and menu
-            },
+  try {
+    const data = await prisma.menuSet.findMany({
+      include: {
+        details: {
+          include: {
+            menu: true,
           },
         },
-      });
-      return new Response(JSON.stringify(data), { status: 200 });
-    } catch (error) {
-      console.error("Error fetching menu sets:", error);
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch menu sets." }),
-        { status: 500 }
-      );
-    }
+      },
+    });
+    return new Response(JSON.stringify(data), { status: 200 });
+  } catch (error) {
+    console.error("Error fetching menu sets:", error);
+    return new Response(
+      JSON.stringify({ error: "Failed to fetch menu sets." }),
+      { status: 500 }
+    );
   }
+}

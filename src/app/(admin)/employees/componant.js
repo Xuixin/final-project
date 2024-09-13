@@ -21,10 +21,10 @@ export const DropdownEmpPath = () => {
 
     useEffect(() => {
         switch (path) {
-            case '/admin/employees':
+            case '/employees':
                 setValue('employee');
                 break;
-            case '/admin/employees/attendance':
+            case '/employees/attendance':
                 setValue('attendance');
                 break;
             default:
@@ -36,10 +36,10 @@ export const DropdownEmpPath = () => {
         setValue(newValue);
         switch (newValue) {
             case 'employee':
-                router.push('/admin/employees');
+                router.push('/employees');
                 break;
             case 'attendance':
-                router.push('/admin/employees/attendance');
+                router.push('/employees/attendance');
                 break;
             default:
                 break;

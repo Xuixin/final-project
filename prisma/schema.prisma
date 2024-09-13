@@ -78,6 +78,7 @@ model MenuSet {
   name         String
   totalMenu    Int
   price        Float
+  status       MenuStatus      @default(Draft)
   details      MenuSetDetail[]
   OrderDetail  OrderDetail[]
   soldQuantity Int             @default(0)
@@ -190,4 +191,16 @@ model Shipping {
   order      Order     @relation(fields: [orderId], references: [id])
   employee   Employee? @relation(fields: [employeeId], references: [id])
   createdAt  DateTime  @default(now()) // Add createdAt field
+}
+
+model Expense {
+  id       Int        @id @default(autoincrement())
+  category ExpenseCat
+  amount   Float
+  date     DateTime   @default(now())
+}
+
+enum ExpenseCat {
+  wage
+  food
 }

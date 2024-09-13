@@ -136,8 +136,8 @@ export default function Admin() {
     const fetchMenu = async () => {
       try {
         const response = await axios.get("/api/menu");
-        setProducts(response.data.data);
-        setFilteredProducts(response.data.data); // ตั้งค่าครั้งแรกให้กรองทั้งหมด
+        setProducts(response.data);
+        setFilteredProducts(response.data); // ตั้งค่าครั้งแรกให้กรองทั้งหมด
       } catch (error) {
         console.log("Fail to fetch menu: ", error);
       }

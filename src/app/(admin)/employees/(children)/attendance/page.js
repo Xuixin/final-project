@@ -27,34 +27,36 @@ export default function Attendance() {
     const [employees, setEmployees] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
 
-    useEffect(() => {
-        const fetchAttendance = async () => {
-            try {
-                const response = await axios.get('/api/employee/attendance');
-                setAttendance(response.data);
-            } catch (error) {
-                console.error(error);
-                toast({
-                    variant: 'destructive',
-                    title: 'Fetch Error',
-                    description: "Failed to fetch attendance data.",
-                });
-            }
-        };
 
-        const fetchAllEmp = async () => {
-            try {
-                const response = await axios.get('/api/employee/emp');
-                setEmployees(response.data);
-            } catch (error) {
-                console.error(error);
-                toast({
-                    variant: 'destructive',
-                    title: 'Fetch Error',
-                    description: "Failed to fetch employee data.",
-                });
-            }
-        };
+    const fetchAttendance = async () => {
+        try {
+            const response = await axios.get('/api/employee/attendance');
+            setAttendance(response.data);
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Fetch Error',
+                description: "Failed to fetch attendance data.",
+            });
+        }
+    };
+
+    const fetchAllEmp = async () => {
+        try {
+            const response = await axios.get('/api/employee/emp');
+            setEmployees(response.data);
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Fetch Error',
+                description: "Failed to fetch employee data.",
+            });
+        }
+    };
+    useEffect(() => {
+
 
         fetchAttendance();
         fetchAllEmp();
@@ -91,6 +93,9 @@ export default function Attendance() {
         // ฟิลเตอร์พนักงานที่มีสถานะ 'Present'
         const payEmployees = combinedData.filter(emp => emp.status);
 
+        // คำนวณยอดรวมที่ต้องจ่าย
+        const totalAmount = payEmployees.reduce((total, emp) => total + emp.wageperday, 0);
+
         // เรียกใช้ API เพื่อทำการจ่ายเงิน
         await Promise.all(payEmployees.map(async (emp) => {
             try {
@@ -104,6 +109,7 @@ export default function Attendance() {
                         title: 'Payment Success',
                         description: `Successfully paid for ${emp.name}`,
                     });
+
                 } else {
                     toast({
                         variant: 'destructive',
@@ -121,9 +127,32 @@ export default function Attendance() {
             }
         }));
 
+        // บันทึกค่าใช้จ่ายรวม
+        try {
+            await axios.post('/api/expense', { category: 'wage', amount: totalAmount });
+
+            toast({
+                variant: 'success',
+                title: 'Expenses Updated',
+                description: `Total wage expenses recorded successfully.`,
+            });
+
+
+            // รีเฟรชข้อมูลพนักงานและการเข้าร่วม
+            fetchAllEmp();
+            fetchAttendance();
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Expenses Error',
+                description: 'Failed to record wage expenses.',
+            });
+        }
 
         setIsLoading(false);
     }
+
 
 
 
