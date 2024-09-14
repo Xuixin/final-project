@@ -34,14 +34,14 @@ import {
   MenubarSeparator,
   MenubarShortcut,
   MenubarTrigger,
-} from "@/components/ui/menubar"
+} from '@/components/ui/menubar'
 
 import { usePathname } from 'next/navigation'
 
 import Bread from '../../components/breadcrump'
 
 export default function AdminLayout({ children }) {
-  const pathname = usePathname(); // รับตำแหน่งปัจจุบันของผู้ใช้
+  const pathname = usePathname() // รับตำแหน่งปัจจุบันของผู้ใช้
 
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
@@ -51,38 +51,45 @@ export default function AdminLayout({ children }) {
           <nav className='flex flex-col items-center gap-4 px-2 sm:py-5'>
             <Link
               href='/dashboard'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/dashboard' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
+                pathname === '/dashboard'
+                  ? 'bg-accent'
+                  : 'text-muted-foreground'
+              } transition-colors hover:text-foreground`}
             >
               <Home className='h-5 w-5' />
               <span className='sr-only'>Dashboard</span>
             </Link>
 
-            <Menubar className="border-none">
+            <Menubar className='border-none'>
               <MenubarMenu>
-                <MenubarTrigger className="border-none">
+                <MenubarTrigger className='border-none'>
                   <Package className='h-5 w-5 cursor-pointer' />
                   <span className='sr-only'>Products</span>
                 </MenubarTrigger>
                 <MenubarContent side={'right'}>
                   <MenubarItem>
-                    <Link href="/menu/allmenu">
-                      Menu
-                    </Link>
+                    <Link href='/menu/allmenu'>Menu</Link>
                   </MenubarItem>
                   <MenubarSeparator />
                   <MenubarItem>
-                    <Link href="/menuset/allmenuset">
-                      Menuset
-                    </Link>
+                    <Link href='/menuset/allmenuset'>Menuset</Link>
+                  </MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem>
+                    <Link href='/category'>Category Menu</Link>
                   </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
 
-
             <Link
               href='/employees'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/ad/employee' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
+                pathname === '/ad/employee'
+                  ? 'bg-accent'
+                  : 'text-muted-foreground'
+              } transition-colors hover:text-foreground`}
             >
               <Users2 className='h-5 w-5' />
               <span className='sr-only'>Employees</span>
@@ -90,18 +97,23 @@ export default function AdminLayout({ children }) {
 
             <Link
               href='/discount'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/discount' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
+                pathname === '/discount' ? 'bg-accent' : 'text-muted-foreground'
+              } transition-colors hover:text-foreground`}
             >
               <CirclePercent className='h-5 w-5' />
               <span className='sr-only'>Discounts</span>
             </Link>
-
           </nav>
 
           <nav className='mt-auto flex flex-col items-center gap-4 px-2 sm:py-5'>
             <Link
               href='/menu/settings'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/menu/settings' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
+                pathname === '/menu/settings'
+                  ? 'bg-accent'
+                  : 'text-muted-foreground'
+              } transition-colors hover:text-foreground`}
             >
               <Settings className='h-5 w-5' />
               <span className='sr-only'>Settings</span>
@@ -114,11 +126,18 @@ export default function AdminLayout({ children }) {
         <header className='sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6'>
           <Sheet>
             <SheetTrigger asChild>
-              <Button size='icon' variant='outline' className='sm:hidden'>
+              <Button
+                size='icon'
+                variant='outline'
+                className='sm:hidden'
+              >
                 <span className='sr-only'>Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side='left' className='sm:max-w-xs'>
+            <SheetContent
+              side='left'
+              className='sm:max-w-xs'
+            >
               <nav className='grid gap-6 text-lg font-medium'>
                 <Link
                   href='/dashboard'
@@ -163,7 +182,11 @@ export default function AdminLayout({ children }) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='outline' size='icon' className='overflow-hidden rounded-full'>
+              <Button
+                variant='outline'
+                size='icon'
+                className='overflow-hidden rounded-full'
+              >
                 <Image
                   src='/no image found'
                   width={36}
@@ -189,5 +212,5 @@ export default function AdminLayout({ children }) {
         </main>
       </div>
     </div>
-  );
+  )
 }

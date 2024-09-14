@@ -11,7 +11,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { usePathname } from 'next/navigation'
 
-
 export function MenuWithPro() {
   const [menusDiscount, setMenusDiscount] = useState([])
   const [bestSeller, setBestSeller] = useState(null)
@@ -91,7 +90,7 @@ export function MenuWithPro() {
 
           {/* Display Best Seller item */}
           {bestSeller && (
-            <div className='border rounded pb-4 relative'>
+            <div className='border rounded pb-4 relative shadow-lg'>
               <BestSeller className='absolute top-0 left-0 w-10, h-10' />
               <div className='relative w-full h-36'>
                 <Image
@@ -115,7 +114,7 @@ export function MenuWithPro() {
               <div className='w-full px-4'>
                 <Button
                   className='w-full text-center'
-                  onClick={() => addToCart({...bestSeller, quantity: 1})}
+                  onClick={() => addToCart({ ...bestSeller, quantity: 1 })}
                 >
                   Add to cart
                 </Button>
@@ -204,7 +203,7 @@ export const Menuset = () => {
             return (
               <ScrollArea
                 key={item.id}
-                className='h-72 w-full  rounded-md border bg-white'
+                className='h-72 w-full  rounded-md border shadow-lg  bg-white'
               >
                 <div>
                   <div className='sticky top-0 flex bg-white justify-between items-center px-4 h-14 mb-15'>
@@ -223,7 +222,10 @@ export const Menuset = () => {
                   <div className='space-y-2 px-3 mt-2'>
                     {item.details.map((menu, index) => {
                       return (
-                        <div key={index} className='max-h-16 border-2 border-orange-100 rounded-lg'>
+                        <div
+                          key={index}
+                          className='max-h-16 border-b rounded-lg'
+                        >
                           <div className='grid grid-cols-4 gap-2 px-2'>
                             <Image
                               src={menu.menu.img}

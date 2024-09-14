@@ -141,13 +141,20 @@ model Order_source {
   orders      Order[]
 }
 
+enum orderStatus {
+  InQueue
+  InProgress
+  Finished
+  Cancelled
+}
+
 model Order {
   id             Int           @id @default(autoincrement())
   customerId     Int?
   tableId        Int? // Optional
   employeeId     Int? // Optional
   order_sourceId Int
-  status         String
+  status         orderStatus   @default(InQueue)
   quantity       Int
   totalPrice     Float
   customer       Customer?     @relation(fields: [customerId], references: [id])
@@ -173,24 +180,40 @@ model OrderDetail {
   createdAt DateTime @default(now()) // Add createdAt field
 }
 
+enum PaymentMethod {
+  Cash
+  PayPal
+}
+
+enum paymentStatus {
+  Pending
+  Completed
+}
+
 model Payment {
-  id            Int      @id @default(autoincrement())
-  orderId       Int      @unique
-  amount        Float
-  transactionId String?
-  status        String
-  order         Order    @relation(fields: [orderId], references: [id])
-  createdAt     DateTime @default(now()) // Add createdAt field
+  id        Int           @id @default(autoincrement())
+  orderId   Int           @unique
+  amount    Float
+  method    PaymentMethod @default(PayPal)
+  status    paymentStatus @default(Completed)
+  order     Order         @relation(fields: [orderId], references: [id])
+  createdAt DateTime      @default(now()) // Add createdAt field
+}
+
+enum ShippingStatus {
+  Pending
+  Shipped
+  Delivered
 }
 
 model Shipping {
-  id         Int       @id @default(autoincrement())
-  orderId    Int       @unique
+  id         Int            @id @default(autoincrement())
+  orderId    Int            @unique
   employeeId Int?
-  status     String
-  order      Order     @relation(fields: [orderId], references: [id])
-  employee   Employee? @relation(fields: [employeeId], references: [id])
-  createdAt  DateTime  @default(now()) // Add createdAt field
+  status     ShippingStatus
+  order      Order          @relation(fields: [orderId], references: [id])
+  employee   Employee?      @relation(fields: [employeeId], references: [id])
+  createdAt  DateTime       @default(now()) // Add createdAt field
 }
 
 model Expense {

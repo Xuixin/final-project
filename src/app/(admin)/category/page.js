@@ -4,6 +4,7 @@ import { File, ListFilter, MoreHorizontal, PlusCircle } from 'lucide-react'
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -19,9 +20,11 @@ import {
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
@@ -32,36 +35,23 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 // Component for displaying table rows
-const TableLoop = ({ menuSet, onDelete }) => {
+const TableLoop = ({ menutypes, onDelete }) => {
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className='w-[100px]'>NO.</TableHead>
+          <TableHead className='w-[100px]'>ID</TableHead>
           <TableHead>Name</TableHead>
-          <TableHead>Menu</TableHead>
-          <TableHead>Quantity</TableHead>
-          <TableHead>Price</TableHead>
           <TableHead>
             <span className='sr-only'>Actions</span>
           </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {menuSet.map((set, index) => (
-          <TableRow key={set.id}>
+        {menutypes.map((type, index) => (
+          <TableRow key={type.id}>
             <TableCell className='font-medium'>{index + 1}</TableCell>
-            <TableCell>{set.name}</TableCell>
-            <TableCell>
-              {set.details.map((detail, index) => (
-                <div key={index}>
-                  {detail.menu.name} X {detail.quantity}
-                </div>
-              ))}
-            </TableCell>
-
-            <TableCell>{set.totalMenu}</TableCell>
-            <TableCell>RM {set.price}</TableCell>
+            <TableCell>{type.name}</TableCell>
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -76,12 +66,14 @@ const TableLoop = ({ menuSet, onDelete }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <Link href={`/admin/menuset/addMenuSet/${set.id}`}>
+                  <Link href={`/category/addcategory/${type.id}`}>
                     <DropdownMenuItem className='cursor-pointer'>
                       Edit
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuItem onClick={() => onDelete(set.id)}>
+                  <DropdownMenuItem
+                    onClick={() => onDelete(type.id)} // Call onDelete with type.id
+                  >
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -97,20 +89,20 @@ const TableLoop = ({ menuSet, onDelete }) => {
 // Main MenuType component
 export default function MenuType() {
   const path = usePathname()
-  const [menuSet, setMenuset] = useState([])
+  const [menutypes, setMenutypes] = useState([])
 
   useEffect(() => {
-    const fetchMenuSet = async () => {
+    const fetchMenutypes = async () => {
       try {
-        const response = await axios.get('/api/menuset')
-        setMenuset(response.data) // Assuming your API returns { data: [...] }
+        const response = await axios.get('/api/menutype')
+        setMenutypes(response.data.data) // Assuming your API returns { data: [...] }
       } catch (error) {
-        console.error('Failed to fetch menuset:', error)
+        console.error('Failed to fetch menu types:', error)
         // Handle error (e.g., show an error message to the user)
       }
     }
 
-    fetchMenuSet()
+    fetchMenutypes()
   }, [])
 
   const handleDelete = async (id) => {
@@ -119,9 +111,11 @@ export default function MenuType() {
     }
 
     try {
-      await axios.delete(`/api/menuset/${id}`)
-      setMenuset((prevMenuSet) => prevMenuSet.filter((set) => set.id !== id)) // Update the state to remove the deleted item
-      alert('Menuset deleted successfully!')
+      await axios.delete(`/api/menutype/${id}`)
+      setMenutypes((prevMenutypes) =>
+        prevMenutypes.filter((type) => type.id !== id)
+      ) // Update the state to remove the deleted item
+      alert('Category deleted successfully!')
     } catch (error) {
       alert(
         'Deletion failed: ' +
@@ -133,16 +127,15 @@ export default function MenuType() {
   return (
     <Tabs defaultValue='all'>
       <div className='flex items-center'>
-        <Selectpath path={path} />
         <div className='ml-auto flex items-center gap-2'>
-          <Link href='/admin/menuset/addMenuSet'>
+          <Link href='/category/addcategory'>
             <Button
               size='sm'
               className='h-8 gap-1'
             >
               <PlusCircle className='h-3.5 w-3.5' />
               <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-                Add MenuSet
+                Add category
               </span>
             </Button>
           </Link>
@@ -151,11 +144,11 @@ export default function MenuType() {
       <TabsContent value='all'>
         <Card x-chunk='dashboard-06-chunk-0'>
           <CardHeader>
-            <CardTitle>MenuSet</CardTitle>
+            <CardTitle>Menu Type</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className={'mx-56'}>
             <TableLoop
-              menuSet={menuSet}
+              menutypes={menutypes}
               onDelete={handleDelete}
             />
           </CardContent>
