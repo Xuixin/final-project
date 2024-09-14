@@ -60,7 +60,7 @@ export default function InputForm() {
         description: 'New role created successfully',
       });
 
-      router.push('/admin/employees')
+      router.push('/employees')
 
     } catch (error) {
       console.log('Fail to create new role: ' + error.message)

@@ -30,12 +30,11 @@ const FormSchema = z.object({
   lastname: z.string().min(1, { message: 'lastname is required.' }),
   address: z.string().min(1, { message: 'address is required.' }),
   email: z.string().min(1, { message: 'email is required.' }),
-  roleId: z.string().min(1, { message: 'role is required.' }),
+  roleId: z.string().min(0, { message: 'role is required.' }),
 })
 
-export default function EmployeeUpdateForm({ params }) {
+export default function InputForm() {
   const { toast } = useToast()
-  const { id } = params
   const router = useRouter()
   const [roles, setRoles] = useState([])
   const form = useForm({
@@ -50,65 +49,45 @@ export default function EmployeeUpdateForm({ params }) {
   })
 
   useEffect(() => {
-    console.log(id)
-    const fetchEmp = async () => {
+    const fetchRole = async () => {
       try {
-        // Fetch employee data based on ID
-        const employeeResponse = await axios.get(`/api/employee/role`)
-        setRoles(employeeResponse.data) // Assuming your API returns an array of categories
-        
+        const response = await axios.get('/api/employee/role')
+        setRoles(response.data) // Assuming your API returns an array of categories
       } catch (error) {
-        console.error('Failed to fetch data:', error)
+        console.error('Failed to fetch role:', error)
       }
     }
 
-    fetchEmp()
-  }, [params.id])
-  useEffect(() => {
-    console.log(id)
-    const fetchEmp = async () => {
-      try {
-        // Fetch employee data based on ID
-        const employeeResponse = await axios.get(`/api/employee/emp/${id}`)
-        console.log(employeeResponse.data.data.name)
-        form.setValue('name', employeeResponse.data.data.name)
-        form.setValue('lastname', employeeResponse.data.data.lastname)
-        form.setValue('email', employeeResponse.data.data.email)
-        form.setValue('address', employeeResponse.data.data.address)
-        form.setValue('roleId', employeeResponse.data.data.role.name)
-
-        // Set form default values
-        form.reset(employeeResponse.data)
-      } catch (error) {
-        console.error('Failed to fetch data:', error)
-      }
-    }
-
-    fetchEmp()
-  }, [params.id])
+    fetchRole()
+  }, [])
 
   const onSubmit = async (data) => {
     console.log(data)
-    const selectedRole = roles.find((role) => role.name === data.roleId)
-    if (!selectedRole) {
+    const selectedRoles = roles.find((role) => role.id === parseInt(data.roleId))
+    if (!selectedRoles) {
       console.error('Selected role not found.')
       return
     }
 
-    console.log('role', selectedRole.id)
 
     try {
-      const updatedData = {
+      const formData = new FormData()
+      // Prepare and send the rest of the form data
+      const newData = {
         ...data,
-        roleId: selectedRole.id,
+        roleId: selectedRoles.id,
       }
 
-      await axios.post(`/api/employee/emp/${params.id}`, updatedData)
+      await axios.post('/api/auth/admin_signup', newData)
 
-      alert('Update successful!')
-      router.push('/admin/employees') // Redirect to the employee list or a specific page
+      toast({
+        variant: 'success',
+        title: 'Submission successful.',
+        description: 'Your data has been submitted successfully.',
+      })
+      router.back()
     } catch (error) {
-      console.error('Update failed:', error)
+      console.error('Submission failed:', error)
     }
   }
 
@@ -143,7 +122,7 @@ export default function EmployeeUpdateForm({ params }) {
               <FormLabel>Lastname</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='Enter lastname'
+                  placeholder='Enter  lastname'
                   {...field}
                 />
               </FormControl>
@@ -157,7 +136,7 @@ export default function EmployeeUpdateForm({ params }) {
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>email</FormLabel>
               <FormControl>
                 <Input
                   placeholder='Enter email'
@@ -173,10 +152,10 @@ export default function EmployeeUpdateForm({ params }) {
           name='address'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>address</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='Enter address'
+                  placeholder='Enter  address'
                   {...field}
                 />
               </FormControl>
@@ -185,7 +164,7 @@ export default function EmployeeUpdateForm({ params }) {
           )}
         />
 
-        {/* Role Field */}
+        {/* Category Field */}
         <FormField
           control={form.control}
           name='roleId'
@@ -195,21 +174,24 @@ export default function EmployeeUpdateForm({ params }) {
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
+                    field.onChange(value); // ส่งค่า id ของ role ไปยังฟอร์ม
                   }}
-                  value={field.value}
+                  value={field.value} // ค่า id ที่ถูกเลือก
                   placeholder='Select role'
                 >
                   <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Select role' />
+                    <SelectValue
+                      placeholder='Select role'
+                      value={roles.find(role => role.id === field.value)?.name} // แสดงชื่อ role ที่ถูกเลือก
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (
                       <SelectItem
                         key={role.id}
-                        value={role.name}
+                        value={role.id} // ส่ง id ของ role
                       >
-                        {role.name}
+                        {role.name} {/* แสดงชื่อ role */}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -220,8 +202,8 @@ export default function EmployeeUpdateForm({ params }) {
           )}
         />
 
-        <Button type='submit'>Update</Button>
+        <Button type='submit'>Submit</Button>
       </form>
-    </Form>
+    </Form >
   )
 }

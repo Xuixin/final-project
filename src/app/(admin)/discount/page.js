@@ -66,7 +66,7 @@ const TableLoop = ({ promotions, onDelete }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <Link href={`/admin/discount/adddiscount/${pro.id}`}>
+                  <Link href={`/discount/adddiscount/${pro.id}`}>
                     <DropdownMenuItem className="cursor-pointer">
                       Edit
                     </DropdownMenuItem>
@@ -118,7 +118,7 @@ export default function Menupro() {
     } catch (error) {
       alert(
         "Deletion failed: " +
-          (error.response?.data?.message || "Something went wrong.")
+        (error.response?.data?.message || "Something went wrong.")
       );
     }
   };
@@ -127,7 +127,7 @@ export default function Menupro() {
     <Tabs defaultValue="all">
       <div className="flex items-center">
         <div className="ml-auto flex items-center gap-2">
-          <Link href="/admin/discount/adddiscount">
+          <Link href="/discount/adddiscount">
             <Button size="sm" className="h-8 gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">

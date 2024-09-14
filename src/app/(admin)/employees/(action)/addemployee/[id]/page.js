@@ -30,11 +30,12 @@ const FormSchema = z.object({
   lastname: z.string().min(1, { message: 'lastname is required.' }),
   address: z.string().min(1, { message: 'address is required.' }),
   email: z.string().min(1, { message: 'email is required.' }),
-  roleId: z.string().min(0, { message: 'role is required.' }),
+  roleId: z.string().min(1, { message: 'role is required.' }),
 })
 
-export default function InputForm() {
+export default function EmployeeUpdateForm({ params }) {
   const { toast } = useToast()
+  const { id } = params
   const router = useRouter()
   const [roles, setRoles] = useState([])
   const form = useForm({
@@ -49,45 +50,62 @@ export default function InputForm() {
   })
 
   useEffect(() => {
-    const fetchRole = async () => {
+    const fetchEmp = async () => {
       try {
-        const response = await axios.get('/api/employee/role')
-        setRoles(response.data) // Assuming your API returns an array of categories
+        // Fetch employee data based on ID
+        const employeeResponse = await axios.get(`/api/employee/role`)
+        setRoles(employeeResponse.data) // Assuming your API returns an array of categories
+
       } catch (error) {
-        console.error('Failed to fetch role:', error)
+        console.error('Failed to fetch data:', error)
       }
     }
 
-    fetchRole()
-  }, [])
+    fetchEmp()
+  }, [params.id])
+  useEffect(() => {
+    console.log(id)
+    const fetchEmp = async () => {
+      try {
+        // Fetch employee data based on ID
+        const employeeResponse = await axios.get(`/api/employee/emp/${id}`)
+        console.log(employeeResponse.data.name)
+        form.setValue('name', employeeResponse.data.name)
+        form.setValue('lastname', employeeResponse.data.lastname)
+        form.setValue('email', employeeResponse.data.email)
+        form.setValue('address', employeeResponse.data.address)
+        form.setValue('roleId', employeeResponse.data.role.id)
+        S
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      }
+    }
+
+    fetchEmp()
+  }, [params.id])
 
   const onSubmit = async (data) => {
     console.log(data)
-    const selectedRoles = roles.find((role) => role.id === parseInt(data.roleId))
-    if (!selectedRoles) {
+    const selectedRole = roles.find((role) => role.name === data.roleId)
+    if (!selectedRole) {
       console.error('Selected role not found.')
       return
     }
 
+    console.log('role', selectedRole.id)
 
     try {
-      const formData = new FormData()
-      // Prepare and send the rest of the form data
-      const newData = {
+      const updatedData = {
         ...data,
-        roleId: selectedRoles.id,
+        roleId: selectedRole.id,
       }
 
-      await axios.post('/api/auth/admin_signup', newData)
+      await axios.post(`/api/employee/emp/${params.id}`, updatedData)
 
-      toast({
-        variant: 'success',
-        title: 'Submission successful.',
-        description: 'Your data has been submitted successfully.',
-      })
-      router.back()
+      alert('Update successful!')
+      router.push('/admin/employees') // Redirect to the employee list or a specific page
     } catch (error) {
-      console.error('Submission failed:', error)
+      console.error('Update failed:', error)
     }
   }
 
@@ -122,7 +140,7 @@ export default function InputForm() {
               <FormLabel>Lastname</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='Enter  lastname'
+                  placeholder='Enter lastname'
                   {...field}
                 />
               </FormControl>
@@ -136,7 +154,7 @@ export default function InputForm() {
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder='Enter email'
@@ -152,10 +170,10 @@ export default function InputForm() {
           name='address'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>address</FormLabel>
+              <FormLabel>Address</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='Enter  address'
+                  placeholder='Enter address'
                   {...field}
                 />
               </FormControl>
@@ -164,7 +182,7 @@ export default function InputForm() {
           )}
         />
 
-        {/* Category Field */}
+        {/* Role Field */}
         <FormField
           control={form.control}
           name='roleId'
@@ -174,24 +192,21 @@ export default function InputForm() {
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value); // ส่งค่า id ของ role ไปยังฟอร์ม
+                    field.onChange(value)
                   }}
-                  value={field.value} // ค่า id ที่ถูกเลือก
+                  value={field.value}
                   placeholder='Select role'
                 >
                   <SelectTrigger className='w-full'>
-                    <SelectValue
-                      placeholder='Select role'
-                      value={roles.find(role => role.id === field.value)?.name} // แสดงชื่อ role ที่ถูกเลือก
-                    />
+                    <SelectValue placeholder='Select role' />
                   </SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (
                       <SelectItem
                         key={role.id}
-                        value={role.id} // ส่ง id ของ role
+                        value={role.name}
                       >
-                        {role.name} {/* แสดงชื่อ role */}
+                        {role.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -202,8 +217,8 @@ export default function InputForm() {
           )}
         />
 
-        <Button type='submit'>Submit</Button>
+        <Button type='submit'>Update</Button>
       </form>
-    </Form >
+    </Form>
   )
 }

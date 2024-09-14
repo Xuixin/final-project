@@ -89,8 +89,8 @@ export default function AdminLayout({ children }) {
             </Link>
 
             <Link
-              href='/ad/discount'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/ad/discount' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
+              href='/discount'
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/discount' ? 'bg-accent' : 'text-muted-foreground'} transition-colors hover:text-foreground`}
             >
               <CirclePercent className='h-5 w-5' />
               <span className='sr-only'>Discounts</span>

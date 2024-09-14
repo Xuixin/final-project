@@ -53,7 +53,7 @@ const TableLoop = ({ employee, func }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <Link href="#">
+                  <Link href={`/employees/addemployee/${emp.id}`}>
                     <DropdownMenuItem className="cursor-pointer">
                       Edit
                     </DropdownMenuItem>
@@ -124,7 +124,7 @@ export default function Employee() {
       <div className="flex">
         <DropdownEmpPath />
         <div className="w-full flex items-center justify-end gap-2">
-          <Link href="/admin/employees/role">
+          <Link href="/employees/role">
             <Button size="sm" variant="outline" className="h-8 gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
