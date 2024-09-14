@@ -186,7 +186,7 @@ enum PaymentMethod {
 }
 
 enum paymentStatus {
-  Pending
+  InComplete
   Completed
 }
 
@@ -195,7 +195,7 @@ model Payment {
   orderId   Int           @unique
   amount    Float
   method    PaymentMethod @default(PayPal)
-  status    paymentStatus @default(Completed)
+  status    paymentStatus @default(InComplete)
   order     Order         @relation(fields: [orderId], references: [id])
   createdAt DateTime      @default(now()) // Add createdAt field
 }
@@ -210,7 +210,7 @@ model Shipping {
   id         Int            @id @default(autoincrement())
   orderId    Int            @unique
   employeeId Int?
-  status     ShippingStatus
+  status     ShippingStatus @default(Pending)
   order      Order          @relation(fields: [orderId], references: [id])
   employee   Employee?      @relation(fields: [employeeId], references: [id])
   createdAt  DateTime       @default(now()) // Add createdAt field

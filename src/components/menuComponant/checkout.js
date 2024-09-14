@@ -42,10 +42,12 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
 
       if (!orderId) throw new Error('Failed to create order.')
 
+      setOrderId(orderId)
+
       const paymentCreate = await axios.post('/api/payment/create', {
         orderId,
         amount: orderTotalPrice,
-        status: 'Completed',
+        status: 'InComplete',
       })
 
       const createShipping = await axios.post(`/api/shipping`, {
@@ -53,16 +55,16 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
         status: 'Pending',
       })
 
-      // 3. สร้างการชำระเงินกับ PayPal
       const paymentResponse = await fetch('/api/payment/paypal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId, amount: orderTotalPrice }),
       })
 
+
+
       const { id: paypalOrderId } = await paymentResponse.json()
 
-      // 4. รีไดเร็กผู้ใช้ไปยัง PayPal
       if (paypalOrderId) {
         window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${paypalOrderId}`
       }

@@ -70,7 +70,7 @@ export function MenuWithPro() {
   }
 
   return (
-    <div className='relative bg-white'>
+    <div className='relative bg-white shadow-lg'>
       <div className='flex justify-between items-center py-4 px-10'>
         <h1 className='text-lg font-bold '>
           D<span className='text-red-600'>e</span>als{' '}
@@ -203,20 +203,25 @@ export const Menuset = () => {
             return (
               <ScrollArea
                 key={item.id}
-                className='h-72 w-full  rounded-md border shadow-lg  bg-white'
+                className='h-72 w-full rounded-2xl border shadow-lg  bg-white'
               >
-                <div>
-                  <div className='sticky top-0 flex bg-white justify-between items-center px-4 h-14 mb-15'>
+                <div className="pb-3">
+                  <div className=' top-0 flex bg-white justify-between items-center px-4 h-14 mb-15 sticky'>
+
                     <h4 className='mb-4 text-lg font-semibold leading-none'>
                       {item.name}
                     </h4>
-                    <div className='flex items-center'>
+                    <div className='flex items-center relative'>
                       <Button
                         className='ml-2'
                         onClick={() => addToCartSet(item)} // เรียกใช้ฟังก์ชันเพิ่ม MenuSet เข้า cartSet
                       >
-                        Add to cart {'( RM ' + item.price.toFixed(2) + ' )'}
+                        Add to cart {' RM ' + item.price.toFixed(2) + ' '}
+                        <span className="absolute rounded-full text-black  line-through decoration-red-400 top-0 right-0 p-2">
+                          {item.details.reduce((total, m) => total + (m.menu.price * m.quantity), 0)}
+                        </span>
                       </Button>
+
                     </div>
                   </div>
                   <div className='space-y-2 px-3 mt-2'>
@@ -249,7 +254,6 @@ export const Menuset = () => {
                     })}
                   </div>
                   <Separator className='my-2' />
-                  <div className='text-sm'>hi</div>
                 </div>
               </ScrollArea>
             )

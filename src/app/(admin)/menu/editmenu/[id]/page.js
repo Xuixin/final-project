@@ -5,7 +5,6 @@ import {
     Upload,
     X
 } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -86,34 +85,57 @@ export default function EditMenu({ params }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const formData = new FormData()
-        formData.append('file', formValues.image)
+
+        let imagePath = formValues.image // เก็บค่าภาพที่มีอยู่เดิม
+
+        // ตรวจสอบว่ามีการอัปโหลดภาพใหม่หรือไม่
+        if (formValues.image instanceof File) {
+            const formData = new FormData()
+            formData.append('file', formValues.image)
+
+            try {
+                // Upload image only if a new file is provided
+                const uploadResponse = await axios.post("http://localhost:3001/api/upload", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+
+                imagePath = uploadResponse.data.filePath // Use new image path
+            } catch (error) {
+                console.error('Error uploading image', error)
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: 'Failed to upload image',
+                })
+                return // ถ้ามีข้อผิดพลาดในการอัปโหลดภาพ ให้หยุดการทำงาน
+            }
+        }
 
         try {
-            // Upload image first
-            const imagePath = await axios.post("http://localhost:3001/api/upload", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            // Prepare data for menu creation
+            // Prepare data for menu update
             const data = {
                 name: formValues.name,
                 price: parseFloat(formValues.price),
                 status: formValues.status,
                 discountId: formValues.discount ? parseInt(formValues.discount) : null,
-                image: imagePath.data.filePath,  // Use image path from the upload response
+                image: imagePath,  // Use either existing or new image path
                 category: parseInt(formValues.category),
             }
 
             // ส่งข้อมูลเพื่ออัปเดตเมนู
-            const response = await axios.put(`/api/menu/${id}`, data)
+            await axios.put(`/api/menu/${id}`, data)
             toast({
                 variant: 'success',
                 title: 'Success',
                 description: 'Menu updated successfully',
             })
+
+            router.push('/menu/allmenu')
+
+
+
 
         } catch (error) {
             console.error('Error updating menu', error)
@@ -127,14 +149,22 @@ export default function EditMenu({ params }) {
 
 
 
+
     return (
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
             <form onSubmit={handleSubmit} className="mx-auto grid min-w-[80%]  flex-1 auto-rows-max gap-4">
                 <div className="flex items-center gap-4">
-                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => router.back()}>
+                    <Button
+                        type="button"  // เพิ่ม type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => router.back()}
+                    >
                         <ChevronLeft className="h-4 w-4" />
                         <span className="sr-only">Back</span>
                     </Button>
+
                     <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
                         Edit Menu
                     </h1>

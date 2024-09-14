@@ -48,7 +48,7 @@ export default function OrderPage() {
                     <h1
                       className={`text-md font-medium text-end
                         ${item.status === 'Finished' && 'text-green-500'}
-                        ${item.status === 'Canceled' && 'text-red-500'}
+                        ${item.status === 'Cancelled' && 'text-red-500'}
                         ${item.status === 'InQueue' && 'text-yellow-500'}
                       }`}
                     >

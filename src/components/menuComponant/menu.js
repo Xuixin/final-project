@@ -24,8 +24,11 @@ export function Menu() {
         const response = await axios.get('/api/menu')
         const data = response.data
 
+        // กรองเฉพาะเมนูที่มีสถานะเป็น 'Published'
+        const publishedMenu = data.filter((item) => item.status === 'Published')
+
         // จัดการกับหมวดหมู่ซ้ำและรวมเมนู
-        const categoriesWithMenu = data.reduce((acc, item) => {
+        const categoriesWithMenu = publishedMenu.reduce((acc, item) => {
           const category = acc.find((c) => c.id === item.categoryId)
 
           if (category) {
@@ -120,11 +123,10 @@ export function Menu() {
                     <Button
                       key={category.id}
                       onClick={() => handleCategorySwap(category)} // เรียกใช้ฟังก์ชันสลับหมวดหมู่
-                      className={`block px-4 py-2 text-left w-full ${
-                        selectedCategory === category.id
+                      className={`block px-4 py-2 text-left w-full ${selectedCategory === category.id
                           ? 'bg-blue-500 text-white'
                           : ''
-                      }`}
+                        }`}
                       variant='ghost'
                     >
                       {category.name}

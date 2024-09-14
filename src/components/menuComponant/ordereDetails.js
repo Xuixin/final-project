@@ -26,7 +26,7 @@ export function OrderDetails({ order, fetchOrder }) {
   const router = useRouter()
 
   const deleteOrder = async () => {
-    if (order.status === 'กำลังดำเนินการ') {
+    if (order.status === 'InProgress') {
       toast({
         variant: 'destructive',
         title: 'ยกเลิกไม่สำเร็จ',
@@ -35,13 +35,12 @@ export function OrderDetails({ order, fetchOrder }) {
       return
     }
     try {
-      await axios.delete(`/api/order/online/${order.orderId}`)
+      await axios.update(`/api/order/status/${order.orderId}`, { status: 'Cancelled' })
       toast({
         variant: 'success',
         title: 'ยกเลิกออเดอร์แล้ว.',
       })
-      // Refresh the order list after deleting
-      await fetchOrder() // เรียก fetchOrder เพื่อรีเฟรชข้อมูลในหน้า parent
+      await fetchOrder()
       router.refresh()
     } catch (error) {
       toast({
@@ -67,7 +66,7 @@ export function OrderDetails({ order, fetchOrder }) {
             </DialogDescription>
           </div>
 
-          {order.status !== 'Finished' && (
+          {order.status === 'InProgress' && (
             <div className='flex justify-end'>
               <Button
                 variant='destructive'
@@ -78,6 +77,7 @@ export function OrderDetails({ order, fetchOrder }) {
               </Button>
             </div>
           )}
+
         </DialogHeader>
         {order.normalmenu.length > 0 && (
           <DialogDescription>Menu</DialogDescription>

@@ -51,20 +51,30 @@ export default function AdminLayout({ children }) {
           <nav className='flex flex-col items-center gap-4 px-2 sm:py-5'>
             <Link
               href='/dashboard'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
-                pathname === '/dashboard'
-                  ? 'bg-accent'
-                  : 'text-muted-foreground'
-              } transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/dashboard')
+                ? 'bg-accent'
+                : 'text-muted-foreground'
+                } transition-colors hover:text-foreground`}
             >
               <Home className='h-5 w-5' />
               <span className='sr-only'>Dashboard</span>
             </Link>
 
+            <Link
+              href='/orders'
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/orders')
+                ? 'bg-accent'
+                : 'text-muted-foreground'
+                } transition-colors hover:text-foreground`}
+            >
+              <ShoppingCart className='h-5 w-5' />
+              <span className='sr-only'>Orders</span>
+            </Link>
+
             <Menubar className='border-none'>
               <MenubarMenu>
-                <MenubarTrigger className='border-none'>
-                  <Package className='h-5 w-5 cursor-pointer' />
+                <MenubarTrigger className='border-none bg-white'>
+                  <Package className='h-5 w-5 cursor-pointer text-muted-foreground' />
                   <span className='sr-only'>Products</span>
                 </MenubarTrigger>
                 <MenubarContent side={'right'}>
@@ -85,11 +95,10 @@ export default function AdminLayout({ children }) {
 
             <Link
               href='/employees'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
-                pathname === '/ad/employee'
-                  ? 'bg-accent'
-                  : 'text-muted-foreground'
-              } transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/employee')
+                ? 'bg-accent'
+                : 'text-muted-foreground'
+                } transition-colors hover:text-foreground`}
             >
               <Users2 className='h-5 w-5' />
               <span className='sr-only'>Employees</span>
@@ -97,9 +106,8 @@ export default function AdminLayout({ children }) {
 
             <Link
               href='/discount'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
-                pathname === '/discount' ? 'bg-accent' : 'text-muted-foreground'
-              } transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/discount') ? 'bg-accent' : 'text-muted-foreground'
+                } transition-colors hover:text-foreground`}
             >
               <CirclePercent className='h-5 w-5' />
               <span className='sr-only'>Discounts</span>
@@ -109,11 +117,10 @@ export default function AdminLayout({ children }) {
           <nav className='mt-auto flex flex-col items-center gap-4 px-2 sm:py-5'>
             <Link
               href='/menu/settings'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${
-                pathname === '/menu/settings'
-                  ? 'bg-accent'
-                  : 'text-muted-foreground'
-              } transition-colors hover:text-foreground`}
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname === '/menu/settings'
+                ? 'bg-accent'
+                : 'text-muted-foreground'
+                } transition-colors hover:text-foreground`}
             >
               <Settings className='h-5 w-5' />
               <span className='sr-only'>Settings</span>

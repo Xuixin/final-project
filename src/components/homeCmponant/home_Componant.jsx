@@ -8,7 +8,7 @@ import { CircleArrowRight } from 'lucide-react'
 export const Hero = () => {
   const router = useRouter()
   return (
-    <section className='hear min-h-96 bg-white'>
+    <section className='hear min-h-96 bg-white shadow-lg'>
       <div className='bg-black px-4 grid h-full gap-10 rounded-lg '>
         <div className='w-full '>
           <h1 className='text-4xl font-semibold'>
