@@ -11,7 +11,7 @@ export default function CompletePage() {
     const { orderId } = useAppContext()
 
     const updatePaymentStatus = async () => {
-        await axios.put(`/api/payment/${orderId}`, { status: 'Complete' })
+        await axios.put(`/api/payment/${orderId}`, { status: 'Completed' })
             .then(() => alert('Payment success'))
             .catch((err) => console.error(err))
     }

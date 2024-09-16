@@ -36,7 +36,7 @@ export default function MenuAdmin() {
 
     useEffect(() => {
         fetchOrders()
-    }, [])
+    }, [trigger])
 
     const filterByDateRange = (orders, startDate, endDate) => {
         return orders.filter(order => {
@@ -85,7 +85,7 @@ export default function MenuAdmin() {
                             <TabsTrigger value="month">Month</TabsTrigger>
                             <TabsTrigger value="year">Year</TabsTrigger>
                         </TabsList>
-                        <div className="ml-auto flex items-center gap-2">
+                        {/* <div className="ml-auto flex items-center gap-2">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
@@ -111,7 +111,7 @@ export default function MenuAdmin() {
                                     </DropdownMenuCheckboxItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                        </div>
+                        </div> */}
                     </div>
                     <TabsContent value="week">
                         <OrderTable orders={filterByWeek(orders)} onSelectOrder={setSelectedOrder} />
