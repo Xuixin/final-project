@@ -6,61 +6,17 @@ import axios from 'axios'
 const AppContext = createContext()
 
 export default function AppProvider({ children }) {
-  const [user, setUser] = useState(null)
+  const [isAuthen, setIsAuthen] = useState(false)
   const [cart, setCart] = useState([])
   const [cartSet, setCartSet] = useState([]) // สำหรับจัดการ MenuSet
   const [orderId, setOrderId] = useState(null)
   const router = useRouter()
 
-  // ดึงข้อมูลผู้ใช้เมื่อมี token
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-
-    if (token) {
-      const userId = parseJwt(token).userId
-
-      axios
-        .get(`/api/customer/${userId}`)
-        .then((response) => {
-          const data = response.data
-          if (data.error) {
-            console.error(data.error)
-          } else {
-            setUser(data)
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching user:', error)
-        })
-    }
-
-
-
-
-  }, [])
-
-  //admin 
-
-
 
   const login = (token) => {
     localStorage.setItem('token', token)
-    const userId = parseJwt(token).userId
-
-    axios
-      .get(`/api/customer/${userId}`)
-      .then((response) => {
-        const data = response.data
-        if (data.error) {
-          console.error(data.error)
-        } else {
-          setUser(data)
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching user:', error)
-      })
-
+    localStorage.setItem('isAuthen', 'true')
+    setIsAuthen(true)
     router.push('/home')
   }
 
@@ -70,7 +26,9 @@ export default function AppProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem('token')
-    setUser(null)
+    sessionStorage.removeItem('isAuthen')
+    localStorage.removeItem('orderId')
+    setIsAuthen(false)
     setCart([])
     setCartSet([])
     router.push('/login')
@@ -186,8 +144,7 @@ export default function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
-        user,
-        setUser,
+        isAuthen,
         cart,
         cartSet,
         login,

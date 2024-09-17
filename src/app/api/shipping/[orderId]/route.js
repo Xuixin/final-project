@@ -1,16 +1,22 @@
 import prisma from "@/lib/prisma";
 
-
 export async function PUT(request, { params }) {
-    const { id } = params
-    const { status } = await request.json()
+    const { orderId } = params
+    const { status, employeeId } = await request.json()
+
+
     try {
-        const updatePayment = await prisma.payment.update({
+        const updatePayment = await prisma.shipping.update({
             where: {
-                orderId: parseInt(id)
+                orderId: parseInt(orderId)
             },
             data: {
-                status
+                status,
+                employee: {
+                    connect: {
+                        id: employeeId
+                    }
+                }
             }
         })
 

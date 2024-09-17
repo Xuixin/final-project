@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 //import ui
-import { useAppContext } from '@/app/Context/AppContext'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,13 +19,16 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '../ui/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 import { useRouter } from 'next/navigation'
+import { parseJwt } from '@/lib/jwt'
 
 export function OrderDetails({ order, fetchOrder }) {
   // เพิ่ม fetchOrder
   const { toast } = useToast()
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
 
   const deleteOrder = async () => {
+    setIsLoading(true)
     if (order.status === 'InProgress') {
       toast({
         variant: 'destructive',
@@ -35,18 +38,20 @@ export function OrderDetails({ order, fetchOrder }) {
       return
     }
     try {
-      await axios.update(`/api/order/status/${order.orderId}`, { status: 'Cancelled' })
+      await axios.post(`/api/order/online/cancel/${order.orderId}`)
       toast({
         variant: 'success',
         title: 'ยกเลิกออเดอร์แล้ว.',
       })
       await fetchOrder()
       router.refresh()
+      setIsLoading(false)
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Failed to delete order.',
       })
+      setIsLoading(false)
     }
   }
 
@@ -66,17 +71,29 @@ export function OrderDetails({ order, fetchOrder }) {
             </DialogDescription>
           </div>
 
-          {order.status === 'InProgress' && (
+          {order.status === 'InQueue' && (
             <div className='flex justify-end'>
-              <Button
-                variant='destructive'
-                className='w-[40%]'
-                onClick={() => deleteOrder()}
-              >
-                Cancel
-              </Button>
+              {isLoading ? (
+                <Button
+                  disabled
+                  variant={'destructive'}
+                  className='w-[40%]'
+                >
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  cancelling
+                </Button>
+              ) : (
+                <Button
+                  variant='destructive'
+                  className='w-[40%]'
+                  onClick={() => deleteOrder()}
+                >
+                  Cancel
+                </Button>
+              )}
             </div>
           )}
+
 
         </DialogHeader>
         {order.normalmenu.length > 0 && (
@@ -155,89 +172,93 @@ export function OrderDetails({ order, fetchOrder }) {
     </>
   )
 }
+
+
 export function EditProfile() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
-  const { user, setUser } = useAppContext()
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     lastname: '',
     email: '',
     address: '',
     tel: '',
-  })
+  });
 
   useEffect(() => {
-    if (user == null) {
-      router.push('/login')
-      return
-    }
-    console.log('user', user)
+    try {
+      const token = localStorage.getItem('token');
+      const userId = parseJwt(token).userId;
 
-    setFormData({
-      name: user.name || '',
-      lastname: user.lastname || '',
-      email: user.email,
-      address: user.address || '',
-      tel: user.tel || '',
-    })
-  }, [user])
+      const fetchUser = async () => {
+        const response = await axios.get(`/api/customer/${userId}`);
+        const fetchedUser = response.data;
+        setUser(fetchedUser);
+        setFormData({
+          name: fetchedUser.name || '',
+          lastname: fetchedUser.lastname || '',
+          email: fetchedUser.email || '',
+          address: fetchedUser.address || '',
+          tel: fetchedUser.tel || '',
+        });
+      };
+
+      fetchUser();
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   const handleInputChange = (e) => {
-    const { id, value } = e.target
+    const { id, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [id]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     toast({
       title: 'Updating profile...',
       description: 'Please wait while we update your information.',
       status: 'info',
       duration: 2000,
       isClosable: true,
-    })
+    });
 
     try {
-      console.log('formData', formData)
-      const response = await axios.post(`/api/customer/${user.id}`, formData)
-
-      console.log('API response:', response.data.updateResponse) // ตรวจสอบโครงสร้างของ response.data
-
+      const response = await axios.post(`/api/customer/${user.id}`, formData);
       if (response.status === 200) {
-        // ตรวจสอบว่าข้อมูลอยู่ใน response.data.updateResponse หรือไม่
-        await setUser([])
-        await setUser(response.data.updateResponse || response.data) // ใช้ข้อมูลที่ถูกต้อง
+        setUser(response.data.updateResponse || response.data);
         toast({
           variant: 'success',
           title: 'Profile updated!',
           description: 'Your profile has been successfully updated.',
           status: 'success',
           duration: 3000,
-          action: <ToastAction altText='Try again'>Done</ToastAction>,
-        })
+          action: <ToastAction altText="Try again">Done</ToastAction>,
+        });
       }
     } catch (error) {
-      console.error('Failed to update profile', error)
+      console.error('Failed to update profile', error);
       toast({
         title: 'Update failed',
         description: 'There was an error updating your profile.',
         status: 'error',
         duration: 3000,
         isClosable: true,
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <DialogContent className='sm:max-w-[425px]'>
+    <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>Edit profile</DialogTitle>
         <DialogDescription>
@@ -245,92 +266,75 @@ export function EditProfile() {
         </DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit}>
-        <div className='grid gap-4 py-4'>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label
-              htmlFor='name'
-              className='text-right'
-            >
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
               Name
             </Label>
             <Input
-              id='name'
+              id="name"
               value={formData.name}
               onChange={handleInputChange}
-              className='col-span-3'
+              className="col-span-3"
               disabled={loading}
             />
           </div>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label
-              htmlFor='lastname'
-              className='text-right'
-            >
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="lastname" className="text-right">
               LastName
             </Label>
             <Input
-              id='lastname'
+              id="lastname"
               value={formData.lastname}
               onChange={handleInputChange}
-              className='col-span-3'
+              className="col-span-3"
               disabled={loading}
             />
           </div>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label
-              htmlFor='email'
-              className='text-right'
-            >
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="email" className="text-right">
               Email
             </Label>
             <Input
-              id='email'
+              id="email"
               value={formData.email}
               onChange={handleInputChange}
-              className='col-span-3'
+              className="col-span-3"
               disabled={loading}
             />
           </div>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label
-              htmlFor='address'
-              className='text-right'
-            >
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="address" className="text-right">
               Address
             </Label>
             <Input
-              id='address'
+              id="address"
               value={formData.address}
               onChange={handleInputChange}
-              className='col-span-3'
+              className="col-span-3"
               disabled={loading}
             />
           </div>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label
-              htmlFor='tel'
-              className='text-right'
-            >
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="tel" className="text-right">
               Tel
             </Label>
             <Input
-              id='tel'
+              id="tel"
               value={formData.tel}
               onChange={handleInputChange}
-              className='col-span-3'
+              className="col-span-3"
               disabled={loading}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button
-            type='submit'
-            disabled={loading}
-          >
+          <Button type="submit" disabled={loading}>
             {loading ? 'Saving...' : 'Save changes'}
           </Button>
         </DialogFooter>
       </form>
     </DialogContent>
-  )
+  );
 }
+

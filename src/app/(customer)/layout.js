@@ -35,10 +35,13 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 export default function Customerlayout({ children }) {
-  const { user, logout, cartCount } = useAppContext()
+  const { isAuthen, logout, cartCount } = useAppContext()
   const [index, setIndex] = useState(0)
+
   const pathName = usePathname()
   const router = useRouter()
+
+  // ฟังก์ชันสำหรับดึงข้อมูลจาก toke
 
   useEffect(() => {
     changePath(pathName)
@@ -52,7 +55,7 @@ export default function Customerlayout({ children }) {
       case '/menu':
         setIndex(2)
         break
-      case '/about':
+      case '/order':
         setIndex(3)
         break
       case '/contact':

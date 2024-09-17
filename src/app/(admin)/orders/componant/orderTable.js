@@ -1,6 +1,5 @@
-
 "use client"
-//IMPORT UI
+// IMPORT UI
 import { Badge } from "@/components/ui/badge"
 import {
     Card,
@@ -30,6 +29,46 @@ export function OrderTable({ orders, onSelectOrder }) {
         onSelectOrder(order, order.orderSource.source_name);
     }
 
+    const orderBg = (status) => {
+        switch (status) {
+            case 'InQueue':
+                return 'outline';
+            case 'InProgress':
+                return 'warning';
+            case 'Finished':
+                return 'success';
+            case 'Cancelled':
+                return 'destructive';
+            default:
+                return 'neutral'; // Default variant
+        }
+    }
+    const paymentBg = (status) => {
+        switch (status) {
+            case 'InComplete':
+                return 'warning';
+            case 'Completed':
+                return 'success';
+            case 'Refunded':
+                return 'destructive';
+            default:
+                return 'neutral'; // Default variant
+        }
+    }
+    const shippingBg = (status) => {
+        switch (status) {
+            case 'Pending':
+                return 'warning';
+            case 'Shipped':
+                return 'success';
+            case 'Delivered':
+                return 'destructive';
+            case 'Cancelled':
+                return 'destructive';
+            default:
+                return 'neutral'; // Default variant
+        }
+    }
 
     return (
         <Card>
@@ -44,7 +83,8 @@ export function OrderTable({ orders, onSelectOrder }) {
                             <TableHead>Order</TableHead>
                             <TableHead className="hidden sm:table-cell">Type</TableHead>
                             <TableHead className="hidden sm:table-cell">Status</TableHead>
-                            <TableHead className="hidden md:table-cell">Date</TableHead>
+                            <TableHead className="hidden md:table-cell">Payment status</TableHead>
+                            <TableHead className="hidden sm:table-cell">Shipping Status</TableHead>
                             <TableHead className="text-right">Amount</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -58,17 +98,25 @@ export function OrderTable({ orders, onSelectOrder }) {
                                     </TableCell>
                                     <TableCell className="hidden sm:table-cell">{order.orderSource.source_name}</TableCell>
                                     <TableCell className="hidden sm:table-cell">
-                                        <Badge className="text-xs" variant="outline">
+                                        <Badge className="text-xs" variant={orderBg(order.status)}>
                                             {order.status}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="hidden md:table-cell">{format(new Date(order.createdAt), 'yyyy-MM-dd')}</TableCell>
+                                    <TableCell className="hidden md:table-cell">
+                                        <Badge className="text-xs" variant={paymentBg(order.payment.status)}>
+                                            {order.payment.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="hidden sm:table-cell">
+                                        <Badge className="text-xs" variant={shippingBg(order.shipping?.status)}>
+                                            {order.shipping?.status}
+                                        </Badge>
+                                    </TableCell>
+
                                     <TableCell className="text-right">RM {order.totalPrice.toFixed(2)}</TableCell>
                                 </TableRow>
-
                             )
                         })}
-
 
                     </TableBody>
                 </Table>
@@ -76,4 +124,3 @@ export function OrderTable({ orders, onSelectOrder }) {
         </Card>
     )
 }
-

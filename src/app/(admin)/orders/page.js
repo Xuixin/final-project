@@ -114,18 +114,18 @@ export default function MenuAdmin() {
                         </div> */}
                     </div>
                     <TabsContent value="week">
-                        <OrderTable orders={filterByWeek(orders)} onSelectOrder={setSelectedOrder} />
+                        <OrderTable orders={filterByWeek(orders)} onSelectOrder={setSelectedOrder} setOrder={fetchOrders} />
                     </TabsContent>
                     <TabsContent value="month">
-                        <OrderTable orders={filterByMonth(orders)} onSelectOrder={setSelectedOrder} />
+                        <OrderTable orders={filterByMonth(orders)} onSelectOrder={setSelectedOrder} setOrder={fetchOrders} />
                     </TabsContent>
                     <TabsContent value="year">
-                        <OrderTable orders={filterByYear(orders)} onSelectOrder={setSelectedOrder} />
+                        <OrderTable orders={filterByYear(orders)} onSelectOrder={setSelectedOrder} setOrder={fetchOrders} />
                     </TabsContent>
                 </Tabs>
             </div>
             <div>
-                {selectedOrder && <Details_order order={selectedOrder} />}
+                {selectedOrder && <Details_order order={selectedOrder} fetchOrders={fetchOrders} />}
             </div>
         </main>
     )

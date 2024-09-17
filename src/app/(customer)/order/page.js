@@ -9,16 +9,16 @@ import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 
 // component
 import { OrderDetails } from '@/components/menuComponant/ordereDetails'
+import { fetchUserInfo } from '@/lib/userInfo'
 
 export default function OrderPage() {
-  const { toast } = useToast()
   const [order, setOrder] = useState([]) // ตั้งค่าเริ่มต้นเป็น array ว่าง
-  const { user } = useAppContext()
+  const [user, setUser] = useState(null)
 
   // Fetch order data from API
-  const fetchOrder = async () => {
+  const fetchOrder = async (userId) => {
     try {
-      const response = await axios.get(`/api/order/online/${user.id}`)
+      const response = await axios.get(`/api/order/online/${userId}`)
       setOrder(response.data)
       console.log(response.data)
     } catch (error) {
@@ -27,10 +27,22 @@ export default function OrderPage() {
   }
 
   useEffect(() => {
-    if (user?.id) {
-      fetchOrder()
+    const getUserAndFetchOrders = async () => {
+      try {
+        const userData = await fetchUserInfo()
+        setUser(userData)
+        // หลังจากได้ข้อมูล user แล้ว ค่อย fetchOrder
+        console.log(userData);
+        if (userData?.id) {
+          fetchOrder(userData.id)
+        }
+      } catch (error) {
+        console.log('Fail to fetch user info: ', error)
+      }
     }
-  }, [user])
+
+    getUserAndFetchOrders()
+  }, [])
 
   return (
     <section>

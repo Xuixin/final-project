@@ -1,8 +1,11 @@
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-} from "@/components/ui/pagination"
+    Dialog,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogContent,
+} from "@/components/ui/dialog";
 import {
     Truck,
     ListFilter,
@@ -10,11 +13,12 @@ import {
     MoreVertical,
     CreditCard,
     ChevronLeft,
-    ChevronRight
-} from "lucide-react"
-import { Separator } from "@/components/ui/separator"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+    ChevronRight,
+    Check
+} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -23,40 +27,70 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+import axios from "axios";
+import { Shipping } from "./shipping";
 
-export function Details_order({ order }) {
+export function Details_order({ order, fetchOrders }) {
     if (!order) return null;
 
+    const headerGb = (status) => {
+        switch (status) {
+            case 'Pending':
+                return 'bg-muted/50';
+            case 'Shipped':
+            case 'Delivered':
+                return 'bg-green-400';
+            case 'Cancelled':
+                return 'bg-red-400';
+            default:
+                return '';
+        }
+    };
 
+    const textColor = (status) => {
+        switch (status) {
+            case 'Pending':
+                return '';
+            case 'Shipped':
+            case 'Delivered':
+            case 'Cancelled':
+                return 'text-white';
+            default:
+                return '';
+        }
+    };
 
     return (
         <Card className="overflow-hidden">
-            <CardHeader className="flex flex-row items-start bg-muted/50">
-                <div className="grid gap-0.5">
-                    <CardTitle className="group flex items-center gap-2 text-lg">
+            <CardHeader className={`flex flex-row items-start ${headerGb(order.shipping.status)}`}>
+                <div className={`grid gap-0.5 ${textColor(order.shipping.status)}`}>
+                    <CardTitle className={`group flex items-center gap-2 text-lg`}>
                         Order {order.id}
                     </CardTitle>
-                    <CardDescription>Date: {new Date(order.createdAt).toLocaleDateString()}</CardDescription>
+                    <CardDescription className={`${textColor(order.shipping.status)}`}>Date: {new Date(order.createdAt).toLocaleDateString()}</CardDescription>
                 </div>
                 <div className="ml-auto flex items-center gap-1">
-                    <Button size="sm" variant="outline" className="h-8 gap-1">
-                        <Truck className="h-3.5 w-3.5" />
-                    </Button>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="outline" className="h-8 w-8">
-                                <MoreVertical className="h-3.5 w-3.5" />
-                                <span className="sr-only">More</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Export</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Trash</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    {order.shipping.status != 'Cancelled' && (
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button
+                                    size="sm"
+                                    variant={'outline'}
+                                    className={`h-8 gap-1 relative`}
+                                    disabled={order.shipping.status === 'Delivered' || order.shipping.status === 'Shipped'}
+                                >
+                                    <Truck className={`h-3.5 w-3.5`} />
+                                    {order.shipping.status !== 'Pending' && <Check className="text-green-500 absolute right-0" strokeWidth={3} />}
+                                </Button>
+
+                            </DialogTrigger>
+                            <Shipping orderId={order.id} fetchOrders={fetchOrders} />
+                        </Dialog>
+                    )}
+
+
                 </div>
             </CardHeader>
             <CardContent className="p-6 text-sm">
@@ -90,16 +124,13 @@ export function Details_order({ order }) {
                                 <strong>Set {setId}</strong>
                                 <ul>
                                     {items.map(item => (
-                                        <li key={item.id} className=" pl-3 flex items-center justify-between">
+                                        <li key={item.id} className="pl-3 flex items-center justify-between">
                                             <span>{item.menu.name} x {item.quantity}</span>
                                         </li>
                                     ))}
                                 </ul>
                             </li>
                         ))}
-
-
-
                     </ul>
                     <Separator className="my-2" />
                     <ul className="grid gap-3">
@@ -117,10 +148,9 @@ export function Details_order({ order }) {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-3">
                         <div className="font-semibold">Shipping Information</div>
-                        <address className="grid gap-0.5 not-italic ">
+                        <address className="grid gap-0.5 not-italic">
                             Address
-                            <span className="text-muted-foreground" >{order.customer.address || 'test'}</span>
-
+                            <span className="text-muted-foreground">{order.customer.address || 'test'}</span>
                         </address>
                     </div>
                 </div>
@@ -186,5 +216,5 @@ export function Details_order({ order }) {
                 </Pagination> */}
             </CardFooter>
         </Card>
-    )
+    );
 }

@@ -188,6 +188,7 @@ enum PaymentMethod {
 enum paymentStatus {
   InComplete
   Completed
+  Refunded
 }
 
 model Payment {
@@ -197,13 +198,14 @@ model Payment {
   method    PaymentMethod @default(PayPal)
   status    paymentStatus @default(InComplete)
   order     Order         @relation(fields: [orderId], references: [id])
-  createdAt DateTime      @default(now()) // Add createdAt field
+  createdAt DateTime      @default(now())
 }
 
 enum ShippingStatus {
   Pending
   Shipped
   Delivered
+  Cancelled
 }
 
 model Shipping {

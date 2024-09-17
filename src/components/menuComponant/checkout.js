@@ -5,7 +5,7 @@ import axios from 'axios'
 
 export default function CheckoutButton({ customerId, userData, totalPrice }) {
   const [error, setError] = useState(null)
-  const { cart, cartSet, setOrderId } = useAppContext()
+  const { cart, cartSet } = useAppContext()
 
   const items = cart.map(({ id, name, price, quantity }) => ({
     id,
@@ -42,7 +42,7 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
 
       if (!orderId) throw new Error('Failed to create order.')
 
-      setOrderId(orderId)
+      localStorage.setItem('orderId', orderId)
 
       const paymentCreate = await axios.post('/api/payment/create', {
         orderId,
