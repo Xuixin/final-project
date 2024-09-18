@@ -107,13 +107,13 @@ export async function GET(request, { params }) {
 
         // ถ้าพบพนักงานแต่ไม่พบข้อมูลการเข้างานในวันนี้
         if (employee.attendances.length <= 0) {
-            return new Response(JSON.stringify({ status: false }), {
+            return new Response(JSON.stringify({ ...employee, status: false }), {
                 status: 200,
             });
         }
 
         // ถ้าพบข้อมูลการเข้างาน
-        return new Response(JSON.stringify({ status: true }), {
+        return new Response(JSON.stringify({ ...employee, status: true }), {
             status: 200,
         });
 

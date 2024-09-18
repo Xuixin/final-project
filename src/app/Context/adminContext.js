@@ -6,47 +6,11 @@ import axios from 'axios';
 export const AdminContext = createContext();
 
 export default function AdminProvider({ children }) {
-    const [admin, setAdmin] = useState(null);
     const router = useRouter();
-
-    useEffect(() => {
-        const token = localStorage.getItem('admin');
-
-        if (token) {
-            const { id } = parseJwt(token);
-
-            axios
-                .get(`/api/employee/emp/${id}`)
-                .then((response) => {
-                    const data = response.data;
-                    if (data.error) {
-                        console.error(data.error);
-                    } else {
-                        setAdmin(data);
-                    }
-                })
-                .catch((err) => {
-                    console.error('Error fetching admin:', err);
-                });
-        }
-    }, []);
 
     const login = async (token) => {
         localStorage.setItem('admin', token);
-        const { id } = parseJwt(token);
-
-        try {
-            const response = await axios.get(`/api/employee/emp/${id}`);
-            const data = response.data;
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                setAdmin(data);
-                router.push('/POS');
-            }
-        } catch (err) {
-            console.error('Error fetching admin:', err);
-        }
+        router.push('POS')
     };
 
     const logout = () => {
@@ -56,7 +20,7 @@ export default function AdminProvider({ children }) {
     };
 
     return (
-        <AdminContext.Provider value={{ admin, login, logout }}>
+        <AdminContext.Provider value={{ login, logout }}>
             {children}
         </AdminContext.Provider>
     );

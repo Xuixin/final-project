@@ -10,6 +10,9 @@ export async function GET(request, { params }) {
       where: {
         id: intId,
       },
+      include: {
+        attendances: true
+      }
     });
 
     return new Response(JSON.stringify(data));

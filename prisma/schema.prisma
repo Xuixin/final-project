@@ -58,12 +58,18 @@ model Menu {
   createdAt      DateTime        @default(now()) // Add createdAt field
 }
 
+enum tableType {
+  inside
+  outside
+}
+
 model Table {
-  id        Int      @id @default(autoincrement())
-  table_NO  Int      @unique
+  id        Int       @id @default(autoincrement())
+  table_NO  Int       @unique
   status    String
+  type      tableType
   orders    Order[]
-  createdAt DateTime @default(now()) // Add createdAt field
+  createdAt DateTime  @default(now()) // Add createdAt field
 }
 
 // สร้าง Enum สำหรับ status
