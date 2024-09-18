@@ -283,7 +283,7 @@ export default function PosPage() {
                 </Tabs>
             </div>
             <div>
-                <p>test</p>
+
             </div>
         </section >
     )
