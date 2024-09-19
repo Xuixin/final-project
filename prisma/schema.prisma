@@ -63,13 +63,18 @@ enum tableType {
   outside
 }
 
+enum tableStatus {
+  available //ว่าง
+  occupied //ไม่ว่าง
+}
+
 model Table {
-  id        Int       @id @default(autoincrement())
-  table_NO  Int       @unique
-  status    String
+  id        Int         @id @default(autoincrement())
+  table_NO  String
+  status    tableStatus @default(available)
   type      tableType
   orders    Order[]
-  createdAt DateTime  @default(now()) // Add createdAt field
+  createdAt DateTime    @default(now()) // Add createdAt field
 }
 
 // สร้าง Enum สำหรับ status

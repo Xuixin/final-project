@@ -23,18 +23,33 @@ export default function HomeLayout({ children }) {
     const { logout } = useAdminContext();
     const [isAttendance, setIsAttendance] = useState(false);
 
+
+    const markAttendance = async () => {
+        const response = await axios.get(`/api/employee/attendance/${adminData.id}`); // ใช้ adminData.id
+        setIsAttendance(response.data.status);
+    };
+
+    const fetchEmp = async () => {
+        try {
+            const response = await fetchAdminInfo();
+            console.log(response);
+            setAdminData(response);  // ไม่ต้องใช้ await กับ setState
+        } catch (error) {
+            console.error('Error fetching admin info:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchEmp = async () => {
-            try {
-                const response = await fetchAdminInfo();
-                console.log(response);
-                setAdminData(response);  // ไม่ต้องใช้ await กับ setState
-            } catch (error) {
-                console.error('Error fetching admin info:', error);
-            }
-        };
         fetchEmp();
     }, []);
+    useEffect(() => {
+        if (adminData) {
+            markAttendance()
+        }
+
+    }, [adminData]);
+
+
 
     const submit = async () => {
         try {
@@ -53,6 +68,7 @@ export default function HomeLayout({ children }) {
                 title: 'Error',
                 description: 'เกิดข้อผิดพลาดในการลงชื่อ'
             });
+            await markAttendance()
         }
     };
 
