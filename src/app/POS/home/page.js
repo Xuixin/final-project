@@ -16,6 +16,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useState } from 'react'
 import { Select } from '@/components/ui/select'
+import { Pos_details } from './componants/detail'
 
 export default function PosPage() {
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -769,7 +770,9 @@ export default function PosPage() {
           </TabsContent>
         </Tabs>
       </div>
-      <div>trst</div>
+      <div className="py-5">
+        <Pos_details />
+      </div>
     </section>
   )
 }
