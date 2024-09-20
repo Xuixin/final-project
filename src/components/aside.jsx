@@ -8,8 +8,8 @@ import {
 import {
   Package2,
   Home,
-  Settings
-
+  Settings,
+  Soup
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -31,14 +31,26 @@ export default function Aside() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              href="#"
+              href="/POS/home"
               className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <Home className="h-5 w-5" />
-              <span className="sr-only">Dashboard</span>
+              <span className="sr-only">Home</span>
             </Link>
           </TooltipTrigger>
-          <TooltipContent side="right">Dashboard</TooltipContent>
+          <TooltipContent side="right">Home</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href="/POS/menu/0"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            >
+              <Soup className="h-5 w-5" />
+              <span className="sr-only">Menu</span>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right">Menu</TooltipContent>
         </Tooltip>
 
       </nav>

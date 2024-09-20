@@ -16,7 +16,10 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { fetchAdminInfo } from '@/lib/adminInfo';
 
-export default function HomeLayout({ children }) {
+// import context
+import { PosProvider } from './context';
+
+export default function PosLayout({ children }) {
     const { toast } = useToast();
     const router = useRouter();
     const [adminData, setAdminData] = useState(null);
@@ -49,11 +52,9 @@ export default function HomeLayout({ children }) {
 
     }, [adminData]);
 
-
-
     const submit = async () => {
         try {
-            const response = await axios.post(`/api/employee/attendance/${adminData.id}`); // ใช้ adminData.id
+            const response = await axios.post(`/api/employee/attendance/${adminData.id}`);
             setIsAttendance(response.data.status);
             toast({
                 variant: 'success',
@@ -68,55 +69,58 @@ export default function HomeLayout({ children }) {
                 title: 'Error',
                 description: 'เกิดข้อผิดพลาดในการลงชื่อ'
             });
-            await markAttendance()
+            await markAttendance(); // อัปเดตสถานะการลงชื่อหลังจากเกิดข้อผิดพลาด
         }
     };
 
+
     return (
-        <TooltipProvider>
-            <div className="grid h-screen w-full pl-[56px]">
-                <Aside />
-                <div className="flex flex-col relative">
-                    <header className="sticky top-0 z-20 flex h-[57px] pl-6 pr-5 items-center justify-end gap-1 border-b bg-background">
+        <PosProvider>
+            <TooltipProvider>
+                <div className="grid h-screen w-full pl-[56px]">
+                    <Aside />
+                    <div className="flex flex-col relative">
+                        <header className="sticky top-0 z-20 flex h-[57px] pl-6 pr-5 items-center justify-end gap-1 border-b bg-background">
 
-                        <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2">
 
-                            {isAttendance ? (
-                                <div className="flex gap-2 items-end">
-                                    <span className="text-sm font-medium text-green-500">Attendance: Marked</span>
-                                </div>
-                            ) : (
-                                <Button type="submit" onClick={submit}>ลงชื่อ</Button>
-                            )}
+                                {isAttendance ? (
+                                    <div className="flex gap-2 items-end">
+                                        <span className="text-sm font-medium text-green-500">Attendance: Marked</span>
+                                    </div>
+                                ) : (
+                                    <Button type="submit" onClick={submit}>ลงชื่อ</Button>
+                                )}
 
 
-                            {adminData ? (
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button className="rounded-lg">Hi {adminData.name}</Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-25">
-                                        <Button
-                                            type="submit"
-                                            variant="aa"
-                                            className="w-full"
-                                            onClick={logout}
-                                        >
-                                            logout
-                                        </Button>
-                                    </PopoverContent>
-                                </Popover>
-                            ) : (
-                                <AdminLogin />
-                            )}
+                                {adminData ? (
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button className="rounded-lg">Hi {adminData.name}</Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-25">
+                                            <Button
+                                                type="submit"
+                                                variant="aa"
+                                                className="w-full"
+                                                onClick={logout}
+                                            >
+                                                logout
+                                            </Button>
+                                        </PopoverContent>
+                                    </Popover>
+                                ) : (
+                                    <AdminLogin />
+                                )}
 
-                        </div>
-                    </header>
-                    <section className='w-full'>
-                        {children}
-                    </section>
+                            </div>
+                        </header>
+                        <section className='w-full'>
+                            {children}
+                        </section>
+                    </div>
                 </div>
-            </div>
-        </TooltipProvider>
+            </TooltipProvider>
+        </PosProvider>
     );
 }

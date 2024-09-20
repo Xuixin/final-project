@@ -1,36 +1,74 @@
 'use client'
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card'
+//import ui
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
 import { Button } from '@/components/ui/button'
-import { File } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import { useState } from 'react'
 import { Select, SelectTrigger, SelectContent, SelectValue, SelectItem } from '@/components/ui/select'
-import { Pos_details } from './componants/detail'
-import { container, item } from './componants/motion'
+import { Input } from '@/components/ui/input'
+import { Loader2 } from 'lucide-react'
+
+//import component
+import { Pos_details } from './components/detail'
+import { Table } from './components/table'
+import { container, item } from './components/motion'
+
+//import next
+import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function PosPage() {
+  const { toast } = useToast()
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [newTableNO, setNewTableNO] = useState('') // จัดการกับ table_NO
+  const [newTableType, setNewTableType] = useState('inside') // จัดการกับ type
+  const [allTable, setAllTable] = useState({ inside: [], outside: [] }) // กำหนดค่าเริ่มต้น
+  const [isLoading, setIsLoading] = useState(false)
 
-  const addTable = (e) => {
-    e.preventDefault()
-    // Add table to the order state
-    const newOrder = {
-      id: Math.random().toString(36).substr(2, 9),
-      type: 'inside',
-      items: [],
+  const fetchAlltable = async () => {
+    try {
+      const response = await axios.get('/api/table')
+      setAllTable(response.data)
+    } catch (error) {
+      console.error(error)
     }
-    setSelectedOrder(newOrder)
+  }
+
+  useEffect(() => {
+    fetchAlltable()
+  }, [])
+
+  useEffect(() => {
+    console.log(selectedOrder);
+  }, [selectedOrder])
+
+  // ฟังก์ชันสำหรับเพิ่มโต๊ะ
+  const addTable = async (e) => {
+    e.preventDefault()
+    setIsLoading(true) // ตั้งค่า isLoading เป็น true
+    try {
+      await axios.post('/api/table', { type: newTableType, table_NO: newTableNO })
+      setNewTableNO('')
+      setNewTableType('inside')
+      fetchAlltable()
+      toast({
+        variant: 'success',
+        title: 'Table added successfully!',
+        description: 'Table added successfully!',
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        title: 'Error adding table!',
+        description: 'Failed to add new table!',
+      })
+    } finally {
+      setIsLoading(false) // ตั้งค่า isLoading เป็น false เมื่อเสร็จสิ้น
+    }
   }
 
   return (
@@ -43,10 +81,22 @@ export default function PosPage() {
               <TabsTrigger value='outside'>Outside</TabsTrigger>
               <TabsTrigger value='takeaway'>Takeaway</TabsTrigger>
             </TabsList>
+
             <form onSubmit={addTable}>
-              <div className='ml-auto flex items-center gap-2'>
-                <Select className='rounded-lg'>
-                  <SelectTrigger className='w-[180px]'>
+              <div className='ml-auto flex items-center'>
+                <Input
+                  type="text"
+                  name='table_NO'
+                  value={newTableNO}
+                  onChange={(e) => setNewTableNO(e.target.value)}
+                  placeholder="Table Number"
+                  className='rounded-r-none '
+                />
+                <Select
+                  value={newTableType}
+                  onValueChange={(value) => setNewTableType(value)}
+                >
+                  <SelectTrigger className='w-[180px] rounded-r-none rounded-l-none border-l-0'>
                     <SelectValue placeholder='Table' />
                   </SelectTrigger>
                   <SelectContent>
@@ -54,12 +104,23 @@ export default function PosPage() {
                     <SelectItem value='outside'>Outside</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button type='submit' className='bg-green-500 text-white'>Add</Button>
+                <Button type='submit' className='rounded-l-none'>
+                  {isLoading ? (
+                    <>
+                      Adding
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    'Add'
+                  )}
+                </Button>
+
               </div>
             </form>
           </div>
           <TabsContent value='inside'>
             <motion.div
+              key={'inside'}
               variants={container}
               initial="hidden"
               animate="visible"
@@ -67,49 +128,29 @@ export default function PosPage() {
             >
               <Card className='min-h-[70%]'>
                 <CardContent>
-                  <div className='w-full grid grid-cols-5 p-5 gap-4'>
-
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.3 }}
-                      className='relative h-24 w-full'
-                    >
-                      <Image
-                        src={'/uploads/0.png'}
-                        alt={'table'}
-                        layout='fill'
-                        objectFit='contain'
-                        className='rounded'
-                      />
-                      <div className='absolute inset-0 flex items-center justify-center'>
-                        <span className='text-xl font-bold'>T1</span>
-                      </div>
-                    </motion.div>
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.3 }}
-                      className='relative h-24 w-full'
-                    >
-                      <Image
-                        src={'/uploads/0.png'}
-                        alt={'table'}
-                        layout='fill'
-                        objectFit='contain'
-                        className='rounded'
-                      />
-                      <div className='absolute inset-0 flex items-center justify-center'>
-                        <span className='text-xl font-bold'>T1</span>
-                      </div>
-                    </motion.div>
-
-
-                  </div>
+                  {allTable?.inside && (
+                    <Table Tabletype={allTable.inside} setSelectedTable={setSelectedOrder} />
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
           </TabsContent>
           <TabsContent value='outside'>
-            test
+            <motion.div
+              key={'ourside'}
+              variants={container}
+              initial="hidden"
+              animate="visible"
+              className="min-h-[70%]"
+            >
+              <Card className='min-h-[70%]'>
+                <CardContent>
+                  {allTable?.outside && (
+                    <Table Tabletype={allTable.outside} setSelectedTable={setSelectedOrder} />
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
           </TabsContent>
           <TabsContent value='takeaway'>
             test
@@ -126,7 +167,7 @@ export default function PosPage() {
             ease: "easeInOut"
           }}
         >
-          <Pos_details order={selectedOrder} />
+          <Pos_details table={selectedOrder} fetchAllTable={fetchAlltable} />
         </motion.div>
       </div>
     </section>

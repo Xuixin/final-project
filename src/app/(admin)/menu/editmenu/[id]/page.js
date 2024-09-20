@@ -124,6 +124,8 @@ export default function EditMenu({ params }) {
                 category: parseInt(formValues.category),
             }
 
+            console.log(data);
+
             // ส่งข้อมูลเพื่ออัปเดตเมนู
             await axios.put(`/api/menu/${id}`, data)
             toast({
@@ -299,7 +301,7 @@ export default function EditMenu({ params }) {
                                                 alt="Product image"
                                                 className="aspect-square w-full rounded-md object-cover"
                                                 height="300"
-                                                src={formValues.image}
+                                                src={imagePreview}
                                                 width="300"
                                             />
                                         </div>

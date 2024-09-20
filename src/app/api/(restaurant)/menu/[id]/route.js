@@ -40,14 +40,14 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const id = params.id;
-  const { name, category, discountId, price, img, status } = await request.json();
+  const { name, category, discountId, price, image, status } = await request.json();
 
   try {
     // เตรียมข้อมูลที่จะอัปเดต
     const dataToUpdate = {
       name,
       price,
-      img,
+      img: image,
       status,
       category: {
         connect: {

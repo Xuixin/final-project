@@ -1,10 +1,11 @@
 import prisma from '@/lib/prisma'
 
 export async function POST(request, { params }) {
-    const { type } = await request.json()
+    const { type, table_NO } = await request.json()
     try {
         const newTable = await prisma.table.create({
             data: {
+                table_NO,
                 type
             }
         })
@@ -95,7 +96,7 @@ export async function GET(request, { params }) {
                                         setId: menuset.id,
                                         setName: menuset.name,
                                         totalMenu: menuset.totalMenu,
-                                        setPrice: detail.price,
+                                        setPrice: menuset.price,
                                         details: menuset.details?.map(d => ({
                                             id: d.menu?.id,
                                             name: d.menu?.name,
