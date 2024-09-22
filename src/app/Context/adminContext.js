@@ -10,17 +10,19 @@ export default function AdminProvider({ children }) {
 
     const login = async (token) => {
         localStorage.setItem('admin', token);
-        router.push('POS')
+        router.push('/POS/home')
     };
+
+    const isAuthenticated = () => !!localStorage.getItem('admin');
+
 
     const logout = () => {
         localStorage.removeItem('admin');
-        setAdmin(null);
-        router.push('/POS');
+        router.push('/POS/home');
     };
 
     return (
-        <AdminContext.Provider value={{ login, logout }}>
+        <AdminContext.Provider value={{ login, logout, isAuthenticated }}>
             {children}
         </AdminContext.Provider>
     );

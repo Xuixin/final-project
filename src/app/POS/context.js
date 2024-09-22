@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const PosContext = createContext();
 
@@ -6,18 +6,26 @@ export function PosProvider({ children }) {
     const [cart, setCart] = useState([]);
     const [cartSet, setCartSet] = useState([]);
 
+    useEffect(() => {
+        console.log("cart", cart);
+        console.log("cartSet|", cartSet)
+    }, [cart, cartSet]);
+
     const addToCart = (item) => {
         setCart((prevCart) => {
             const existingItem = prevCart.find((i) => i.id === item.id);
             if (existingItem) {
+                // หากมีรายการอยู่ในตะกร้าแล้ว จะอัปเดตจำนวนและยังคงรายการไว้ที่ตำแหน่งเดิม
                 return prevCart.map((i) =>
                     i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
                 );
             } else {
-                return [...prevCart, item];
+                // เพิ่มรายการใหม่ที่ด้านบนของอาเรย์
+                return [item, ...prevCart];
             }
         });
     };
+
 
     const minusFromCart = (item) => {
         setCart((prevCart) => {
@@ -43,8 +51,10 @@ export function PosProvider({ children }) {
             const existingItem = newCartSet.find((i) => i.id === item.id);
 
             if (existingItem) {
+
                 newCartSet.forEach((i) => {
                     if (i.id === item.id) {
+                        i.quantity += item.quantity
                         i.details = i.details.map((detail) => {
                             const existingDetail = item.details.find(
                                 (newDetail) => newDetail.menuId === detail.menuId
@@ -85,8 +95,10 @@ export function PosProvider({ children }) {
             const newCartSet = [...prevCartSet];
             const index = newCartSet.findIndex((i) => i.id === item.id);
             if (index !== -1) {
+
                 const detailIndex = newCartSet[index].details.findIndex((detail) => detail.id === item.details[0].id);
                 if (detailIndex !== -1 && newCartSet[index].details[detailIndex].quantity > 1) {
+                    newCartSet[index].quantity--
                     newCartSet[index].details[detailIndex].quantity--;
                 } else {
                     newCartSet.splice(index, 1);
@@ -112,6 +124,13 @@ export function PosProvider({ children }) {
         setCartSet([]);
     };
 
+    const calculateTotalPrice = () => {
+        const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const cartSetTotal = cartSet.reduce((total, item) => total + item.price, 0);
+        return cartTotal + cartSetTotal;
+    };
+
+
     return (
         <PosContext.Provider value={{
             cart,
@@ -124,6 +143,7 @@ export function PosProvider({ children }) {
             removeFromCartSet,
             cartCount,
             clearCart,
+            calculateTotalPrice
         }}>
             {children}
         </PosContext.Provider>

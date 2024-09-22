@@ -11,8 +11,8 @@ export async function POST(req) {
     const order = await prisma.order.create({
       data: {
         status,
-        quantity: 0, // จะอัปเดตหลังจากสร้าง OrderDetail
-        totalPrice: parseFloat(totalPrice), // totalPrice รวมเฉพาะ items
+        quantity: 0,
+        totalPrice: parseFloat(totalPrice),
         customer: {
           connect: { id: parseInt(customerId) },
         },

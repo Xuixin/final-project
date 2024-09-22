@@ -30,7 +30,7 @@ export default function PosPage() {
 
   const fetchAlltable = async () => {
     try {
-      const response = await axios.get('/api/table')
+      const response = await axios.get('/api/table/all')
       setAllTable(response.data)
     } catch (error) {
       console.error(error)
@@ -42,7 +42,11 @@ export default function PosPage() {
   }, [])
 
   useEffect(() => {
-    console.log(selectedOrder);
+    console.log("allTable", allTable.inside);
+  }, [allTable]);
+
+  useEffect(() => {
+    console.log("selectedOrder", selectedOrder);
   }, [selectedOrder])
 
   // ฟังก์ชันสำหรับเพิ่มโต๊ะ
@@ -153,7 +157,24 @@ export default function PosPage() {
             </motion.div>
           </TabsContent>
           <TabsContent value='takeaway'>
-            test
+            <motion.div
+              key={'ourside'}
+              variants={container}
+              initial="hidden"
+              animate="visible"
+              className="min-h-[70%] "
+            >
+              <Card className='min-h-96'>
+                <CardHeader>
+                  <CardTitle>Takeaway</CardTitle>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  test
+                </CardContent>
+              </Card>
+
+            </motion.div>
           </TabsContent>
         </Tabs>
       </div>

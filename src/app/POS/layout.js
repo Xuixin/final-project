@@ -23,8 +23,9 @@ export default function PosLayout({ children }) {
     const { toast } = useToast();
     const router = useRouter();
     const [adminData, setAdminData] = useState(null);
-    const { logout } = useAdminContext();
+    const { logout, isAuthenticated } = useAdminContext();
     const [isAttendance, setIsAttendance] = useState(false);
+    const [isAuthen, setIsAuthen] = useState(false)
 
 
     const markAttendance = async () => {
@@ -44,13 +45,14 @@ export default function PosLayout({ children }) {
 
     useEffect(() => {
         fetchEmp();
+        setIsAuthen(isAuthenticated())
     }, []);
     useEffect(() => {
         if (adminData) {
             markAttendance()
         }
-
     }, [adminData]);
+
 
     const submit = async () => {
         try {
@@ -62,6 +64,7 @@ export default function PosLayout({ children }) {
                 description: 'ลงชื่อสำเร็จ'
             });
             router.refresh();
+            setIsAttendance(true)
         } catch (error) {
             console.error('Error marking attendance:', error);
             toast({
@@ -84,19 +87,22 @@ export default function PosLayout({ children }) {
 
                             <div className="flex items-center space-x-2">
 
-                                {isAttendance ? (
-                                    <div className="flex gap-2 items-end">
-                                        <span className="text-sm font-medium text-green-500">Attendance: Marked</span>
-                                    </div>
-                                ) : (
-                                    <Button type="submit" onClick={submit}>ลงชื่อ</Button>
+                                {isAuthen && (
+
+                                    isAttendance ? (
+                                        <div className="flex gap-2 items-end" >
+                                            <span className="text-sm font-medium text-green-500">Attendance: Marked</span>
+                                        </div>
+                                    ) : (
+                                        <Button type="submit" onClick={submit}>ลงชื่อ</Button>
+                                    )
                                 )}
 
 
-                                {adminData ? (
+                                {isAuthen ? (
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <Button className="rounded-lg">Hi {adminData.name}</Button>
+                                            <Button className="rounded-lg">Hi {adminData?.name}</Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-25">
                                             <Button

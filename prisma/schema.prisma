@@ -188,12 +188,15 @@ model OrderDetail {
   order     Order    @relation(fields: [orderId], references: [id])
   menu      Menu?    @relation(fields: [menuId], references: [id])
   menuset   MenuSet? @relation(fields: [menusetId], references: [id])
-  createdAt DateTime @default(now()) // Add createdAt field
+  createdAt DateTime @default(now())
+
+  @@unique([orderId, menuId, menusetId]) // Add unique constraint
 }
 
 enum PaymentMethod {
   Cash
   PayPal
+  QRCode
 }
 
 enum paymentStatus {
@@ -206,6 +209,7 @@ model Payment {
   id        Int           @id @default(autoincrement())
   orderId   Int           @unique
   amount    Float
+  imgQr     String?
   method    PaymentMethod @default(PayPal)
   status    paymentStatus @default(InComplete)
   order     Order         @relation(fields: [orderId], references: [id])

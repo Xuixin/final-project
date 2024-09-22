@@ -9,21 +9,9 @@ export async function GET(request, { params }) {
         const occupiedTables = await prisma.table.findMany({
             where: {
                 status: 'occupied',
-                orders: {
-                    some: {
-                        status: {
-                            in: ['InProgress', 'InQueue']
-                        }
-                    }
-                }
             },
             include: {
                 orders: {
-                    where: {
-                        status: {
-                            in: ['InProgress', 'InQueue']
-                        }
-                    },
                     include: {
                         customer: true,
                         orderDetails: {

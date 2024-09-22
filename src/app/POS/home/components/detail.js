@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchAdminInfo } from '@/lib/adminInfo'
 import axios from 'axios';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import Link from "next/link";
 
 
 export function Pos_details({ table, fetchAllTable }) {
@@ -93,7 +95,9 @@ export function Pos_details({ table, fetchAllTable }) {
                     <Separator className='mx-2' />
                     <CardContent className="p-6 text-sm min-h-96 flex flex-col">
                         <div className="flex items-center justify-center w-full mb-auto">
-                            <Button variant='link' className='underline'>Create new order for this table</Button>
+                            <Link href={`/POS/menu/${table.id}`}>
+                                <Button variant='link' className='underline'>Create new order for this table</Button>
+                            </Link>
                         </div>
 
                     </CardContent>
@@ -135,74 +139,87 @@ export function Pos_details({ table, fetchAllTable }) {
                             </span>
                         </CardDescription>
                     </div>
-                    <div className="ml-auto flex items-center gap-1">
+                    <div className="ml-auto flex flex-col items-center gap-1">
                         <h1>Table:
                             <span className="text-lg font-semibold">
                                 {table.table_NO}
                             </span>
                         </h1>
+                        <Link href={`/POS/menu/${table.id}`}>
+                            <Button>Update</Button>
+                        </Link>
                     </div>
                 </CardHeader>
                 <Separator className="mx-5" />
                 <CardContent className="p-6 text-sm min-h-80 flex flex-col">
                     <div className="grid gap-3">
                         <div className="font-semibold">Order Details</div>
-                        <ul className="grid gap-3 mb-auto">
-                            {table.order.normalMenu.map((menu) => (
-                                <li key={menu.id}>
-                                    <div className="grid items-center grid-cols-4 gap-2">
-                                        <h2 className="col-span-2">{menu.name}</h2>
-                                        <span>x {menu.quantity}</span>
-                                        <h2 className="text-end">RM {(menu.price * menu.quantity).toFixed(2)}</h2>
-                                    </div>
-                                </li>
-                            ))}
-
-                            {table.order.setMenu.map((set, index) => (
-                                <li key={set.id}>
-                                    <ul>
-                                        <div className="grid items-center grid-cols-2">
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <div className="flex" onClick={() => toggleSetMenu(index)}>
-                                                            <h2 className="text-md font-semibold">SET {index + 1}</h2>
-                                                            <span className="text-sm text-center">
-                                                                <ChevronDown size={16} />
-                                                            </span>
-                                                        </div>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>Set details</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                            <h2 className="text-end">RM {set.setPrice.toFixed(2)}</h2>
+                        <ScrollArea className='h-60 py-3 px-3 shadow-inner' style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                            <ul className="grid gap-3 mb-auto">
+                                {table.order.normalMenu.map((menu) => (
+                                    <li key={menu.id} className="flex items-center bg-gray-100 rounded-lg p-2 mb-2">
+                                        <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
+                                        <div className="flex flex-col flex-grow">
+                                            <h2 className="text-md font-semibold">{menu.name}</h2>
+                                            <h2 className="text-sm">RM {(menu.price * menu.quantity).toFixed(2)}</h2>
                                         </div>
-                                        <AnimatePresence>
-                                            {openSets.includes(index) && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: "auto", opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.3 }}
-                                                    className="flex flex-col pl-5"
-                                                >
-                                                    {set.details.map((menu) => (
-                                                        <li key={menu.id}>
-                                                            <div className="grid items-center grid-cols-2 gap-2">
-                                                                <h2>{menu.name}</h2>
-                                                                <span>x {menu.quantity}</span>
+                                        <div className="text-end flex flex-col items-center">
+                                            <h2 className="text-sm">QTY</h2>
+                                            <h2 className="font-semibold text-md">{menu.quantity}</h2>
+                                        </div>
+                                    </li>
+                                ))}
+
+                                {table.order.setMenu.map((set, index) => (
+                                    <li key={set.id}>
+                                        <ul>
+                                            <div className="grid items-center grid-cols-2">
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger>
+                                                            <div className="flex" onClick={() => toggleSetMenu(index)}>
+                                                                <h2 className="text-md font-semibold">SET {index + 1}</h2>
+                                                                <span className="text-sm text-center">
+                                                                    <ChevronDown size={16} />
+                                                                </span>
                                                             </div>
-                                                        </li>
-                                                    ))}
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </ul>
-                                </li>
-                            ))}
-                        </ul>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Set details</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                                <h2 className="text-end">RM {set.setPrice.toFixed(2)}</h2>
+                                            </div>
+                                            <AnimatePresence>
+                                                {openSets.includes(index) && (
+                                                    <motion.div
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: "auto", opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                        className="flex flex-col pl-5"
+                                                    >
+                                                        {set.details.map((menu) => (
+                                                            <li key={menu.id} className="flex items-center bg-gray-100 rounded-lg p-2 mb-2">
+                                                                <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
+                                                                <div className="flex flex-col flex-grow">
+                                                                    <h2 className="text-md font-semibold">{menu.name}</h2>
+                                                                </div>
+                                                                <div className="text-end flex flex-col items-center">
+                                                                    <h2 className="text-sm">QTY</h2>
+                                                                    <h2 className="font-semibold text-md">{menu.quantity}</h2>
+                                                                </div>
+                                                            </li>
+                                                        ))}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </ul>
+                                    </li>
+                                ))}
+                            </ul>
+                        </ScrollArea>
                     </div>
                     <div className='mt-auto'>
                         <Separator className="my-2" />
