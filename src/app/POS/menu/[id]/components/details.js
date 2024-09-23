@@ -203,7 +203,7 @@ export function Posmenu_details({ id }) {
                                                 <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
                                                 <div className="flex flex-col flex-grow">
                                                     <h2 className="text-sm font-semibold">{menu.name}</h2>
-                                                    <h2 className="text-md">RM {(menu.price * menu.quantity).toFixed(2)}</h2>
+                                                    <h2 className="text-md">RM {(menu.discountId ? (menu.price - menu.discount.discount) * menu.quantity : menu.price * menu.quantity).toFixed(2)}</h2>
                                                 </div>
                                                 <div className="text-end grid  justify-items-center">
                                                     <div className='flex gap-1 items-end'>

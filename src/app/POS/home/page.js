@@ -19,6 +19,8 @@ import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useToast } from '@/components/ui/use-toast'
+import { TakeAway } from './components/takeaway'
+import { Delivery } from './components/delivery'
 
 export default function PosPage() {
   const { toast } = useToast()
@@ -162,17 +164,10 @@ export default function PosPage() {
               variants={container}
               initial="hidden"
               animate="visible"
-              className="min-h-[70%] "
+              className="min-h-[70%] grid grid-cols-2 gap-4"
             >
-              <Card className='min-h-96'>
-                <CardHeader>
-                  <CardTitle>Takeaway</CardTitle>
-                </CardHeader>
-                <Separator />
-                <CardContent>
-                  test
-                </CardContent>
-              </Card>
+              <TakeAway />
+              <Delivery />
 
             </motion.div>
           </TabsContent>

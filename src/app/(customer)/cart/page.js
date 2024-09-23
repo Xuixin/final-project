@@ -35,7 +35,7 @@ export default function Cart() {
 
   const calculateTotal = () => {
     const cartTotal = cart.reduce(
-      (total, item) => total + item.quantity * item.price,
+      (total, item) => total + (item.discountId ? (item.price - item.discount.discount) * item.quantity : item.price * item.quantity),
       0
     )
     const cartSetTotal = cartSet.reduce(

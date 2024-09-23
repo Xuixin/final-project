@@ -7,6 +7,7 @@ export async function POST(req) {
         // รับข้อมูลจาก request
         const { items, itemsSet, totalPrice, status, source_id, table_id } = await req.json();
         console.log('totalPrice:', totalPrice);
+        console.log('item', items);
 
         // อัปเดตสถานะโต๊ะถ้าเป็น dine-in และมี table_id
         if (source_id === 2 && table_id) {

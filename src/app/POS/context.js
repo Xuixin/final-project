@@ -112,7 +112,6 @@ export function PosProvider({ children }) {
         setCartSet((prevCartSet) => prevCartSet.filter((item) => item.id !== itemId));
     };
 
-    // นับจำนวนสินค้าใน Cart ทั้งแบบปกติและ MenuSet
     const cartCount = () => {
         const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
         const cartSetCount = cartSet.reduce((total, item) => total + item.details.reduce((total, detail) => total + detail.quantity, 0), 0);
@@ -125,7 +124,7 @@ export function PosProvider({ children }) {
     };
 
     const calculateTotalPrice = () => {
-        const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const cartTotal = cart.reduce((total, item) => total + (item.discountId ? (item.price - item.discount.discount) * item.quantity : item.price * item.quantity), 0);
         const cartSetTotal = cartSet.reduce((total, item) => total + item.price, 0);
         return cartTotal + cartSetTotal;
     };

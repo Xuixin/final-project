@@ -90,7 +90,7 @@ export function Menu() {
         <div className='mb-4 flex items-center'>
           <Button
             onClick={() => setSelectedCategory(null)}
-            className={`rounded-full`}
+            className={`rounded-full shadow-lg`}
             variant={selectedCategory ? 'outline' : ''}
           >
             All Categories
@@ -99,7 +99,7 @@ export function Menu() {
             <Button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`ml-2 rounded-full`}
+              className={`ml-2 rounded-full shadow-md`}
               variant={selectedCategory === category.id ? '' : 'outline'}
             >
               {category.name}
@@ -124,8 +124,8 @@ export function Menu() {
                       key={category.id}
                       onClick={() => handleCategorySwap(category)} // เรียกใช้ฟังก์ชันสลับหมวดหมู่
                       className={`block px-4 py-2 text-left w-full ${selectedCategory === category.id
-                          ? 'bg-blue-500 text-white'
-                          : ''
+                        ? 'bg-blue-500 text-white'
+                        : ''
                         }`}
                       variant='ghost'
                     >
@@ -164,7 +164,7 @@ export function Menu() {
                 return (
                   <div
                     key={item.id}
-                    className='border rounded pb-4 px-4 py-2'
+                    className='border rounded pb-4 px-4 py-2 shadow-sm'
                   >
                     <div className='relative w-full h-36'>
                       <Image
