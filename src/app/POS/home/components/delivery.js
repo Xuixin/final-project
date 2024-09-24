@@ -24,7 +24,7 @@ const OrderRow = ({ order, renderButton, onCheckboxChange, isSelected }) => (
         </TableCell>
         <TableCell>#{order.id}</TableCell>
         <TableCell>{order.customer.email}</TableCell>
-        <TableCell>{order.quantity}</TableCell>
+        <TableCell className='text-center'>{order.quantity}</TableCell>
         <TableCell>{renderButton(order.status)}</TableCell>
     </TableRow>
 );
@@ -141,17 +141,17 @@ export function Delivery() {
                 ) : (
                     <ScrollArea className='h-72 w-full shadow-inner mt-1'>
                         <Table>
-                            <TableHeader className='bg-primary-foreground'>
+                            <TableHeader className='bg-primary text-white'>
                                 <TableHead>
                                     <Checkbox
                                         checked={selectedOrders.length === orders.filter(order => order.status === 'Finished').length}
                                         onCheckedChange={handleSelectAll}
                                     />
                                 </TableHead>
-                                <TableHead>#ID</TableHead>
-                                <TableHead>Customer</TableHead>
-                                <TableHead>Quantity</TableHead>
-                                <TableHead>State</TableHead>
+                                <TableHead className='text-white'>#ID</TableHead>
+                                <TableHead className='text-white'>Customer</TableHead>
+                                <TableHead className='text-white'>Quantity</TableHead>
+                                <TableHead className='text-white text-center'>State</TableHead>
                             </TableHeader>
                             <TableBody>
                                 {orders.map((od) => (
