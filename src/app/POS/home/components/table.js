@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 
-export function Table({ Tabletype, setSelectedTable }) {
+export function Table({ Tabletype, setSelectedTable, pay }) {
     return (
         <div className='w-full grid grid-cols-5 p-5 gap-4'>
             {Tabletype.map((table) => {
@@ -14,7 +14,10 @@ export function Table({ Tabletype, setSelectedTable }) {
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.3 }}
                         className='relative h-24 w-full cursor-pointer'
-                        onClick={() => setSelectedTable(table)}
+                        onClick={() => {
+                            setSelectedTable(table)
+                            pay(null)
+                        }}
                     >
                         <Image
                             src={imageSrc}

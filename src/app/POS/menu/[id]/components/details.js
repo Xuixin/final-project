@@ -54,9 +54,9 @@ export function Posmenu_details({ id }) {
         setIsLoading(true);
         try {
             const response = await axios.get(`/api/table/${id}`);
-            console.log(response.data);
+            console.log('res', response.data);
             // เช็คว่า orders มีอยู่ใน response หรือไม่
-            if (response.data.orders.status != 'available') {
+            if (response.data.status != 'available') {
                 setTable(response.data);
                 setType(OrderTypes.EXISTING_MENU);
             } else {

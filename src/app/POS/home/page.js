@@ -13,21 +13,25 @@ import { Loader2 } from 'lucide-react'
 import { Pos_details } from './components/detail'
 import { Table } from './components/table'
 import { container, item } from './components/motion'
+import { TakeAway } from './components/takeaway'
+import { Delivery } from './components/delivery'
+import { Queue } from './components/queue'
+import { Pay } from './components/pay'
 
 //import next
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useToast } from '@/components/ui/use-toast'
-import { TakeAway } from './components/takeaway'
-import { Delivery } from './components/delivery'
+
 
 export default function PosPage() {
   const { toast } = useToast()
   const [selectedOrder, setSelectedOrder] = useState(null)
-  const [newTableNO, setNewTableNO] = useState('') // จัดการกับ table_NO
-  const [newTableType, setNewTableType] = useState('inside') // จัดการกับ type
-  const [allTable, setAllTable] = useState({ inside: [], outside: [] }) // กำหนดค่าเริ่มต้น
+  const [selectedOrderToPay, setSelectedOrderToPay] = useState(null)
+  const [newTableNO, setNewTableNO] = useState('')
+  const [newTableType, setNewTableType] = useState('inside')
+  const [allTable, setAllTable] = useState({ inside: [], outside: [] })
   const [isLoading, setIsLoading] = useState(false)
 
   const fetchAlltable = async () => {
@@ -50,6 +54,10 @@ export default function PosPage() {
   useEffect(() => {
     console.log("selectedOrder", selectedOrder);
   }, [selectedOrder])
+
+  useEffect(() => {
+    console.log("selectedOrderToPay", selectedOrderToPay);
+  }, [selectedOrderToPay])
 
   // ฟังก์ชันสำหรับเพิ่มโต๊ะ
   const addTable = async (e) => {
@@ -85,7 +93,7 @@ export default function PosPage() {
             <TabsList>
               <TabsTrigger value='inside'>Inside</TabsTrigger>
               <TabsTrigger value='outside'>Outside</TabsTrigger>
-              <TabsTrigger value='takeaway'>Takeaway</TabsTrigger>
+              <TabsTrigger value='takeaway' onClick={() => setSelectedOrder(null)}>Takeaway</TabsTrigger>
             </TabsList>
 
             <form onSubmit={addTable}>
@@ -135,7 +143,7 @@ export default function PosPage() {
               <Card className='min-h-[70%]'>
                 <CardContent>
                   {allTable?.inside && (
-                    <Table Tabletype={allTable.inside} setSelectedTable={setSelectedOrder} />
+                    <Table Tabletype={allTable.inside} setSelectedTable={setSelectedOrder} pay={setSelectedOrderToPay} />
                   )}
                 </CardContent>
               </Card>
@@ -152,7 +160,7 @@ export default function PosPage() {
               <Card className='min-h-[70%]'>
                 <CardContent>
                   {allTable?.outside && (
-                    <Table Tabletype={allTable.outside} setSelectedTable={setSelectedOrder} />
+                    <Table Tabletype={allTable.outside} setSelectedTable={setSelectedOrder} pay={setSelectedOrderToPay} />
                   )}
                 </CardContent>
               </Card>
@@ -166,7 +174,7 @@ export default function PosPage() {
               animate="visible"
               className="min-h-[70%] grid grid-cols-2 gap-4"
             >
-              <TakeAway />
+              <TakeAway pay={setSelectedOrderToPay} order={setSelectedOrder} />
               <Delivery />
 
             </motion.div>
@@ -183,7 +191,17 @@ export default function PosPage() {
             ease: "easeInOut"
           }}
         >
-          <Pos_details table={selectedOrder} fetchAllTable={fetchAlltable} />
+
+          {selectedOrderToPay ? (
+            <Pay order={selectedOrderToPay} setOrder={setSelectedOrderToPay} setQueue={setSelectedOrder} fetchAllTable={fetchAlltable} />
+          ) : (
+            selectedOrder ? (
+              <Pos_details table={selectedOrder} fetchAllTable={fetchAlltable} pay={setSelectedOrderToPay} order={setSelectedOrder} />
+            ) : (
+              <Queue />
+            )
+          )}
+
         </motion.div>
       </div>
     </section>

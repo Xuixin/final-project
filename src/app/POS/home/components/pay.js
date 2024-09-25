@@ -1,8 +1,14 @@
+'use client'
+import { fetchAdminInfo } from "@/lib/adminInfo";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from 'axios';
 import {
-    CircleAlert,
-    ChevronDown,
-    Loader2
-} from "lucide-react";
+    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from "@/components/ui/table";
+import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
     Tooltip,
@@ -10,55 +16,19 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { CircleAlert, Banknote, QrCode, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { fetchAdminInfo } from '@/lib/adminInfo'
-import axios from 'axios';
-import { ScrollArea } from "@/components/ui/scroll-area";
-import Link from "next/link";
 
-
-export function Pos_details({ table, fetchAllTable, pay, order }) {
-    const { toast } = useToast()
-    // State to control the opening/closing of setMenu
+export function Pay({ order, setOrder, setQueue, fetchAllTable }) {
+    const { toast } = useToast();
     const [openSets, setOpenSets] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
+    const [orders, setOrders] = useState([]);
+    const [isHydrated, setIsHydrated] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('Cash')
+    const [emp, setemp] = useState(null)
 
-    const cancelOrder = async (table) => {
-        setIsLoading(true)
-        try {
-            const admin = await fetchAdminInfo()
-            // เปลี่ยนเป็น order.orderId ถ้าจำเป็น
-            await axios.post(`/api/order/cancel`,
-                {
-                    orderId: table.order.orderId,
-                    empId: admin.id
-                }
-            );
-            toast({
-                variant: "success",
-                title: "Order canceled successfully",
-                description: "Order will be removed from the table",
-            });
-            fetchAllTable();
-        } catch (error) {
-            console.error(error.response || error);
-            toast({
-                variant: "destructive",
-                title: "Error canceling order",
-                description: "Failed to cancel the order",
-            });
-        } finally {
-            setIsLoading(false)
-        }
-    };
 
-    if (!table) return null;
-
-    // Toggle function for setMenu by index
     const toggleSetMenu = (index) => {
         setOpenSets((prevState) => {
             if (prevState.includes(index)) {
@@ -69,52 +39,45 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
         });
     };
 
-    if (table.status === 'available') {
-        return (
-            <motion.div
-                key={table.id}
-                initial={{ scale: 0, x: -100 }}
-                animate={{ scale: 1, x: 0 }}
-                transition={{
-                    type: "spring",
-                    bounce: 0.3,
-                    duration: 0.4,
-                }}
-            >
-                <Card className="overflow-hidden">
-                    <CardHeader className="flex flex-col items-start">
-                        <div className="grid gap-0.5">
-                            <CardTitle className="group flex items-center gap-2 text-lg">
-                                Order #
-                            </CardTitle>
-                        </div>
-                        <div className="ml-auto flex items-center gap-1">
-                            Table: {table.table_NO}
-                        </div>
-                    </CardHeader>
-                    <Separator className='mx-2' />
-                    <CardContent className="p-6 text-sm min-h-96 flex flex-col">
-                        <div className="flex items-center justify-center w-full mb-auto">
-                            <Link href={`/POS/menu/${table.id}`}>
-                                <Button variant='link' className='underline'>Create new order for this table</Button>
-                            </Link>
-                        </div>
+    useEffect(() => {
+        setIsHydrated(true); // Set as hydrated after mount
+        const fetchAdmin = async () => {
+            const data = await fetchAdminInfo();
+            setemp(data);
+        }
 
-                    </CardContent>
+        fetchAdmin();
+        setOrders(order)
+    }, [order]);
 
-                    <CardFooter className="flex flex-row items-center justify-end border-t bg-muted/50 px-6 py-3">
-                        <span className="bg-red-500 rounded-full">
-                            <CircleAlert color="#ffffff" absoluteStrokeWidth />
-                        </span>
-                    </CardFooter>
-                </Card>
-            </motion.div>
-        );
+    useEffect(() => {
+        console.log('emp', emp);
+    }, [emp]);
+
+    if (!isHydrated) {
+        // Avoid rendering mismatch during server-side rendering
+        return null;
+    }
+
+    const onPay = async () => {
+        setIsLoading(true);
+
+        try {
+            await axios.post(`/api/payment/${order.orderId}`, { order, paymentMethod, emp: emp.id });
+            toast({ variant: 'success', title: 'Payment successful', description: 'Thank you for your payment.' });
+            setOrder(null);
+            setQueue(null);
+            fetchAllTable()
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Payment failed', description: error.message });
+        } finally {
+            setPaymentMethod('Cash')
+            setIsLoading(false)
+        }
     }
 
     return (
         <motion.div
-            key={table.id}
             initial={{ opacity: 0, scale: 0, x: -100 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{
@@ -124,39 +87,55 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
             }}
         >
             <Card className="overflow-hidden">
-                <CardHeader className="flex flex-row items-start">
+                <CardHeader className="flex flex-cols items-start">
                     <div className="grid gap-0.5">
                         <CardTitle className="group flex items-center gap-2 text-lg">
-                            Order {table.order.orderId}
+                            Bill
                         </CardTitle>
-                        <CardDescription>
-                            Type: {table.type}
-                        </CardDescription>
-                        <CardDescription>
-                            Status :
-                            <span className='text-xl font-bold'>
-                                {table.order.status}
-                            </span>
-                        </CardDescription>
                     </div>
-                    <div className="ml-auto flex flex-col items-center gap-1">
-                        <h1>Table:
-                            <span className="text-lg font-semibold">
-                                {table.table_NO}
-                            </span>
-                        </h1>
-                        <Link href={`/POS/menu/${table.id}`}>
-                            <Button>Update</Button>
-                        </Link>
-                    </div>
+                    <CardDescription>
+                        {order.source == 3 ? (
+                            <span className="text-red-500">Takeaway Payment</span>
+                        ) : (
+                            < span className="text-blue-500">Table : {order.table_NO}</span>
+                        )}
+                    </CardDescription>
                 </CardHeader>
-                <Separator className="mx-5" />
+                <Separator className="mx-2" />
                 <CardContent className="p-6 text-sm min-h-80 flex flex-col">
                     <div className="grid gap-3">
-                        <div className="font-semibold">Order Details</div>
-                        <ScrollArea className='h-60 py-3 px-3 shadow-inner' style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                        <div className='space-x-3 flex'>
+                            <motion.button
+                                whileTap={{ scale: 0.7 }}
+                                transition={{ type: "spring", damping: 10 }}
+                                onClick={() => setPaymentMethod('Cash')} // ตั้ง payment method
+                                className={`rounded-lg flex flex-col justify-center text-sm font-semibold px-5 py-2 transition-colors duration-300 ease-in-out ${paymentMethod === 'Cash' ? 'bg-primary text-white' : 'border border-primary text-primary'}`}
+                            >
+                                <span className="flex justify-center pl-1">
+                                    <Banknote />
+                                </span>
+                                Cash
+                            </motion.button>
+
+                            <motion.button
+                                whileTap={{ scale: 0.7 }}
+                                transition={{ type: "spring", damping: 10 }}
+                                onClick={() => setPaymentMethod('QRCode')} // ตั้ง payment method
+                                className={`rounded-lg flex flex-col justify-center text-sm font-semibold px-5 py-2 transition-colors duration-300 ease-in-out ${paymentMethod === 'QRCode' ? 'bg-primary text-white' : 'border border-primary text-primary'}`}
+                            >
+                                <span className="flex justify-center pl-3">
+                                    <QrCode />
+                                </span>
+                                QRCode
+                            </motion.button>
+
+
+
+                        </div>
+
+                        <ScrollArea className='h-40 py-3 px-3 shadow-inner' >
                             <ul className="grid gap-3 mb-auto">
-                                {table.order.normalMenu.map((menu) => (
+                                {orders.normalMenu.map((menu) => (
                                     <li key={menu.id} className="flex items-center bg-gray-100 rounded-lg p-2 mb-2">
                                         <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
                                         <div className="flex flex-col flex-grow">
@@ -170,7 +149,7 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                                     </li>
                                 ))}
 
-                                {table.order.setMenu.map((set, index) => (
+                                {orders.setMenu.map((set, index) => (
                                     <li key={set.id}>
                                         <ul>
                                             <div className="grid items-center grid-cols-2">
@@ -219,38 +198,27 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                                     </li>
                                 ))}
                             </ul>
+
                         </ScrollArea>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between items-center my-3">
+                        <p className='text-lg font-semibold'>Total</p>
+                        <p className='text-md font-semibold'>
+                            RM
+                            <span className="text-lg">
+                                {orders.totalPrice.toFixed(2)}
+                            </span>
+                        </p>
                     </div>
                     <div className='mt-auto'>
                         <Separator className="my-2" />
-                        <ul className="grid gap-3">
-                            <li className="flex items-center justify-between font-semibold">
-                                <span className="text-muted-foreground">Total</span>
-                                <span>RM {table.order.totalPrice.toFixed(2)}</span>
-                            </li>
-                        </ul>
                     </div>
-                    <Separator className='mx-2 my-2' />
-                    <div className="flex items-center justify-end w-full space-x-2">
-                        <Button variant='outline' disabled={table.order.status === 'Inprogress'} className='flex-1' onClick={() => cancelOrder(table)}>
-                            {
-                                isLoading ? (
-                                    <>
-                                        Canceling
-                                        <span className='mx-1'>< Loader2 className="mr-2 h-4 w-4 animate-spin" /></span>
-                                    </>
-                                ) : (
-                                    'cancel order'
-                                )}
-                        </Button>
-                        <Button className='flex-1' onClick={() => {
-                            pay(table.order)
-                            order(null)
-                        }}>
-                            Pay
+                    <div className='flex-1'>
+                        <Button className='w-full' onClick={onPay} disabled={isLoading}>
+                            {isLoading ? 'Paying..' : 'Pay'}
                         </Button>
                     </div>
-
                 </CardContent>
                 <CardFooter className="flex flex-row items-center justify-end border-t bg-muted/50 px-6 py-3">
                     <span className="bg-red-500 rounded-full">
@@ -258,7 +226,6 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                     </span>
                 </CardFooter>
             </Card>
-        </motion.div>
-
+        </motion.div >
     );
 }

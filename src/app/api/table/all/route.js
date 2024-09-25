@@ -104,6 +104,9 @@ export async function GET(request, { params }) {
                     orderId: ordersForTable.orders[0]?.id,
                     status: ordersForTable.orders[0]?.status,
                     totalPrice: ordersForTable.orders[0]?.totalPrice,
+                    source: ordersForTable.orders[0]?.order_sourceId,
+                    table_NO: ordersForTable.table_NO,
+                    tableId: ordersForTable.id,
                     normalMenu,
                     setMenu
                 } : { status: 'available' }

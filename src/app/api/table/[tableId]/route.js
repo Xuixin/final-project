@@ -83,18 +83,21 @@ export async function GET(request, { params }) {
         }
 
         // สร้าง order object
-        const orderData = response.orders.length > 0 ? {
-            orderId: response.orders[0].id,
-            status: response.orders[0].status,
-            quantity: response.orders[0].quantity,
-            totalPrice: response.orders[0].totalPrice,
-            normalMenu,
-            setMenu,
-        } : { status: 'available' };
+        const orderData = response.status === 'available' ?
+            { status: 'available' } : response.orders.length > 0 && {
+                orderId: response.orders[0].id,
+                status: response.orders[0].status,
+                type: response.orders[0].order_sourceId,
+                quantity: response.orders[0].quantity,
+                totalPrice: response.orders[0].totalPrice,
+                normalMenu,
+                setMenu,
+            };
 
         // ส่งกลับข้อมูล
+        const { orders, ...resorder } = response
         return new Response(JSON.stringify({
-            ...response,
+            ...resorder,
             orders: orderData,
         }), { status: 200 });
 

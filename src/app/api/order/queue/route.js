@@ -7,15 +7,8 @@ export async function GET() {
         const orders = await prisma.order.findMany({
             where: {
                 status: {
-                    not: 'Cancelled',
+                    in: ['InQueue', 'InProgress'],
                 },
-                orderSource: {
-                    id: 3
-                },
-                payment: {
-                    is: null
-                }
-
                 // createdAt: {
                 //   gte: today, // เฉพาะคำสั่งซื้อที่ถูกสร้างในวันนี้
                 // },
@@ -39,10 +32,12 @@ export async function GET() {
                         },
                     },
                 },
+                orderSource: true,
             },
-            orderBy: {
-                createdAt: 'asc',
-            },
+            orderBy: [
+                { status: 'desc' },  // เรียงลำดับตามสถานะ InQueue ก่อน, InProgress หลัง
+                { createdAt: 'asc' } // เรียงตามวันที่สร้าง (จากเก่าสุดไปใหม่สุด)
+            ],
         });
 
         // สร้าง orders ใหม่ที่มี normalMenu และ setMenu โดยไม่รวม orderDetails
@@ -94,8 +89,6 @@ export async function GET() {
             const { orderDetails, ...restOrder } = order;
             return {
                 ...restOrder,
-                source: restOrder.order_sourceId,
-                orderId: restOrder.id,
                 normalMenu,
                 setMenu,
             };

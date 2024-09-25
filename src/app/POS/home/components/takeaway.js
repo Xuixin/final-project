@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 
 // import ui
-import { Loader2, PackageOpen } from "lucide-react";
+import { Loader2, PackageOpen, PartyPopper } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
@@ -22,7 +22,7 @@ const OrderRow = ({ order, renderButton, }) => (
     </TableRow >
 );
 
-export function TakeAway() {
+export function TakeAway({ pay, order }) {
     const { toast } = useToast()
     const [isLoading, setIsLoading] = useState(false)
     const [ordersTakeAway, setOrderTakeAway] = useState([])
@@ -62,8 +62,8 @@ export function TakeAway() {
                         </div>
                     </div>
                 ) : (
-                    <ScrollArea className='h-72 w-full shadow-inner mt-1'>
-                        <Table>
+                    <ScrollArea className='h-72 w-full rounded-lg mt-1'>
+                        <Table className='rounded-lg'>
                             <TableHeader className='bg-primary rounded-lg'>
                                 <TableHead className='text-white'>#ID</TableHead>
                                 <TableHead className='text-white'>Quantity</TableHead>
@@ -75,11 +75,14 @@ export function TakeAway() {
                                         key={od.id}
                                         order={od}
                                         renderButton={od.status === 'Finished' ? (
-                                            <Button variant='success' disabled>
+                                            <Button variant='success' onClick={() => {
+                                                pay(od)
+                                                order(null)
+                                            }} >
                                                 Pay
                                             </Button>
                                         ) : (
-                                            <Button variant='secondary'>
+                                            <Button variant='secondary' disabled>
                                                 {od.status}
                                             </Button>
                                         )}
