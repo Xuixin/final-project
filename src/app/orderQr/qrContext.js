@@ -9,6 +9,7 @@ export function QRProvider({ children }) {
     useEffect(() => {
         console.log("cart", cart);
         console.log("cartSet|", cartSet)
+        console.log('count', cartCount());
     }, [cart, cartSet]);
 
     const addToCart = (item) => {

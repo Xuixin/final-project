@@ -42,6 +42,10 @@ export default function OrderTablePage() {
         fetchAllTable();
     }, []);
 
+    useEffect(() => {
+        console.log('qrCodeUrl', qrCodeUrl);
+    }, [qrCodeUrl])
+
     const generateQRCode = async (tableId) => {
         try {
             const url = await QRCode.toDataURL(`${process.env.NEXT_PUBLIC_WEB_URL}/orderQr/${tableId}`);
@@ -81,35 +85,40 @@ export default function OrderTablePage() {
                                             {tb.table_NO}
                                         </motion.button>
                                     </DialogTrigger>
+
                                     <DialogContent className="sm:max-w-md">
-                                        <div className="flex items-center space-x-2">
-                                            <DialogContent className="sm:max-w-[425px]">
-                                                <DialogHeader>
-                                                    <DialogTitle>QR Code for Table {tb.table_NO}</DialogTitle>
-                                                </DialogHeader>
-                                                <div className='w-full flex justify-center items-center'>
-                                                    {qrCodeUrl ? (
-                                                        <Image src={qrCodeUrl} alt={`QR Code for table ${tb.table_NO}`} width={200} height={200} />
-                                                    ) : (
-                                                        <p>Generating QR Code...</p>
-                                                    )}
-                                                </div>
-                                                <DialogFooter>
-                                                    <Button onClick={() => window.open(qrCodeUrl, '_blank')}>Go To Path</Button>
-                                                </DialogFooter>
-                                            </DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>QR Code for Table {tb.table_NO}</DialogTitle>
+                                            {/* Add DialogDescription for accessibility */}
+                                            <DialogDescription>
+                                                Scan this QR code or use the button below to access the table's order page.
+                                            </DialogDescription>
+                                        </DialogHeader>
 
-
+                                        <div className='w-full flex justify-center items-center'>
+                                            {qrCodeUrl ? (
+                                                <Image src={qrCodeUrl} alt={`QR Code for table ${tb.table_NO}`} width={200} height={200} />
+                                            ) : (
+                                                <p>Generating QR Code...</p>
+                                            )}
                                         </div>
+
+                                        <DialogFooter>
+                                            <Button onClick={() => window.open(`${process.env.NEXT_PUBLIC_WEB_URL}/orderQr/${tb.id}`, '_blank')}>
+                                                Go To Path
+                                            </Button>
+                                        </DialogFooter>
+
                                         <DialogFooter className="sm:justify-start">
                                             <DialogClose asChild>
-                                                <Button type="button" variant="secondary" >
+                                                <Button type="button" variant="secondary">
                                                     Close
                                                 </Button>
                                             </DialogClose>
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
+
 
                             ))}
                         </div>
@@ -131,26 +140,30 @@ export default function OrderTablePage() {
                                             {tb.table_NO}
                                         </motion.button>
                                     </DialogTrigger>
+
                                     <DialogContent className="sm:max-w-md">
-                                        <div className="flex items-center space-x-2">
-                                            <DialogContent className="sm:max-w-[425px]">
-                                                <DialogHeader>
-                                                    <DialogTitle>QR Code for Table {tb.table_NO}</DialogTitle>
-                                                </DialogHeader>
-                                                <div className='w-full flex justify-center items-center'>
-                                                    {qrCodeUrl ? (
-                                                        <Image src={qrCodeUrl} alt={`QR Code for table ${tb.table_NO}`} width={200} height={200} />
-                                                    ) : (
-                                                        <p>Generating QR Code...</p>
-                                                    )}
-                                                </div>
-                                                <DialogFooter>
-                                                    <Button onClick={() => window.open(qrCodeUrl, '_blank')}>Go To Path</Button>
-                                                </DialogFooter>
-                                            </DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>QR Code for Table {tb.table_NO}</DialogTitle>
+                                            {/* Add DialogDescription for accessibility */}
+                                            <DialogDescription>
+                                                Scan this QR code or use the button below to access the table's order page.
+                                            </DialogDescription>
+                                        </DialogHeader>
 
-
+                                        <div className='w-full flex justify-center items-center'>
+                                            {qrCodeUrl ? (
+                                                <Image src={qrCodeUrl} alt={`QR Code for table ${tb.table_NO}`} width={200} height={200} />
+                                            ) : (
+                                                <p>Generating QR Code...</p>
+                                            )}
                                         </div>
+
+                                        <DialogFooter>
+                                            <Button onClick={() => window.open(`${process.env.NEXT_PUBLIC_WEB_URL}/orderQr/${tb.id}`, '_blank')}>
+                                                Go To Path
+                                            </Button>
+                                        </DialogFooter>
+
                                         <DialogFooter className="sm:justify-start">
                                             <DialogClose asChild>
                                                 <Button type="button" variant="secondary">
@@ -160,6 +173,7 @@ export default function OrderTablePage() {
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
+
 
 
                             ))}
