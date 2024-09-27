@@ -80,10 +80,12 @@ export default function OrderTablePage() {
                                             transition={{ type: 'spring', damping: 10 }}
                                             onClick={() => generateQRCode(tb.id)} // Only open the dialog after clicking
                                             key={tb.id}
-                                            className='w-16 h-16 flex justify-center items-center text-white text-xl font-bold bg-blue-500 rounded-lg hover:bg-blue-600 cursor-pointer'
+                                            className={`w-16 h-16 flex justify-center items-center text-xl font-bold rounded-lg cursor-pointer 
+    ${tb.status === 'available' ? 'outline outline-primary text-primary' : 'bg-primary text-white'} hover:bg-blue-600`}
                                         >
                                             {tb.table_NO}
                                         </motion.button>
+
                                     </DialogTrigger>
 
                                     <DialogContent className="sm:max-w-md">
@@ -135,7 +137,8 @@ export default function OrderTablePage() {
                                             transition={{ type: 'spring', damping: 10 }}
                                             onClick={() => generateQRCode(tb.id)} // Only open the dialog after clicking
                                             key={tb.id}
-                                            className='w-16 h-16 flex justify-center items-center text-white text-xl font-bold bg-blue-500 rounded-lg hover:bg-blue-600 cursor-pointer'
+                                            className={`w-16 h-16 flex justify-center items-center text-xl font-bold rounded-lg cursor-pointer 
+    ${tb.status === 'available' ? 'outline outline-primary text-primary' : 'bg-primary text-white'} hover:bg-blue-600`}
                                         >
                                             {tb.table_NO}
                                         </motion.button>
@@ -181,6 +184,6 @@ export default function OrderTablePage() {
                     </TabsContent>
                 </Tabs>
             </section>
-        </main>
+        </main >
     );
 }

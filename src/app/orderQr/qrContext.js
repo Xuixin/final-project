@@ -80,6 +80,7 @@ export function QRProvider({ children }) {
             } else {
                 newCartSet.push({
                     ...item,
+                    quantity: 1,
                     totalMenu: item.details.reduce(
                         (total, detail) => total + detail.quantity,
                         0
