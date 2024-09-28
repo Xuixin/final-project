@@ -58,7 +58,7 @@ export function CartPage({ setPage, tableId }) {
         setPage('order')
     }
     return (
-        <section className='w-full bg-secondary rounded-b-lg mb-5 py-5 space-y-5'>
+        <section className='w-full bg-secondary rounded-b-lg mb-5 py-5 space-y-5 bg-white '>
             <div className='w-full flex justify-between items-center px-3 mb-5'>
                 {/* Category selection */}
                 <Button className='rounded-full p-3 relative' onClick={() => setPage('menu')}>
@@ -181,7 +181,7 @@ export function CartPage({ setPage, tableId }) {
                 </ul>
 
             </ScrollArea>
-            <Button className={`rounded-2xl w-full `} onClick={() => onsubmit()}>submit order</Button>
+            <Button className={`rounded-2xl w-full my-5 sticky`} onClick={() => onsubmit()}>submit order</Button>
         </section>
     )
 }

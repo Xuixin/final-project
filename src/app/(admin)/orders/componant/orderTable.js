@@ -102,16 +102,34 @@ export function OrderTable({ orders, onSelectOrder }) {
                                             {order.status}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="hidden md:table-cell">
-                                        <Badge className="text-xs" variant={paymentBg(order.payment.status)}>
-                                            {order.payment.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="hidden sm:table-cell">
-                                        <Badge className="text-xs" variant={shippingBg(order.shipping?.status)}>
-                                            {order.shipping?.status}
-                                        </Badge>
-                                    </TableCell>
+                                    {order.payment?.status ? (
+                                        <TableCell className="hidden md:table-cell">
+                                            <Badge className="text-xs" variant={paymentBg(order.payment.status)}>
+                                                {order.payment.status}
+                                            </Badge>
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell className="hidden md:table-cell">
+                                            <Badge className="text-xs" variant={'warning'}>
+                                                InComplete
+                                            </Badge>
+                                        </TableCell>
+                                    )}
+                                    {order.orderSource.id !== 1 ? (
+                                        <TableCell >
+                                            <Badge className="text-xs" variant={'destructive'}>
+                                                not online
+                                            </Badge>
+                                        </TableCell>
+
+                                    ) : (
+
+                                        <TableCell className="hidden sm:table-cell">
+                                            <Badge className="text-xs" variant={shippingBg(order.shipping?.status)}>
+                                                {order.shipping?.status ? order.shipping?.status : ''}
+                                            </Badge>
+                                        </TableCell>
+                                    )}
 
                                     <TableCell className="text-right">RM {order.totalPrice.toFixed(2)}</TableCell>
                                 </TableRow>

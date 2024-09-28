@@ -64,34 +64,34 @@ export function Details_order({ order, fetchOrders }) {
 
     return (
         <Card className="overflow-hidden">
-            <CardHeader className={`flex flex-row items-start ${headerGb(order.shipping.status)}`}>
-                <div className={`grid gap-0.5 ${textColor(order.shipping.status)}`}>
+            <CardHeader className={`flex flex-row items-start ${headerGb(order.shipping?.status || '')}`}>
+                <div className={`grid gap-0.5 ${textColor(order.shipping?.status || '')}`}>
                     <CardTitle className={`group flex items-center gap-2 text-lg`}>
                         Order {order.id}
                     </CardTitle>
-                    <CardDescription className={`${textColor(order.shipping.status)}`}>Date: {new Date(order.createdAt).toLocaleDateString()}</CardDescription>
+                    <CardDescription className={`${textColor(order.shipping?.status || '')}`}>Date: {new Date(order.createdAt).toLocaleDateString()}</CardDescription>
                 </div>
-                <div className="ml-auto flex items-center gap-1">
-                    {order.shipping.status != 'Cancelled' && (
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button
-                                    size="sm"
-                                    variant={'outline'}
-                                    className={`h-8 gap-1 relative`}
-                                    disabled={order.shipping.status === 'Delivered' || order.shipping.status === 'Shipped'}
-                                >
-                                    <Truck className={`h-3.5 w-3.5`} />
-                                    {order.shipping.status !== 'Pending' && <Check className="text-green-500 absolute right-0" strokeWidth={3} />}
-                                </Button>
+                {order.orderSource.id === 1 && (
+                    <div className="ml-auto flex items-center gap-1">
+                        {order.shipping.status != 'Cancelled' && (
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        size="sm"
+                                        variant={'outline'}
+                                        className={`h-8 gap-1 relative`}
+                                        disabled={order.shipping?.status === 'Delivered' || order.shipping.status === 'Shipped'}
+                                    >
+                                        <Truck className={`h-3.5 w-3.5`} />
+                                        {order.shipping.status !== 'Pending' && <Check className="text-green-500 absolute right-0" strokeWidth={3} />}
+                                    </Button>
 
-                            </DialogTrigger>
-                            <Shipping orderId={order.id} fetchOrders={fetchOrders} />
-                        </Dialog>
-                    )}
-
-
-                </div>
+                                </DialogTrigger>
+                                <Shipping orderId={order.id} fetchOrders={fetchOrders} />
+                            </Dialog>
+                        )}
+                    </div>
+                )}
             </CardHeader>
             <CardContent className="p-6 text-sm">
                 <div className="grid gap-3">
@@ -145,39 +145,41 @@ export function Details_order({ order, fetchOrders }) {
                     </ul>
                 </div>
                 <Separator className="my-4" />
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-3">
-                        <div className="font-semibold">Shipping Information</div>
-                        <address className="grid gap-0.5 not-italic">
-                            Address
-                            <span className="text-muted-foreground">{order.customer.address || 'test'}</span>
-                        </address>
-                    </div>
-                </div>
-                <Separator className="my-4" />
-
                 {order.orderSource.id === 1 && (
-                    <div className="grid gap-3">
-                        <div className="font-semibold">Customer Information</div>
-                        <dl className="grid gap-3">
-                            <div className="flex items-center justify-between">
-                                <dt className="text-muted-foreground">Customer</dt>
-                                <dd>{order.customer.name} {order.customer.lastname}</dd>
+                    <>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-3">
+                                <div className="font-semibold">Shipping Information</div>
+                                <address className="grid gap-0.5 not-italic">
+                                    Address
+                                    <span className="text-muted-foreground">{order.customer.address || 'test'}</span>
+                                </address>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <dt className="text-muted-foreground">Email</dt>
-                                <dd>
-                                    <a href={`mailto:${order.customer.email}`}>{order.customer.email}</a>
-                                </dd>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <dt className="text-muted-foreground">Phone</dt>
-                                <dd>
-                                    <a href={`tel:${order.customer.tel}`}>{order.customer.tel}</a>
-                                </dd>
-                            </div>
-                        </dl>
-                    </div>
+                        </div>
+                        <Separator className="my-4" />
+
+                        <div className="grid gap-3">
+                            <div className="font-semibold">Customer Information</div>
+                            <dl className="grid gap-3">
+                                <div className="flex items-center justify-between">
+                                    <dt className="text-muted-foreground">Customer</dt>
+                                    <dd>{order.customer.name} {order.customer.lastname}</dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="text-muted-foreground">Email</dt>
+                                    <dd>
+                                        <a href={`mailto:${order.customer.email}`}>{order.customer.email}</a>
+                                    </dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="text-muted-foreground">Phone</dt>
+                                    <dd>
+                                        <a href={`tel:${order.customer.tel}`}>{order.customer.tel}</a>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </>
                 )}
 
                 <Separator className="my-4" />
@@ -187,9 +189,9 @@ export function Details_order({ order, fetchOrders }) {
                         <div className="flex items-center justify-between">
                             <dt className="flex items-center gap-1 text-muted-foreground">
                                 <CreditCard className="h-4 w-4" />
-                                {order.payment.method}
+                                {order.payment ? order.payment?.method : 'Incompleate'}
                             </dt>
-                            <dd>{order.payment.status}</dd>
+                            <dd>{order.payment ? order.payment.status : 'Incompleate'}</dd>
                         </div>
                     </dl>
                 </div>
