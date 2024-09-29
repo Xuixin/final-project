@@ -20,8 +20,8 @@ import { useToast } from "@/components/ui/use-toast"
 
 export function CartPage({ setPage, tableId }) {
     const { toast } = useToast()
-    const [expandedSetId, setExpandedSetId] = useState(null);
     const { clearCart, calculateTotalPrice, cart, cartSet, addToCartSet, minusFromCart, minusFromCartSet, removeFromCart, removeFromCartSet } = useQr()
+    const [expandedSetId, setExpandedSetId] = useState(null);
 
     const toggleDetails = (setId) => {
         setExpandedSetId(prevId => (prevId === setId ? null : setId));
@@ -45,6 +45,7 @@ export function CartPage({ setPage, tableId }) {
                     description: 'Your order has been placed successfully',
                 })
                 clearCart()
+                setPage('order')
             })
             .catch((error) => {
                 toast({
@@ -183,5 +184,168 @@ export function CartPage({ setPage, tableId }) {
             </ScrollArea>
             <Button className={`rounded-2xl w-full my-5 sticky`} onClick={() => onsubmit()}>submit order</Button>
         </section>
+    )
+}
+
+export function OrderPage({ setPage, tableId }) {
+    const { toast } = useToast()
+    const [isLoading, setIsLoading] = useState(true)
+    const [tableOrder, setTableOrder] = useState([])
+    const [expandedSetId, setExpandedSetId] = useState(null);
+
+    const toggleDetails = (setId) => {
+        setExpandedSetId(prevId => (prevId === setId ? null : setId));
+    };
+    const { cartCount } = useQr()
+
+    const fetchOrder = async () => {
+        setIsLoading(true)
+        try {
+            const response = await axios.get(`/api/table/${tableId}`)
+            setTableOrder(response.data)
+        } catch (error) {
+            console.error(error)
+            toast({
+                title: 'Error fetching order',
+                description: 'Please try again later',
+                variant: 'destructive'
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchOrder()
+    }, [])
+
+    if (isLoading) {
+        return (
+            <h1>loading....</h1>
+        )
+    }
+
+
+    return (
+        <motion.section
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            classNam='w-full bg-secondary rounded-b-lg mb-5 py-5'
+        >
+            <div className='w-full flex  justify-between items-center  px-3 py-5'>
+                <Button className='rounded-full p-3 relative' onClick={() => setPage('menu')}>
+                    <ChevronLeft className='text-white h-5 w-5' strokeWidth={2.5} />
+                </Button>
+
+
+                {/* Cart Button with animated cart count */}
+                <Button className='rounded-full p-3 relative' onClick={() => setPage('cart')}>
+                    {cartCount() > 0 && (
+                        <span className="bg-white text-primary rounded-full absolute top-1 right-1 h-4 w-4 flex items-center justify-center">
+                            {cartCount()}
+                        </span>
+                    )}
+                    <ShoppingCart className='text-white h-5 w-5' strokeWidth={2.5} />
+                </Button>
+            </div>
+
+            {/* Scrollable Menu Area */}
+            <ScrollArea className='w-full h-[40rem]  px-4'>
+                <div className="space-y-3 p-5 bg-white rounded-lg min-h-32">
+                    <h1>Order:
+                        <span className="text-xl font-semibold">
+                            #{tableOrder?.orders?.orderId}
+                        </span>
+                    </h1>
+                    <h2>Status: {tableOrder?.orders?.status}</h2>
+                    {tableOrder?.orders?.normalMenu.length > 0 && (
+                        <ul>
+                            {tableOrder?.orders.normalMenu.map((menu) => {
+                                return (
+                                    <motion.li
+                                        key={menu.id}
+                                        className="flex items-center bg-gray-100 rounded-lg p-2 mb-2"
+                                        initial={{ scale: 0.9, opacity: 0 }}  // เริ่มต้นที่ขนาดเล็กและโปร่งใส
+                                        animate={{ scale: 1, opacity: 1 }}   // ขยายขนาดเป็นปกติและทำให้เห็นได้ชัดเจน
+                                        exit={{ scale: 0.9, opacity: 0 }}
+                                        transition={{ type: "spring", damping: 20, stiffness: 300 }} // ปรับค่า damping และ stiffness ให้การเคลื่อนไหวดูนุ่มนวล
+                                    >
+                                        <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
+                                        <div className="flex flex-col flex-grow">
+                                            <h2 className="text-sm font-semibold">{menu.name}</h2>
+                                            <h2 className="text-md">RM {(menu.discount ? (menu.price - menu.discount.discount) * menu.quantity : menu.price * menu.quantity).toFixed(2)}</h2>
+                                        </div>
+                                        <div className="text-end grid  justify-items-center">
+                                            <div className='flex gap-1 items-end'>
+                                                <h2 className="font-semibold">{menu.quantity}</h2>
+                                            </div>
+                                        </div>
+                                    </motion.li>
+                                )
+                            })}
+                        </ul>
+                    )}
+
+                    {tableOrder.orders?.setMenu?.length > 0 && tableOrder.orders?.setMenu?.map((set) => (
+                        <>
+
+                            <motion.li
+                                key={set.id}
+                                className="flex items-center bg-gray-100 rounded-lg p-2 mb-2"
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                            >
+                                <div className="flex flex-col flex-grow" onClick={() => toggleDetails(set.id)} >
+                                    <h2
+                                        className="text-sm font-semibold cursor-pointer"
+                                    // Toggle details visibility
+                                    >
+                                        {set.setName}
+                                    </h2>
+                                    <h2 className="text-md">RM {set.setPrice.toFixed(2)}</h2>
+                                </div>
+                                <div className="text-end grid justify-items-center">
+                                    <div className='flex gap-1 items-end'>
+                                        <h2 className="font-semibold">OPEN</h2>
+                                    </div>
+
+                                </div>
+
+                                {/* AnimatePresence and motion for the set details */}
+                            </motion.li>
+                            <AnimatePresence>
+                                {expandedSetId === set.id && (  // Show details only if this set is expanded
+                                    <motion.ul
+                                        key={set.id}
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                        className='space-y-1'
+                                    >
+                                        {set.details.map((m) => (
+                                            <li key={m.id} className="flex justify-between px-5 items-center">
+                                                <img src={m.img} alt={m.name} className="w-12 h-12 rounded-md object-cover mr-2" />
+
+                                                <h2 className="text-sm font-semibold">{m.name}</h2>
+                                                <h2 className="text-md">
+                                                    X {m.quantity}
+                                                </h2>
+
+                                            </li>
+                                        ))}
+                                    </motion.ul>
+                                )}
+
+                            </AnimatePresence>
+                        </>
+                    ))}
+
+
+                </div>
+            </ScrollArea>
+        </motion.section>
     )
 }

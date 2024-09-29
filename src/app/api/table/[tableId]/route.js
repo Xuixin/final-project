@@ -14,7 +14,11 @@ export async function GET(request, { params }) {
                     include: {
                         orderDetails: {
                             include: {
-                                menu: true,
+                                menu: {
+                                    include: {
+                                        discount: true
+                                    }
+                                },
                                 menuset: {
                                     include: {
                                         details: {
@@ -43,10 +47,12 @@ export async function GET(request, { params }) {
                         if (detail.menusetId === null) {
                             normalMenu.push({
                                 id: detail.id,
+                                img: detail.menu?.img,
                                 menuId: detail.menu?.id,
                                 name: detail.menu?.name,
                                 quantity: detail.quantity,
                                 price: detail.price,
+                                discount: detail.menu?.discount,
                             });
                         } else if (!setIds.has(detail.menusetId)) {
                             setIds.add(detail.menusetId);
@@ -73,6 +79,7 @@ export async function GET(request, { params }) {
                                         id: d.menu?.id,
                                         name: d.menu?.name,
                                         quantity: d.quantity,
+                                        img: d.menu?.img
                                     })),
                                 });
                             }

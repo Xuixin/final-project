@@ -26,7 +26,7 @@ import {
 import { SetMenuCom } from './components/set'
 import { Loader_orderQr } from "./components/loader"
 import { motion, AnimatePresence, } from "framer-motion"
-import { CartPage } from "./components/allPage"
+import { CartPage, OrderPage } from "./components/allPage"
 
 const MenuCard = ({ menu, add }) => {
     const newPrice = menu.discount ? (menu.price - menu.discount.discount).toFixed(2) : menu.price.toFixed(2)
@@ -152,6 +152,10 @@ export default function OrderTableWithId({ params }) {
                                 </SelectContent>
                             </Select>
 
+                            <Button variant='outline' onClick={() => setPages('order')}>
+                                order
+                            </Button>
+
                             {/* Cart Button with animated cart count */}
                             <Button className='rounded-full p-3 relative' onClick={() => setPages('cart')}>
                                 {cartCount() > 0 && (
@@ -182,10 +186,8 @@ export default function OrderTableWithId({ params }) {
             {pages === 'cart' && (
                 <CartPage setPage={setPages} tableId={tableId} />
             )}
-            {pages === 'checkout' && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <h1>Checkout Page</h1>
-                </motion.div>
+            {pages === 'order' && (
+                <OrderPage setPage={setPages} tableId={tableId} />
             )}
         </main>
     )
