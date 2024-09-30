@@ -11,7 +11,7 @@ export async function PUT(request, { params }) {
                 id: parseInt(orderId)
             },
             data: {
-                quantity: order.quantity + newItemCount,
+                quantity: parseInt(order.quantity + newItemCount),
                 totalPrice: order.totalPrice + totalPrice,
                 status
             }

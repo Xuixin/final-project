@@ -1,67 +1,55 @@
 "use client"
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
-const data = [
-    {
-        name: "Nov",
-        total: Math.floor(Math.random() * 5000) + 1000,
+const chartConfig = {
+    income: {
+        label: "Income",
+        color: "#4ade80", // สีเขียว
     },
-    {
-        name: "Dec",
-        total: Math.floor(Math.random() * 5000) + 1000,
+    expense: {
+        label: "Expense",
+        color: "#f87171", // สีแดง
     },
-    {
-        name: "Nov",
-        total: Math.floor(Math.random() * 5000) + 1000,
-    },
-    {
-        name: "Dec",
-        total: Math.floor(Math.random() * 5000) + 1000,
-    },
-    {
-        name: "Nov",
-        total: Math.floor(Math.random() * 5000) + 1000,
-    },
-    {
-        name: "Dec",
-        total: Math.floor(Math.random() * 5000) + 1000,
-    },
-    {
-        name: "Nov",
-        total: Math.floor(Math.random() * 5000) + 1000,
-    },
-    {
-        name: "Dec",
-        total: Math.floor(Math.random() * 5000) + 1000,
-    },
-]
+}
 
 export function Overview() {
+    const [chartData, setChartData] = useState([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("/api/overview")
+                setChartData(response.data)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        fetchData()
+    }, [])
+
     return (
-        <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={data}>
+        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+            <BarChart accessibilityLayer data={chartData}>
+                <CartesianGrid vertical={false} />
                 <XAxis
                     dataKey="name"
-                    stroke="#888888"
-                    fontSize={12}
                     tickLine={false}
+                    tickMargin={10}
                     axisLine={false}
                 />
-                <YAxis
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `B${value}`}
-                />
-                <Bar
-                    dataKey="total"
-                    fill="currentColor"
-                    radius={[4, 4, 0, 0]}
-                    className="fill-primary"
-                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="income" fill={chartConfig.income.color} radius={4} />
+                <Bar dataKey="expense" fill={chartConfig.expense.color} radius={4} />
             </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
     )
 }

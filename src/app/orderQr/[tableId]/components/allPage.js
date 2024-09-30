@@ -20,12 +20,48 @@ import { useToast } from "@/components/ui/use-toast"
 
 export function CartPage({ setPage, tableId }) {
     const { toast } = useToast()
-    const { clearCart, calculateTotalPrice, cart, cartSet, addToCartSet, minusFromCart, minusFromCartSet, removeFromCart, removeFromCartSet } = useQr()
+    const {
+        clearCart,
+        calculateTotalPrice,
+        cart,
+        cartSet,
+        addToCartSet,
+        minusFromCart,
+        minusFromCartSet,
+        removeFromCart,
+        removeFromCartSet,
+        cartCount
+    } = useQr()
     const [expandedSetId, setExpandedSetId] = useState(null);
+    const [isCreate, setIsCreate] = useState(false)
+    const [order, setOrder] = useState(null)
 
     const toggleDetails = (setId) => {
         setExpandedSetId(prevId => (prevId === setId ? null : setId));
     };
+
+    const fetchingOrder = async () => {
+        try {
+            const response = await axios.get(`/api/table/${tableId}`)
+            if (response.data.status === 'available') {
+                setIsCreate(true)
+            } else {
+                setIsCreate(false)
+                setOrder(response.data.orders)
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchingOrder()
+    }, [])
+
+    useEffect(() => {
+        console.log(order);
+    }, [order])
 
     const onsubmit = async () => {
         const Data = {
@@ -55,6 +91,27 @@ export function CartPage({ setPage, tableId }) {
                 })
                 console.error(error)
             })
+
+        setPage('order')
+    }
+
+    const onUpdate = async () => {
+        const response = await axios.put(`/api/order/orderTable/${order.orderId}`, {
+            menu: [...cart],
+            menuSet: [...cartSet],
+            order: order,
+            status: 'InQueue',
+            totalPrice: calculateTotalPrice(),
+            newItemCount: cartCount()
+        })
+
+        clearCart()
+
+        toast({
+            variant: "success",
+            title: "Success",
+            description: "updating success"
+        });
 
         setPage('order')
     }
@@ -182,7 +239,11 @@ export function CartPage({ setPage, tableId }) {
                 </ul>
 
             </ScrollArea>
-            <Button className={`rounded-2xl w-full my-5 sticky`} onClick={() => onsubmit()}>submit order</Button>
+            {isCreate ? (
+                <Button className={`rounded-2xl w-full my-5 sticky`} onClick={() => onsubmit()}>submit order</Button>
+            ) : (
+                <Button className={`rounded-2xl w-full my-5 sticky`} onClick={() => onUpdate()}>update order</Button>
+            )}
         </section>
     )
 }
