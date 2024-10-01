@@ -25,7 +25,9 @@ export async function GET(request, { params }) {
 export async function POST(request, { params }) {
   const { id } = params
 
-  const { userData } = await request.json()
+  const userData = await request.json()
+
+  console.log('userData', userData);
 
   try {
     const updateResponse = await prisma.customer.update({

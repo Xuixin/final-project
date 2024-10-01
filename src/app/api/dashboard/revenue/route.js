@@ -10,34 +10,40 @@ export async function GET(request) {
         const endOfLastMonth = endOfMonth(subMonths(now, 1))
 
         // ดึงข้อมูลคำสั่งซื้อเดือนนี้
-        const currentMonthOrders = await prisma.order.findMany({
+        const currentMonthOrders = await prisma.payment.findMany({
             where: {
                 createdAt: {
                     gte: startOfCurrentMonth,
                     lte: endOfCurrentMonth,
                 },
+                status: {
+                    not: 'Refunded'
+                }
             },
             select: {
-                totalPrice: true,
+                amount: true,
             },
         })
 
         // ดึงข้อมูลคำสั่งซื้อเดือนที่แล้ว
-        const lastMonthOrders = await prisma.order.findMany({
+        const lastMonthOrders = await prisma.payment.findMany({
             where: {
                 createdAt: {
                     gte: startOfLastMonth,
                     lte: endOfLastMonth,
                 },
+                status: {
+                    not: 'Refunded'
+                }
             },
             select: {
-                totalPrice: true,
+                amount: true,
             },
         })
 
         // คำนวณรายได้และจำนวนคำสั่งซื้อของเดือนนี้และเดือนที่แล้ว
-        const currentMonthIncome = currentMonthOrders.reduce((sum, order) => sum + order.totalPrice, 0)
-        const lastMonthIncome = lastMonthOrders.reduce((sum, order) => sum + order.totalPrice, 0)
+        const currentMonthIncome = currentMonthOrders.reduce((sum, order) => sum + order.amount, 0)
+        const lastMonthIncome = lastMonthOrders.reduce((sum, order) => sum + order.amount, 0)
 
         const currentMonthOrderCount = currentMonthOrders.length
         const lastMonthOrderCount = lastMonthOrders.length
@@ -56,9 +62,9 @@ export async function GET(request) {
 
         const data = {
             income: currentMonthIncome,
-            percentageIncomeChange: percentageIncomeChange,
+            percentageIncomeChange: percentageIncomeChange.toFixed(2),
             orderCount: currentMonthOrderCount,
-            percentageOrderChange: percentageOrderChange,
+            percentageOrderChange: percentageOrderChange.toFixed(2),
         }
 
         return new Response(JSON.stringify(data), { status: 200 })

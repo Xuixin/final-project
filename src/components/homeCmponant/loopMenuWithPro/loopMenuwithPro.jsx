@@ -70,9 +70,9 @@ export function MenuWithPro() {
   }
 
   return (
-    <div className='relative bg-white shadow-lg'>
-      <div className='flex justify-between items-center py-4 px-10'>
-        <h1 className='text-lg font-bold '>
+    <div className='relative mb-7'>
+      <div className='flex justify-center items-center py-4 px-10'>
+        <h1 className='text-3xl font-bold '>
           D<span className='text-red-600'>e</span>als{' '}
         </h1>
       </div>
@@ -90,7 +90,7 @@ export function MenuWithPro() {
 
           {/* Display Best Seller item */}
           {bestSeller && (
-            <div className='border rounded pb-4 relative shadow-lg'>
+            <div className='rounded pb-4 relative shadow-lg'>
               <BestSeller className='absolute top-0 left-0 w-10, h-10' />
               <div className='relative w-full h-36'>
                 <Image
@@ -129,7 +129,7 @@ export function MenuWithPro() {
             return (
               <div
                 key={item.id}
-                className='border rounded pb-4 relative'
+                className='shadow-lg rounded pb-4 relative'
               >
                 <div className='relative w-full h-36'>
                   <Image
@@ -196,14 +196,14 @@ export const Menuset = () => {
 
   return (
     <div className='w-full'>
-      <h2 className='text-3xl font-semibold text-center mb-4'>Menu Set</h2>
-      <div className='w-full grid grid-cols-2 gap-4 px-16'>
+      <h2 className='text-3xl font-semibold text-center text-white mb-4'>Menu Set</h2>
+      <div className='w-full grid grid-cols-2 gap-4 py-5 px-16'>
         {menuSet &&
           menuSet.map((item) => {
             return (
               <ScrollArea
                 key={item.id}
-                className='h-72 w-full rounded-2xl border shadow-lg  bg-white'
+                className='h-72 w-full rounded-2xl border shadow-lg  bg-white px-5  py-5'
               >
                 <div className="pb-3">
                   <div className=' top-0 flex bg-white justify-between items-center px-4 h-14 mb-15 sticky'>
@@ -213,11 +213,12 @@ export const Menuset = () => {
                     </h4>
                     <div className='flex items-center relative'>
                       <Button
-                        className='ml-2'
+                        className='ml-2 px-10'
+                        variant={'outline'}
                         onClick={() => addToCartSet(item)} // เรียกใช้ฟังก์ชันเพิ่ม MenuSet เข้า cartSet
                       >
                         Add to cart {' RM ' + item.price.toFixed(2) + ' '}
-                        <span className="absolute rounded-full text-black  line-through decoration-red-400 top-0 right-0 p-2">
+                        <span className="absolute rounded-full bg-primary text-white  line-through decoration-red-400 top-0 left-0 p-1">
                           {item.details.reduce((total, m) => total + (m.menu.price * m.quantity), 0)}
                         </span>
                       </Button>

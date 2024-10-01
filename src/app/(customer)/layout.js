@@ -35,16 +35,27 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 export default function Customerlayout({ children }) {
-  const { isAuthen, logout, cartCount } = useAppContext()
+  const { logout, cartCount } = useAppContext()
   const [index, setIndex] = useState(0)
+  const [isAuthen, setIsAuthen] = useState(false)
 
   const pathName = usePathname()
   const router = useRouter()
+
+  const getISLogIn = () => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      setIsAuthen(true)
+    } else {
+      setIsAuthen(false)
+    }
+  }
 
   // ฟังก์ชันสำหรับดึงข้อมูลจาก toke
 
   useEffect(() => {
     changePath(pathName)
+    getISLogIn()
   }, [pathName])
 
   const changePath = (path) => {
@@ -158,50 +169,66 @@ export default function Customerlayout({ children }) {
           </SheetContent>
         </Sheet>
 
-        <div className='flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4'>
-          <div className='ml-auto flex-1 sm:flex-initial'>
-            <div
-              className='relative p-2 cursor-pointer'
-              onClick={() => router.push('/cart')}
-            >
-              <p className='absolute text-white bg-primary rounded-full w-5 h-5 flex justify-center items-center top-0 right-0'>
-                {cartCount()}
-              </p>
-              <ShoppingCart
-                size={24}
-                className='text-primary'
-              />
-            </div>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant='secondary'
-                size='icon'
-                className='rounded-full'
-              >
-                <CircleUser className='h-5 w-5' />
-                <span className='sr-only'>Toggle user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className='w-full flex justify-start items-center border-none px-2'>Profile</Button>
-                </DialogTrigger>
-                <EditProfile />
-              </Dialog>
+        <div className={`flex w-full items-center ${!isAuthen && 'justify-end'}  gap-4 md:ml-auto md:gap-2 lg:gap-4 `}>
+          {isAuthen ? (
+            <>
+              <div className='ml-auto flex-1 sm:flex-initial'>
+                <div
+                  className='relative p-2 cursor-pointer'
+                  onClick={() => router.push('/cart')}
+                >
+                  <p className='absolute text-white bg-primary rounded-full w-5 h-5 flex justify-center items-center top-0 right-0'>
+                    {cartCount()}
+                  </p>
+                  <ShoppingCart
+                    size={24}
+                    className='text-primary'
+                  />
+                </div>
+              </div>
 
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant='secondary'
+                    size='icon'
+                    className='rounded-full'
+                  >
+                    <CircleUser className='h-5 w-5' />
+                    <span className='sr-only'>Toggle user menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className='w-full flex justify-start items-center border-none px-2'>Profile</Button>
+                    </DialogTrigger>
+                    <EditProfile />
+                  </Dialog>
+
+                  <DropdownMenuItem>Support</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+            </>
+          ) : (
+            <>
+              <Button variant='outline' className='mx-3'>
+                Sign In
+              </Button>
+              <Button >
+                Sign Up
+              </Button>
+            </>
+          )}
+
         </div>
       </header>
-      <main className='flex min-h-[calc(100vh_-_theme(spacing.16))] border flex-1 flex-col gap-4 pt-16 bg-primary-foreground px-4 md:gap-8 md:py-5 lg:px-32 '>
+      <main className='flex min-h-[calc(100vh_-_theme(spacing.16))] border flex-1 flex-col gap-4 pt-16 bg-primary-foreground md:gap-8 md:py-5 lg: px-24 '>
         {children}
         <Footer />
       </main>

@@ -251,6 +251,7 @@ export function EditProfile() {
         status: 'error',
         duration: 3000,
         isClosable: true,
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);

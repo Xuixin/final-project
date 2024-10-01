@@ -22,7 +22,12 @@ export default function Dashboard() {
         percentageIncomeChange: 0,
         orderCount: 0,
         percentageOrderChange: 0,
+    })
 
+    const [newCustomer, setNewCustomer] = useState({
+        currentMonthNewCustomers: 0,
+        lastMonthNewCustomers: 0,
+        percentageChange: ""
     })
 
     const fetchRevenue = async () => {
@@ -44,8 +49,22 @@ export default function Dashboard() {
             })
     }
 
+    const fetchNewOrder = async () => {
+        await axios.get('/api/customer/new')
+            .then((response) => {
+                setNewCustomer({
+                    currentMonthNewCustomers: response.data.currentMonthNewCustomers,
+                    lastMonthNewCustomers: response.data.lastMonthNewCustomers,
+                    percentageChange: response.data.percentageChange
+                })
+            }).catch((error) => {
+                console.error(error)
+            })
+    }
+
     useEffect(() => {
         fetchRevenue()
+        fetchNewOrder()
     }, []);
 
 
@@ -136,7 +155,7 @@ export default function Dashboard() {
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-sm font-medium">
-                                        Active Now
+                                        New Customer
                                     </CardTitle>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -152,9 +171,13 @@ export default function Dashboard() {
                                     </svg>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">+573</div>
+                                    <div className="text-2xl font-bold">{newCustomer.currentMonthNewCustomers}</div>
                                     <p className="text-xs text-muted-foreground">
-                                        +201 since last hour
+                                        {newCustomer.percentageChange >= 0 ? (
+                                            `+ ${newCustomer.percentageChange} ( ${newCustomer.lastMonthNewCustomers} )`
+                                        ) : (
+                                            `${newCustomer.percentageChange} ( ${newCustomer.lastMonthNewCustomers} )`
+                                        )}
                                     </p>
                                 </CardContent>
                             </Card>

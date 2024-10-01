@@ -9,16 +9,19 @@ export async function GET(request) {
         const startOfThreeMonthsAgo = startOfMonth(subMonths(now, 3))
 
         // ดึงข้อมูลคำสั่งซื้อ (รายได้)
-        const orders = await prisma.order.findMany({
+        const payment = await prisma.payment.findMany({
             where: {
                 createdAt: {
                     gte: startOfThreeMonthsAgo,
                     lte: endOfCurrentMonth,
                 },
+                status: {
+                    not: 'Refunded'
+                }
             },
             select: {
                 createdAt: true,
-                totalPrice: true,
+                amount: true,
             },
         })
 
@@ -45,11 +48,11 @@ export async function GET(request) {
         ]
 
         // รวมยอดรายได้ตามเดือน
-        orders.forEach(order => {
+        payment.forEach(order => {
             const orderDate = new Date(order.createdAt)
             const monthDiff = now.getMonth() - orderDate.getMonth() + (now.getFullYear() - orderDate.getFullYear()) * 12
             if (monthDiff >= 0 && monthDiff <= 3) {
-                data[3 - monthDiff].income += order.totalPrice
+                data[3 - monthDiff].income += order.amount
             }
         })
 

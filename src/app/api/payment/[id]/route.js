@@ -7,7 +7,7 @@ export async function POST(request, { params }) {
     try {
         if (order.source === 3) {
             Promise.all([
-                prisma.order.update({
+                await prisma.order.update({
                     where: {
                         id: parseInt(id)
                     },
@@ -15,7 +15,7 @@ export async function POST(request, { params }) {
                         employee: { connect: { id: emp } }
                     }
                 }),
-                prisma.payment.create({
+                await prisma.payment.create({
                     data: {
                         order: {
                             connect: {
@@ -32,25 +32,7 @@ export async function POST(request, { params }) {
             return new Response(JSON.stringify({ message: 'Payment created successfully' }), { status: 200 })
         } else {
             Promise.all([
-                prisma.table.update({
-                    where: {
-                        id: parseInt(order.tableId)
-                    },
-                    data: {
-                        status: 'available'
-                    }
-                }),
-
-                prisma.order.update({
-                    where: {
-                        id: parseInt(id)
-                    },
-                    data: {
-                        employee: { connect: { id: emp } }
-                    }
-                }),
-
-                prisma.payment.create({
+                await prisma.payment.create({
                     data: {
                         order: {
                             connect: {
@@ -61,7 +43,26 @@ export async function POST(request, { params }) {
                         status: 'Completed',
                         method: paymentMethod
                     }
-                })
+                }),
+                await prisma.table.update({
+                    where: {
+                        id: parseInt(order.tableId)
+                    },
+                    data: {
+                        status: 'available'
+                    }
+                }),
+
+                await prisma.order.update({
+                    where: {
+                        id: parseInt(id)
+                    },
+                    data: {
+                        employee: { connect: { id: emp } }
+                    }
+                }),
+
+
             ])
             return new Response(JSON.stringify({ message: 'Payment created successfully' }), { status: 200 })
         }
