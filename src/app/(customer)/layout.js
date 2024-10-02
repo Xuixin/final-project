@@ -228,7 +228,7 @@ export default function Customerlayout({ children }) {
 
         </div>
       </header>
-      <main className='flex min-h-[calc(100vh_-_theme(spacing.16))] border flex-1 flex-col gap-4 pt-16 bg-primary-foreground md:gap-8 md:py-5 lg: px-24 '>
+      <main className='flex min-h-[calc(100vh_-_theme(spacing.16))] border flex-1 flex-col gap-4  bg-white md:gap-8  '>
         {children}
         <Footer />
       </main>

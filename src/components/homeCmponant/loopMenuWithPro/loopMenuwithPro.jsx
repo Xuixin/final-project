@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import axios from 'axios'
-import { ChevronLeft, ChevronRight, Flame } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Flame, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import BestSeller from '@/components/ui/bestseller'
@@ -205,24 +205,27 @@ export const Menuset = () => {
                 key={item.id}
                 className='h-72 w-full rounded-2xl border shadow-lg  bg-white px-5  py-5'
               >
-                <div className="pb-3">
+                <div className="pb-3 space-y-5">
                   <div className=' top-0 flex bg-white justify-between items-center px-4 h-14 mb-15 sticky'>
 
                     <h4 className='mb-4 text-lg font-semibold leading-none'>
                       {item.name}
                     </h4>
                     <div className='flex items-center relative'>
+                      <p className="absolute z-30 text-white  top-[-3px] right-0 p-1">
+                        {item.price.toFixed(2) + ' '}
+                      </p>
+                      <div className={`absolute top-[-7px] z-10 right-0 h-10 w-10 rounded-full bg-red-500`} ></div>
                       <Button
-                        className='ml-2 px-10'
+                        className='ml-2 px-10 '
                         variant={'outline'}
                         onClick={() => addToCartSet(item)} // เรียกใช้ฟังก์ชันเพิ่ม MenuSet เข้า cartSet
                       >
-                        Add to cart {' RM ' + item.price.toFixed(2) + ' '}
-                        <span className="absolute rounded-full bg-primary text-white  line-through decoration-red-400 top-0 left-0 p-1">
-                          {item.details.reduce((total, m) => total + (m.menu.price * m.quantity), 0)}
+                        Add to cart
+                        <span className="line-through decoration-red-400 mx-2" style={{ textDecorationThickness: '3px' }}>
+                          RM {item.details.reduce((total, m) => total + (m.menu.price * m.quantity), 0)}
                         </span>
                       </Button>
-
                     </div>
                   </div>
                   <div className='space-y-2 px-3 mt-2'>
@@ -232,7 +235,7 @@ export const Menuset = () => {
                           key={index}
                           className='max-h-16 border-b rounded-lg'
                         >
-                          <div className='grid grid-cols-4 gap-2 px-2'>
+                          <div className='grid grid-cols-3 gap-2 px-2'>
                             <Image
                               src={menu.menu.img}
                               alt={menu.menu.name}
@@ -243,18 +246,15 @@ export const Menuset = () => {
                             <h6 className='text-sm font-medium leading-none flex items-center'>
                               {menu.menu.name}
                             </h6>
-                            <p className='text-sm flex items-center'>
-                              {menu.quantity} unit
-                            </p>
-                            <p className='text-sm flex justify-center items-center'>
-                              RM {(menu.quantity * menu.menu.price).toFixed(2)}
+                            <p className='text-sm flex items-center justify-end'>
+                              X {menu.quantity}
                             </p>
                           </div>
                         </div>
                       )
                     })}
                   </div>
-                  <Separator className='my-2' />
+                  <Separator className='my-4' />
                 </div>
               </ScrollArea>
             )

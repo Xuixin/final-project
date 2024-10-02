@@ -155,16 +155,17 @@ export function Menu() {
         filteredItems.map((category) => (
           <div
             key={category.id}
-            className='bg-white mb-2 rounded-xl px-8 py-5 shadow-lg'
+            className=' mb-2 rounded-xl px-8 py-5 '
           >
-            <h2 className='text-2xl font-semibold'>{category.name}</h2>
+            <h2 className='text-3xl font-bold capitalize'>{category.name}</h2>
+
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4 p-4'>
               {category.menu.map((item) => {
                 const finalPrice = item.price - (item.discount?.discount || 0)
                 return (
                   <div
                     key={item.id}
-                    className='border rounded pb-4 px-4 py-2 shadow-sm'
+                    className=' rounded pb-4 bg-gray-50 py-2 shadow-md'
                   >
                     <div className='relative w-full h-36'>
                       <Image
@@ -175,7 +176,7 @@ export function Menu() {
                         className='rounded'
                       />
                     </div>
-                    <div className='w-full px-4'>
+                    <div className='w-full px-4 bg-primary-foreground'>
                       <h3 className='text-lg font-semibold'>{item.name}</h3>
                       <div className='flex gap-2'>
                         <p className='text-green-500 font-bold'>
@@ -187,13 +188,14 @@ export function Menu() {
                           </p>
                         )}
                       </div>
+                      <Button
+                        className='w-full mt-2'
+                        onClick={() => addToCart({ ...item, quantity: 1 })}
+                      >
+                        Add to Cart
+                      </Button>
                     </div>
-                    <Button
-                      className='w-full mt-2'
-                      onClick={() => addToCart({ ...item, quantity: 1 })}
-                    >
-                      Add to Cart
-                    </Button>
+
                   </div>
                 )
               })}

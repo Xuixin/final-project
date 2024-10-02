@@ -45,7 +45,7 @@ export default function OrderPage() {
   }, [])
 
   return (
-    <section>
+    <section className='px-32 py-5 bg-white'>
       <h1 className='font-semibold text-2xl mb-5'>My Orders</h1>
       <div className='w-full min-h-10 px-6'>
         {order.length > 0 ? ( // ตรวจสอบว่า order มีข้อมูลหรือไม่
