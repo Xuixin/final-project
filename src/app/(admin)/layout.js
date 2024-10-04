@@ -94,6 +94,17 @@ export default function AdminLayout({ children }) {
             </Menubar>
 
             <Link
+              href='/ingredient'
+              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/ingredient')
+                ? 'bg-accent'
+                : 'text-muted-foreground'
+                } transition-colors hover:text-foreground`}
+            >
+              <Users2 className='h-5 w-5' />
+              <span className='sr-only'>Employees</span>
+            </Link>
+
+            <Link
               href='/employees'
               className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/employee')
                 ? 'bg-accent'

@@ -5,7 +5,8 @@ const prisma = new PrismaClient()
 
 export async function POST(req) {
   try {
-    const { name, category, price, image, status, discountId } = await req.json()
+    const InsertData = await req.json()
+    const { name, category, price, image, status, discountId, ingredientIds } = InsertData
     console.log({
       name,
       category,
@@ -13,6 +14,7 @@ export async function POST(req) {
       image,
       status,
       discountId,
+      ingredientIds
     });
 
     // ตรวจสอบว่าข้อมูลสำคัญไม่เป็นค่าว่าง
@@ -49,6 +51,27 @@ export async function POST(req) {
     const newData = await prisma.menu.create({
       data: data,
     })
+
+    if (newData.id) {
+      ingredientIds.map(async (i) => {
+        await prisma.menuRecipes.create({
+          data: {
+            menu: {
+              connect: {
+                id: parseInt(newData.id),
+              }
+            },
+            ingredient: {
+              connect: {
+                id: parseInt(i.id),
+              }
+            },
+            quantity: parseFloat(i.qty),
+            unit: i.unit
+          }
+        })
+      })
+    }
 
     return NextResponse.json({
       status: true,
