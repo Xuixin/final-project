@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { useToast } from "@/components/ui/use-toast"
+import { CheckboxIdsCom } from "./component/checkbox"
 
 export default function EditMenu({ params }) {
     const { id } = params
@@ -32,6 +33,8 @@ export default function EditMenu({ params }) {
     const router = useRouter()
     const [categories, setCategories] = useState()
     const [discount, setDiscount] = useState()
+    const [checkedIds, setCheckedIds] = useState([]);
+    const [igd, setIgd] = useState([])
     const [formValues, setFormValues] = useState({
         name: '',
         category: '',
@@ -50,10 +53,13 @@ export default function EditMenu({ params }) {
         const response = await axios.get('/api/promotion')
         setDiscount(response.data)
     }
+    const fetchIngredient = async () => {
+        const response = await axios.get('/api/igd');
+        setIgd(response.data);
+    };
 
     const fetchMenuWithId = async () => {
         const response = await axios.get(`/api/menu/${id}`)
-        console.log(response.data);
         setFormValues({
             name: response.data.name,
             category: response.data.category.id ? response.data.category.id : '',
@@ -62,13 +68,29 @@ export default function EditMenu({ params }) {
             discount: response.data.discount ? response.data.discount.id : '',
             image: response.data.img,
         })
+        setCheckedIds(() => {
+            return response.data.menuRecipes.filter((item) => {
+                if (item.menuId === parseInt(id)) {
+                    return {
+                        id: item.ingredient.id,
+                        quantity: item.quantity,
+                        unit: item.unit
+                    }
+                }
+            })
+        })
         setImagePreview(response.data.img) // แสดง preview รูป
     }
     useEffect(() => {
         fetchCategories()
         fetchDiscounts()
         fetchMenuWithId()
+        fetchIngredient()
     }, [])
+
+    useEffect(() => {
+        console.log(checkedIds);
+    }, [checkedIds]);
 
     const handleInputChange = (e) => {
         const { id, value } = e.target
@@ -122,6 +144,7 @@ export default function EditMenu({ params }) {
                 discountId: formValues.discount ? parseInt(formValues.discount) : null,
                 image: imagePath,  // Use either existing or new image path
                 category: parseInt(formValues.category),
+                ingredientIds: checkedIds
             }
 
             console.log(data);
@@ -135,9 +158,6 @@ export default function EditMenu({ params }) {
             })
 
             router.push('/menu/allmenu')
-
-
-
 
         } catch (error) {
             console.error('Error updating menu', error)
@@ -237,27 +257,7 @@ export default function EditMenu({ params }) {
                                 <CardTitle>Product Option</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid gap-6 ">
-                                    <div className="grid gap-3 ">
-                                        <Label htmlFor="discount">Discount</Label>
-                                        <Select onValueChange={(value) => setFormValues({ ...formValues, discount: value })}>
-                                            <SelectTrigger
-                                                id="discount"
-                                                aria-label="Select discount"
-                                            >
-                                                <SelectValue placeholder="Select Discount" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="null">none</SelectItem>
-                                                {discount && discount.map((dc) => (
-                                                    <SelectItem key={dc.id} value={dc.id}>
-                                                        {dc.discount}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
+                                <CheckboxIdsCom igd={igd} checkedIds={checkedIds} setCheckedIds={setCheckedIds} />
                             </CardContent>
                         </Card>
                     </div>
@@ -279,6 +279,27 @@ export default function EditMenu({ params }) {
                                                 <SelectItem value="Draft">Draft</SelectItem>
                                                 <SelectItem value="Published">Published</SelectItem>
                                                 <SelectItem value="Archived">Archived</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="grid gap-6 my-2">
+                                    <div className="grid gap-3 ">
+                                        <Label htmlFor="discount">Discount</Label>
+                                        <Select onValueChange={(value) => setFormValues({ ...formValues, discount: value })}>
+                                            <SelectTrigger
+                                                id="discount"
+                                                aria-label="Select discount"
+                                            >
+                                                <SelectValue placeholder="Select Discount" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="null">none</SelectItem>
+                                                {discount && discount.map((dc) => (
+                                                    <SelectItem key={dc.id} value={dc.id}>
+                                                        {dc.discount}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>

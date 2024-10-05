@@ -31,10 +31,12 @@ export default function ReadOrder() {
         fetchOrders();
     }, [fetchOrders]);
 
-    const handleFinishOrder = async (orderId) => {
+    const handleFinishOrder = async (order) => {
         try {
             setAnimationCompleted(false); // Set to false to prevent fetching new orders
+            const orderId = order.id;
             await axios.put(`/api/order/status/${orderId}`, { status: 'Finished' });
+            await axios.put(`/api/igd/order/${orderId}`, { order })
             setFinishedOrderIds([...finishedOrderIds, orderId]);
             // Wait for animation to complete before fetching new orders
             setTimeout(() => {
@@ -74,7 +76,7 @@ export default function ReadOrder() {
                                     <Button
                                         variant="outline"
                                         className='flex items-center gap-2'
-                                        onClick={() => handleFinishOrder(order.id)}
+                                        onClick={() => handleFinishOrder(order)}
                                         disabled={!animationCompleted} // Disable the button while animation is in progress
                                     >
                                         <span className="text-base md:text-lg">Finish</span>

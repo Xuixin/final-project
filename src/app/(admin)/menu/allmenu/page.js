@@ -114,6 +114,21 @@ export default function MenuAdmin() {
                     </TabsTrigger>
                 </TabsList>
                 <div className="ml-auto flex items-center gap-2">
+                    <Input
+                        type='text'
+                        placeholder="Search for menu..."
+                        onChange={(e) => {
+                            setSelectedMenu((selectedMenu) => {
+                                const keyword = e.target.value.toLowerCase()
+                                if (keyword === '') {
+                                    return menus
+                                } else {
+                                    return selectedMenu.filter((menu) => menu.name.toLowerCase().includes(keyword))
+                                }
+
+                            })
+                        }}
+                    />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="sm" className="h-8 gap-1">

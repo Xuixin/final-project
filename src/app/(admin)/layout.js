@@ -9,6 +9,7 @@ import {
   LineChart,
   Settings,
   ShoppingCart,
+  ShoppingBasket
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -100,7 +101,7 @@ export default function AdminLayout({ children }) {
                 : 'text-muted-foreground'
                 } transition-colors hover:text-foreground`}
             >
-              <Users2 className='h-5 w-5' />
+              <ShoppingBasket className='h-5 w-5' />
               <span className='sr-only'>Employees</span>
             </Link>
 

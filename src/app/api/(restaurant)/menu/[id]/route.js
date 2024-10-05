@@ -11,7 +11,13 @@ export async function GET(request, { params }) {
       where: { id: Number(id) },
       include: {
         category: true,
+        menuRecipes: {
+          include: {
+            ingredient: true
+          }
+        }
       },
+
     });
 
     if (!data) {
@@ -40,10 +46,11 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const id = params.id;
-  const { name, category, discountId, price, image, status } = await request.json();
+  const data = await request.json();
+  const { name, category, discountId, price, image, status, ingredientIds } = data;
 
   try {
-    // เตรียมข้อมูลที่จะอัปเดต
+    // Prepare data for update
     const dataToUpdate = {
       name,
       price,
@@ -56,7 +63,7 @@ export async function PUT(request, { params }) {
       },
     };
 
-    // ตรวจสอบว่า discountId มีค่าหรือไม่
+    // Check if discountId is provided
     if (discountId) {
       dataToUpdate.discount = {
         connect: {
@@ -64,18 +71,45 @@ export async function PUT(request, { params }) {
         },
       };
     } else {
-      // ถ้าไม่มี discountId ให้ทำการลบ discount ที่เชื่อมต่ออยู่ก่อนหน้าออก
+      // Disconnect discount if none provided
       dataToUpdate.discount = {
         disconnect: true,
       };
     }
 
-    // ทำการอัปเดตเมนู
+    // Update the menu
     const updateMenu = await prisma.menu.update({
       where: { id: parseInt(id) },
       data: dataToUpdate,
     });
 
+    // Update associated ingredients if the menu update succeeds
+    if (updateMenu.id) {
+      // Clear existing ingredients first
+      await prisma.menuRecipes.deleteMany({ where: { menuId: parseInt(updateMenu.id) } });
+
+      // Add new ingredients
+      ingredientIds.map(async (ingredient) => {
+        await prisma.menuRecipes.create({
+          data: {
+            menu: {
+              connect: {
+                id: parseInt(updateMenu.id),
+              },
+            },
+            ingredient: {
+              connect: {
+                id: parseInt(ingredient.id),
+              },
+            },
+            quantity: parseFloat(ingredient.quantity),
+            unit: ingredient.unit,
+          },
+        });
+      });
+    }
+
+    // Return success response
     return new Response(
       JSON.stringify({
         message: "Menu updated successfully",
@@ -92,8 +126,6 @@ export async function PUT(request, { params }) {
       }),
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -101,11 +133,15 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   const { id } = params;
   try {
-    const deleteMenu = await prisma.menu.delete({
+    await prisma.menuRecipes.deleteMany({
+      where: { menuId: Number(id) }
+    })
+    await prisma.menu.delete({
       where: { id: Number(id) },
     });
+
     return new Response(
-      JSON.stringify({ message: "Menu deleted successfully", deleteMenu }),
+      JSON.stringify({ message: "Menu deleted successfully", }),
       { status: 200 }
     );
   } catch (error) {

@@ -12,13 +12,20 @@ export async function GET(request) {
             include: {
                 orderDetails: {
                     include: {
-                        menu: true,
+                        menu: {
+                            include: {
+                                menuRecipes: true
+                            }
+                        },
                     },
                 },
-                orderSource: true
+                orderSource: true,
+
             },
             take: 2 // จำกัดจำนวนผลลัพธ์ที่ได้
         });
+
+
 
         // อัพเดตสถานะของออเดอร์เป็น 'InProgress'
         await Promise.all(
