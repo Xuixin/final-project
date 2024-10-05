@@ -89,7 +89,7 @@ export default function Menu({ params }) {
     return (
         <section className='grid flex-1 items-start gap-4 p-4 bg-primary-foreground h-screen sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'>
             <div className='grid auto-rows-max items-start pt-2 gap-4 md:gap-8 lg:col-span-2'>
-                <Card className='h-[30rem]'>
+                <Card className='h-[45rem]'>
                     <CardHeader>
                         <CardTitle className='flex'>
                             Menu
@@ -107,7 +107,7 @@ export default function Menu({ params }) {
                     <Separator className='mb-5' />
 
                     <CardContent className='flex-grow'>
-                        <ScrollArea className="h-64">
+                        <ScrollArea className="h-[30rem]">
                             {loading ? (
                                 <Loader />
                             ) : (

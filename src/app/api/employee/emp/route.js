@@ -32,7 +32,7 @@ export async function GET() {
   try {
     const data = await prisma.employee.findMany({
       include: {
-        roles: true,
+        role: true,
       },
     })
 

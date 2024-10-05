@@ -27,7 +27,7 @@ export async function PUT(request, { params }) {
                     const newQuantity = existingMenuDetail.quantity + m.quantity;
 
 
-                    await prisma.orderDetail.update({
+                    await prisma.orderdetail.update({
                         where: {
                             id: existingMenuDetail.id,
                             orderId: parseInt(orderId)
@@ -38,7 +38,7 @@ export async function PUT(request, { params }) {
                     });
                 } else {
                     // ถ้าไม่มี ให้สร้างรายการใหม่
-                    await prisma.orderDetail.create({
+                    await prisma.orderdetail.create({
                         data: {
                             orderId: parseInt(orderId),
                             menuId: m.id,
@@ -60,7 +60,7 @@ export async function PUT(request, { params }) {
                 if (existingDetailSet) {
                     // ใช้ Promise.all สำหรับ map ภายในนี้
                     await Promise.all(ms.details.map(async (d) => {
-                        await prisma.orderDetail.update({
+                        await prisma.orderdetail.update({
                             where: {
                                 orderId_menuId_menusetId: {
                                     orderId: parseInt(orderId),
@@ -76,7 +76,7 @@ export async function PUT(request, { params }) {
                 } else {
                     // ใช้ Promise.all สำหรับ map ภายในนี้
                     await Promise.all(ms.details.map(async (d) => {
-                        await prisma.orderDetail.create({
+                        await prisma.orderdetail.create({
                             data: {
                                 orderId: parseInt(orderId),
                                 menusetId: ms.id,

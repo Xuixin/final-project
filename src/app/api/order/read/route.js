@@ -10,16 +10,16 @@ export async function GET(request) {
                 ]
             },
             include: {
-                orderDetails: {
+                orderdetail: {
                     include: {
                         menu: {
                             include: {
-                                menuRecipes: true
+                                menurecipes: true
                             }
                         },
                     },
                 },
-                orderSource: true,
+                order_source: true,
 
             },
             take: 2 // จำกัดจำนวนผลลัพธ์ที่ได้
@@ -37,7 +37,12 @@ export async function GET(request) {
             )
         );
 
-        return new Response(JSON.stringify(response), { status: 200 });
+        const newResponse = response.map(({ orderdetail, ...response }) => ({
+            orderDetails: orderdetail,
+            ...response
+        }))
+
+        return new Response(JSON.stringify(newResponse), { status: 200 });
     } catch (error) {
         console.error(error);
         return new Response(JSON.stringify({ message: "Error fetching orders" }), { status: 500 });

@@ -170,8 +170,9 @@ export function Posmenu_details({ id }) {
                 bounce: 0.3,
                 duration: 0.4,
             }}
+            className='min-h-[45rem]'
         >
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden min-h-96">
                 <CardHeader className="flex flex-row items-start">
                     <div className="grid gap-0.5">
                         <CardTitle className="group flex items-center gap-2 text-lg">

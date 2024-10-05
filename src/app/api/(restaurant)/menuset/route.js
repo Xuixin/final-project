@@ -10,7 +10,7 @@ export async function POST(request, { params }) {
     const floatprice = parseFloat(price)
 
     // Create the menuSet
-    const menuset = await prisma.menuSet.create({
+    const menuset = await prisma.menuset.create({
       data: {
         name,
         totalMenu,
@@ -21,7 +21,7 @@ export async function POST(request, { params }) {
 
     // Insert menuSetDetails for each menu item
     for (const menuItem of menu) {
-      await prisma.menuSetDetail.create({
+      await prisma.menusetdetail.create({
         data: {
           menusetId: menuset.id, // Connect to the newly created menuSet
           menuId: menuItem.id,
@@ -47,16 +47,22 @@ export async function POST(request, { params }) {
 
 export async function GET(request) {
   try {
-    const data = await prisma.menuSet.findMany({
+    const data = await prisma.menuset.findMany({
       include: {
-        details: {
+        menusetdetail: {
           include: {
             menu: true,
           },
         },
       },
     });
-    return new Response(JSON.stringify(data), { status: 200 });
+
+    const newData = data.map(({ menusetdetail, ...eachData }) => ({
+      ...eachData,
+      details: menusetdetail, // ใช้ชื่อใหม่
+    }));
+
+    return new Response(JSON.stringify(newData), { status: 200 });
   } catch (error) {
     console.error("Error fetching menu sets:", error);
     return new Response(

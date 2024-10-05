@@ -10,9 +10,9 @@ export async function GET(request, { params }) {
                 id: intId,
             },
             include: {
-                orders: {
+                order: {
                     include: {
-                        orderDetails: {
+                        orderdetail: {
                             include: {
                                 menu: {
                                     include: {
@@ -21,7 +21,7 @@ export async function GET(request, { params }) {
                                 },
                                 menuset: {
                                     include: {
-                                        details: {
+                                        menusetdetail: {
                                             include: {
                                                 menu: true,
                                             },
@@ -40,9 +40,9 @@ export async function GET(request, { params }) {
         const setMenu = [];
         const setIds = new Set();
 
-        if (response && response.orders) {
-            for (const order of response.orders) {
-                for (const detail of order.orderDetails) {
+        if (response && response.order) {
+            for (const order of response.order) {
+                for (const detail of order.orderdetail) {
                     if (detail) {
                         if (detail.menusetId === null) {
                             normalMenu.push({
@@ -58,10 +58,10 @@ export async function GET(request, { params }) {
                             setIds.add(detail.menusetId);
                             const menuset = detail.menuset;
                             if (menuset) {
-                                // หา orderDetails สำหรับ menuset นี้
-                                const findeOrderDetail = await prisma.orderDetail.findMany({
+                                // หา orderdetail สำหรับ menuset นี้
+                                const findeorderdetail = await prisma.orderdetail.findMany({
                                     where: {
-                                        orderId: order.id,  // ใช้ order.id แทน response.orders.id
+                                        orderId: order.id,  // ใช้ order.id แทน response.order.id
                                         menusetId: menuset.id,
                                     },
                                     include: {
@@ -74,7 +74,7 @@ export async function GET(request, { params }) {
                                     setName: menuset.name,
                                     totalMenu: menuset.totalMenu,
                                     setPrice: menuset.price,
-                                    details: findeOrderDetail.map(d => ({
+                                    menusetdetail: findeorderdetail.map(d => ({
                                         d_id: d.id,
                                         id: d.menu?.id,
                                         name: d.menu?.name,
@@ -91,21 +91,21 @@ export async function GET(request, { params }) {
 
         // สร้าง order object
         const orderData = response.status === 'available' ?
-            { status: 'available' } : response.orders.length > 0 && {
-                orderId: response.orders[0].id,
-                status: response.orders[0].status,
-                type: response.orders[0].order_sourceId,
-                quantity: response.orders[0].quantity,
-                totalPrice: response.orders[0].totalPrice,
+            { status: 'available' } : response.order.length > 0 && {
+                orderId: response.order[0].id,
+                status: response.order[0].status,
+                type: response.order[0].order_sourceId,
+                quantity: response.order[0].quantity,
+                totalPrice: response.order[0].totalPrice,
                 normalMenu,
                 setMenu,
             };
 
         // ส่งกลับข้อมูล
-        const { orders, ...resorder } = response
+        const { order, ...resorder } = response
         return new Response(JSON.stringify({
             ...resorder,
-            orders: orderData,
+            order: orderData,
         }), { status: 200 });
 
     } catch (error) {

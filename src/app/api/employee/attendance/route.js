@@ -9,7 +9,7 @@ export async function GET(request) {
             include: {
                 employee: {
                     include: {
-                        roles: true
+                        role: true
                     }
                 },
                 wages: true

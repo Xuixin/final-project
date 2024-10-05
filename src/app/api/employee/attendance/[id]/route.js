@@ -87,7 +87,7 @@ export async function GET(request, { params }) {
                 id: parseInt(id)
             },
             include: {
-                attendances: {
+                attendance: {
                     where: {
                         createdAt: {
                             gte: new Date(`${today}T00:00:00`), // เริ่มต้นวัน
@@ -106,7 +106,7 @@ export async function GET(request, { params }) {
         }
 
         // ถ้าพบพนักงานแต่ไม่พบข้อมูลการเข้างานในวันนี้
-        if (employee.attendances.length <= 0) {
+        if (employee.attendance.length <= 0) {
             return new Response(JSON.stringify({ ...employee, status: false }), {
                 status: 200,
             });

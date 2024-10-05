@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
         id: intId,
       },
       include: {
-        attendances: true
+        attendance: true
       }
     });
 

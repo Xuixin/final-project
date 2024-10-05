@@ -10,7 +10,7 @@ export async function GET(request, { params }) {
   const id = await params.id
   try {
     // Fetch the restaurant by ID
-    const data = await prisma.menuSet.findUnique({
+    const data = await prisma.menuset.findUnique({
       where: { id: Number(id) },
       include: {
         details: {
@@ -48,8 +48,8 @@ export async function PUT(request, { params }) {
     const parseIntID = parseInt(id)
     const floatprice = parseFloat(price)
 
-    // Update the menuSet
-    const menuset = await prisma.menuSet.update({
+    // Update the menuset
+    const menuset = await prisma.menuset.update({
       where: { id: parseIntID },
       data: {
         name,
@@ -58,16 +58,16 @@ export async function PUT(request, { params }) {
       },
     })
 
-    // Delete existing menuSetDetails
-    await prisma.menuSetDetail.deleteMany({
+    // Delete existing menusetdetails
+    await prisma.menusetdetail.deleteMany({
       where: { menusetId: menuset.id },
     })
 
-    // Insert updated menuSetDetails for each menu item
+    // Insert updated menusetdetails for each menu item
     for (const menuItem of menu) {
-      await prisma.menuSetDetail.create({
+      await prisma.menusetdetail.create({
         data: {
-          menusetId: menuset.id, // Connect to the existing menuSet
+          menusetId: menuset.id, // Connect to the existing menuset
           menuId: menuItem.id,
           quantity: menuItem.quantity,
         },
@@ -76,7 +76,7 @@ export async function PUT(request, { params }) {
 
     // Return success response
     return new Response(
-      JSON.stringify({ message: 'Menuset update successfully!' }),
+      JSON.stringify({ message: 'menuset update successfully!' }),
       { status: 200 }
     )
   } catch (error) {
@@ -100,10 +100,10 @@ export async function DELETE(request, { params }) {
       )
     }
     const parseIntID = parseInt(id)
-    // Delete the menuSet
-    await prisma.menuSetDetail.deleteMany({ where: { menusetId: parseIntID } })
+    // Delete the menuset
+    await prisma.menusetdetail.deleteMany({ where: { menusetId: parseIntID } })
 
-    await prisma.menuSet.delete({ where: { id: parseIntID } })
+    await prisma.menuset.delete({ where: { id: parseIntID } })
     return new Response(
       JSON.stringify({ message: 'Menu set deleted successfully!' }),
       { status: 200 }

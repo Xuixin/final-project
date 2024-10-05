@@ -1,272 +1,289 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model attendance {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  status     Boolean
+  createdAt  DateTime @default(now())
+  employee   employee @relation(fields: [employeeId], references: [id], map: "Attendance_employeeId_fkey")
+  wages      wages[]
+
+  @@index([employeeId], map: "Attendance_employeeId_fkey")
 }
 
-model Customer {
+model category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique(map: "Category_name_key")
+  createdAt DateTime @default(now())
+  menu      menu[]
+}
+
+model customer {
   id        Int      @id @default(autoincrement())
   name      String
   lastname  String
-  email     String   @unique
+  email     String   @unique(map: "Customer_email_key")
   address   String?
   tel       String?
   password  String
-  orders    Order[]
   createdAt DateTime @default(now())
+  order     order[]
 }
 
-model Category {
+model discount {
   id        Int      @id @default(autoincrement())
-  name      String   @unique
-  menus     Menu[]
-  createdAt DateTime @default(now()) // Add createdAt field
-}
-
-model Discount {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+  name      String   @unique(map: "Discount_name_key")
   discount  Float
-  menus     Menu[]
-  createdAt DateTime @default(now()) // Add createdAt field
+  createdAt DateTime @default(now())
+  menu      menu[]
 }
 
-model Ingredient {
+model employee {
+  id         Int          @id @default(autoincrement())
+  name       String
+  lastname   String
+  address    String?
+  email      String       @unique(map: "Employee_email_key")
+  password   String
+  createdAt  DateTime     @default(now())
+  roleId     Int
+  attendance attendance[]
+  role       role         @relation(fields: [roleId], references: [id], map: "Employee_roleId_fkey")
+  order      order[]
+  shipping   shipping[]
+
+  @@index([roleId], map: "Employee_roleId_fkey")
+}
+
+model expense {
+  id       Int              @id @default(autoincrement())
+  category expense_category
+  amount   Float
+  date     DateTime         @default(now())
+}
+
+model ingredient {
   id           Int           @id @default(autoincrement())
   name         String
   min_quantity Float
   quantity     Float
   unit         String
-  menuRecipes  MenuRecipes[] // Relation with MenuRecipes
   createdAt    DateTime      @default(now())
+  menurecipes  menurecipes[]
 }
 
-model Menu {
-  id             Int             @id @default(autoincrement())
-  name           String
-  img            String?
-  price          Float
-  categoryId     Int
-  discountId     Int? // Optional
-  status         MenuStatus      @default(Draft)
-  category       Category        @relation(fields: [categoryId], references: [id])
-  discount       Discount?       @relation(fields: [discountId], references: [id])
-  menusetDetails MenuSetDetail[]
-  orderDetails   OrderDetail[]
-  menuRecipes    MenuRecipes[] // Relation with MenuRecipes
-  soldQuantity   Int             @default(0)
-  createdAt      DateTime        @default(now())
+model menu {
+  id            Int             @id @default(autoincrement())
+  name          String
+  img           String?
+  price         Float
+  categoryId    Int
+  discountId    Int?
+  createdAt     DateTime        @default(now())
+  soldQuantity  Int             @default(0)
+  status        menu_status     @default(Draft)
+  category      category        @relation(fields: [categoryId], references: [id], map: "Menu_categoryId_fkey")
+  discount      discount?       @relation(fields: [discountId], references: [id], map: "Menu_discountId_fkey")
+  menurecipes   menurecipes[]
+  menusetdetail menusetdetail[]
+  orderdetail   orderdetail[]
+
+  @@index([categoryId], map: "Menu_categoryId_fkey")
+  @@index([discountId], map: "Menu_discountId_fkey")
 }
 
-//food ingredients
+model menurecipes {
+  id           Int        @id @default(autoincrement())
+  menuId       Int
+  ingredientId Int
+  quantity     Float
+  unit         String
+  createdAt    DateTime   @default(now())
+  ingredient   ingredient @relation(fields: [ingredientId], references: [id], map: "MenuRecipes_ingredientId_fkey")
+  menu         menu       @relation(fields: [menuId], references: [id], map: "MenuRecipes_menuId_fkey")
 
-model MenuRecipes {
-  id           Int    @id @default(autoincrement())
-  menuId       Int // ฟิลด์นี้ใช้เก็บค่า id ของ Menu
-  ingredientId Int // ฟิลด์นี้ใช้เก็บค่า id ของ Ingredient
-  quantity     Float // ปริมาณของส่วนประกอบที่ต้องใช้
-  unit         String // หน่วยของปริมาณ (ควรตรงกับหน่วยของ Ingredient)
-
-  menu       Menu       @relation(fields: [menuId], references: [id]) // ความสัมพันธ์กับ Menu
-  ingredient Ingredient @relation(fields: [ingredientId], references: [id]) // ความสัมพันธ์กับ Ingredient
-
-  createdAt DateTime @default(now())
+  @@index([ingredientId], map: "MenuRecipes_ingredientId_fkey")
+  @@index([menuId], map: "MenuRecipes_menuId_fkey")
 }
 
-enum tableType {
-  inside
-  outside
+model menuset {
+  id            Int             @id @default(autoincrement())
+  name          String
+  totalMenu     Int
+  price         Float
+  createdAt     DateTime        @default(now())
+  soldQuantity  Int             @default(0)
+  status        menuset_status  @default(Draft)
+  menusetdetail menusetdetail[]
+  orderdetail   orderdetail[]
 }
 
-enum tableStatus {
-  available //ว่าง
-  occupied //ไม่ว่าง
-}
-
-model Table {
-  id        Int         @id @default(autoincrement())
-  table_NO  String
-  status    tableStatus @default(available)
-  type      tableType
-  orders    Order[]
-  createdAt DateTime    @default(now()) // Add createdAt field
-}
-
-// สร้าง Enum สำหรับ status
-enum MenuStatus {
-  Draft
-  Published
-  Archived
-}
-
-model MenuSet {
-  id           Int             @id @default(autoincrement())
-  name         String
-  totalMenu    Int
-  price        Float
-  status       MenuStatus      @default(Draft)
-  details      MenuSetDetail[]
-  OrderDetail  OrderDetail[]
-  soldQuantity Int             @default(0)
-  createdAt    DateTime        @default(now())
-}
-
-model MenuSetDetail {
+model menusetdetail {
   id        Int      @id @default(autoincrement())
   menusetId Int
   menuId    Int
   quantity  Int
-  menuset   MenuSet  @relation(fields: [menusetId], references: [id])
-  menu      Menu     @relation(fields: [menuId], references: [id])
-  createdAt DateTime @default(now()) // Add createdAt field
+  createdAt DateTime @default(now())
+  menu      menu     @relation(fields: [menuId], references: [id], map: "MenuSetDetail_menuId_fkey")
+  menuset   menuset  @relation(fields: [menusetId], references: [id], map: "MenuSetDetail_menusetId_fkey")
+
+  @@index([menuId], map: "MenuSetDetail_menuId_fkey")
+  @@index([menusetId], map: "MenuSetDetail_menusetId_fkey")
 }
 
-model Employee {
-  id          Int          @id @default(autoincrement())
-  name        String
-  lastname    String
-  address     String?
-  email       String       @unique
-  password    String
-  roleId      Int // Foreign key to Role model
-  roles       Role         @relation(fields: [roleId], references: [id])
-  attendances Attendance[]
-  orders      Order[]
-  shipping    Shipping[]
-  createdAt   DateTime     @default(now())
+model order {
+  id             Int           @id @default(autoincrement())
+  customerId     Int?
+  tableId        Int?
+  employeeId     Int?
+  status         order_status  @default(InQueue)
+  quantity       Int
+  totalPrice     Float
+  createdAt      DateTime      @default(now())
+  order_sourceId Int
+  customer       customer?     @relation(fields: [customerId], references: [id], map: "Order_customerId_fkey")
+  employee       employee?     @relation(fields: [employeeId], references: [id], map: "Order_employeeId_fkey")
+  order_source   order_source  @relation(fields: [order_sourceId], references: [id], map: "Order_order_sourceId_fkey")
+  table          table?        @relation(fields: [tableId], references: [id], map: "Order_tableId_fkey")
+  orderdetail    orderdetail[]
+  payment        payment?
+  shipping       shipping?
+
+  @@index([customerId], map: "Order_customerId_fkey")
+  @@index([employeeId], map: "Order_employeeId_fkey")
+  @@index([order_sourceId], map: "Order_order_sourceId_fkey")
+  @@index([tableId], map: "Order_tableId_fkey")
 }
 
-model Role {
+model order_source {
+  id          Int     @id @default(autoincrement())
+  source_name String  @unique(map: "Order_source_source_name_key")
+  order       order[]
+}
+
+model orderdetail {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  menuId    Int?
+  menusetId Int?
+  quantity  Int
+  price     Float?
+  createdAt DateTime @default(now())
+  menu      menu?    @relation(fields: [menuId], references: [id], map: "OrderDetail_menuId_fkey")
+  menuset   menuset? @relation(fields: [menusetId], references: [id], map: "OrderDetail_menusetId_fkey")
+  order     order    @relation(fields: [orderId], references: [id], map: "OrderDetail_orderId_fkey")
+
+  @@unique([orderId, menuId, menusetId], map: "OrderDetail_orderId_menuId_menusetId_key")
+  @@index([menuId], map: "OrderDetail_menuId_fkey")
+  @@index([menusetId], map: "OrderDetail_menusetId_fkey")
+}
+
+model payment {
+  id        Int            @id @default(autoincrement())
+  orderId   Int            @unique(map: "Payment_orderId_key")
+  amount    Float
+  status    payment_status @default(InComplete)
+  createdAt DateTime       @default(now())
+  method    payment_method @default(PayPal)
+  imgQr     String?
+  order     order          @relation(fields: [orderId], references: [id], map: "Payment_orderId_fkey")
+}
+
+model role {
   id           Int        @id @default(autoincrement())
   name         String
-  wagepermonth Int
   wageperday   Int
-  employees    Employee[] // Use the plural form to reflect the one-to-many relationship
+  wagepermonth Int
+  employee     employee[]
 }
 
-model Attendance {
-  id         Int      @id @default(autoincrement())
-  employeeId Int
-  status     Boolean
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  wages      Wages[]
-  createdAt  DateTime @default(now())
+model shipping {
+  id         Int             @id @default(autoincrement())
+  orderId    Int             @unique(map: "Shipping_orderId_key")
+  employeeId Int?
+  status     shipping_status @default(Pending)
+  createdAt  DateTime        @default(now())
+  employee   employee?       @relation(fields: [employeeId], references: [id], map: "Shipping_employeeId_fkey")
+  order      order           @relation(fields: [orderId], references: [id], map: "Shipping_orderId_fkey")
+
+  @@index([employeeId], map: "Shipping_employeeId_fkey")
 }
 
-model Wages {
+model table {
+  id        Int          @id @default(autoincrement())
+  table_NO  String
+  status    table_status @default(available)
+  createdAt DateTime     @default(now())
+  type      table_type
+  order     order[]
+}
+
+model wages {
   id           Int        @id @default(autoincrement())
   attendanceId Int
   amount       Float
-  attendance   Attendance @relation(fields: [attendanceId], references: [id])
-  createdAt    DateTime   @default(now()) // Add createdAt field
+  createdAt    DateTime   @default(now())
+  attendance   attendance @relation(fields: [attendanceId], references: [id], map: "Wages_attendanceId_fkey")
+
+  @@index([attendanceId], map: "Wages_attendanceId_fkey")
 }
 
-model Order_source {
-  id          Int     @id @default(autoincrement())
-  source_name String  @unique
-  orders      Order[]
+enum expense_category {
+  wage
+  food
 }
 
-enum orderStatus {
-  InQueue
-  InProgress
-  Finished
-  Cancelled
+enum table_status {
+  available
+  occupied
 }
 
-model Order {
-  id             Int           @id @default(autoincrement())
-  customerId     Int?
-  tableId        Int? // Optional
-  employeeId     Int? // Optional
-  order_sourceId Int
-  status         orderStatus   @default(InQueue)
-  quantity       Int
-  totalPrice     Float
-  customer       Customer?     @relation(fields: [customerId], references: [id])
-  table          Table?        @relation(fields: [tableId], references: [id])
-  employee       Employee?     @relation(fields: [employeeId], references: [id])
-  orderSource    Order_source  @relation(fields: [order_sourceId], references: [id])
-  orderDetails   OrderDetail[]
-  payment        Payment?
-  shipping       Shipping?
-  createdAt      DateTime      @default(now()) // Add createdAt field
-}
-
-model OrderDetail {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  menuId    Int? // Optional
-  menusetId Int? // Optional
-  quantity  Int
-  price     Float?
-  order     Order    @relation(fields: [orderId], references: [id])
-  menu      Menu?    @relation(fields: [menuId], references: [id])
-  menuset   MenuSet? @relation(fields: [menusetId], references: [id])
-  createdAt DateTime @default(now())
-
-  @@unique([orderId, menuId, menusetId]) // Add unique constraint
-}
-
-enum PaymentMethod {
-  Cash
-  PayPal
-  QRCode
-}
-
-enum paymentStatus {
+enum payment_status {
   InComplete
   Completed
   Refunded
 }
 
-model Payment {
-  id        Int           @id @default(autoincrement())
-  orderId   Int           @unique
-  amount    Float
-  imgQr     String?
-  method    PaymentMethod @default(PayPal)
-  status    paymentStatus @default(InComplete)
-  order     Order         @relation(fields: [orderId], references: [id])
-  createdAt DateTime      @default(now())
-}
-
-enum ShippingStatus {
+enum shipping_status {
   Pending
   Shipped
   Delivered
   Cancelled
 }
 
-model Shipping {
-  id         Int            @id @default(autoincrement())
-  orderId    Int            @unique
-  employeeId Int?
-  status     ShippingStatus @default(Pending)
-  order      Order          @relation(fields: [orderId], references: [id])
-  employee   Employee?      @relation(fields: [employeeId], references: [id])
-  createdAt  DateTime       @default(now()) // Add createdAt field
+enum order_status {
+  InQueue
+  InProgress
+  Finished
+  Cancelled
 }
 
-model Expense {
-  id       Int        @id @default(autoincrement())
-  category ExpenseCat
-  amount   Float
-  date     DateTime   @default(now())
+enum table_type {
+  inside
+  outside
 }
 
-enum ExpenseCat {
-  wage
-  food
+enum payment_method {
+  Cash
+  PayPal
+  QRCode
+}
+
+enum menuset_status {
+  Draft
+  Published
+  Archived
+}
+
+enum menu_status {
+  Draft
+  Published
+  Archived
 }

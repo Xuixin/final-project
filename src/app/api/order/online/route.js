@@ -16,7 +16,7 @@ export async function POST(req) {
         customer: {
           connect: { id: parseInt(customerId) },
         },
-        orderSource: {
+        order_source: {
           connect: { id: 1 },
         },
       },
@@ -31,7 +31,7 @@ export async function POST(req) {
         orderId: order.id,
       })),
       ...itemsSet.flatMap((set) =>
-        set.details.map((detail) => ({
+        set.orderdetail.map((detail) => ({
           menuId: detail.menuId,
           menusetId: set.id,
           quantity: detail.quantity,
@@ -41,7 +41,7 @@ export async function POST(req) {
       ),
     ]
 
-    // 3. สร้าง OrderDetails สำหรับ items และ itemsSet
+    // 3. สร้าง orderdetail สำหรับ items และ itemsSet
     await prisma.orderDetail.createMany({
       data: allItems,
     })
@@ -102,7 +102,7 @@ export async function GET() {
         status: {
           not: 'Cancelled',
         },
-        orderSource: {
+        order_source: {
           id: 1
         },
         payment: {
@@ -120,7 +120,7 @@ export async function GET() {
       include: {
         customer: true,
         shipping: true,
-        orderDetails: {
+        orderdetail: {
           include: {
             menu: {
               include: {
@@ -129,7 +129,7 @@ export async function GET() {
             },
             menuset: {
               include: {
-                details: {
+                orderdetail: {
                   include: {
                     menu: true,
                   },
@@ -144,13 +144,13 @@ export async function GET() {
       },
     });
 
-    // สร้าง orders ใหม่ที่มี normalMenu และ setMenu โดยไม่รวม orderDetails
+    // สร้าง orders ใหม่ที่มี normalMenu และ setMenu โดยไม่รวม orderdetail
     const updatedOrders = orders.map((order) => {
       const normalMenu = [];
       const setMenu = [];
       const setIds = new Set(); // ใช้ Set เพื่อป้องกันการเพิ่มเซ็ตเมนูซ้ำ
 
-      for (const detail of order.orderDetails) {
+      for (const detail of order.orderdetail) {
         if (detail) {
           if (detail.menusetId === null) {
             // เป็นเมนูปกติ
@@ -165,7 +165,7 @@ export async function GET() {
             // เป็นเซ็ตเมนู และยังไม่ได้เพิ่มในรายการ
             setIds.add(detail.menusetId); // ป้องกันการเพิ่ม menusetId ซ้ำ
 
-            const findeOrderDetail = order.orderDetails.filter(
+            const findeOrderDetail = order.orderdetail.filter(
               (d) => d.menusetId === detail.menusetId
             );
 
@@ -176,7 +176,7 @@ export async function GET() {
                 setName: menuset.name,
                 totalMenu: menuset.totalMenu,
                 setPrice: menuset.price * findeOrderDetail[0].quantity,
-                details: findeOrderDetail.map((d) => ({
+                orderdetail: findeOrderDetail.map((d) => ({
                   d_id: d.id,
                   id: d.menu?.id,
                   name: d.menu?.name,
@@ -189,8 +189,8 @@ export async function GET() {
         }
       }
 
-      // ลบฟิลด์ orderDetails และเพิ่ม normalMenu และ setMenu
-      const { orderDetails, ...restOrder } = order;
+      // ลบฟิลด์ orderdetail และเพิ่ม normalMenu และ setMenu
+      const { orderdetail, ...restOrder } = order;
       return {
         ...restOrder,
         normalMenu,

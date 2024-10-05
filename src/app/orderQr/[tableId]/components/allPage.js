@@ -319,9 +319,9 @@ export function OrderPage({ setPage, tableId }) {
                         </span>
                     </h1>
                     <h2>Status: {tableOrder?.orders?.status}</h2>
-                    {tableOrder?.orders?.normalMenu.length > 0 && (
+                    {tableOrder?.order?.normalMenu.length > 0 && (
                         <ul>
-                            {tableOrder?.orders.normalMenu.map((menu) => {
+                            {tableOrder?.order.normalMenu.map((menu) => {
                                 return (
                                     <motion.li
                                         key={menu.id}

@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/table"
 
 import Link from "next/link"
+import { Description } from '@headlessui/react';
 
 export default function AddMenuSet() {
     const { toast } = useToast()
@@ -279,7 +280,7 @@ export default function AddMenuSet() {
 
                         <Card className="overflow-hidden" x-chunk="dashboard-07-chunk-4">
                             <CardHeader>
-                                <CardTitle>Product Images</CardTitle>
+                                <CardTitle>Product Description</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid gap-6">

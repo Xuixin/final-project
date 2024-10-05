@@ -103,7 +103,7 @@ export default function EmployeeUpdateForm({ params }) {
       await axios.post(`/api/employee/emp/${params.id}`, updatedData)
 
       alert('Update successful!')
-      router.push('/admin/employees') // Redirect to the employee list or a specific page
+      router.push('/employees') // Redirect to the employee list or a specific page
     } catch (error) {
       console.error('Update failed:', error)
     }

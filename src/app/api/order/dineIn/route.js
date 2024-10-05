@@ -22,7 +22,7 @@ export async function POST(req) {
             status,
             quantity: 0,
             totalPrice: parseFloat(totalPrice),
-            orderSource: { connect: { id: source_id } },
+            order_source: { connect: { id: source_id } },
         };
 
         // ถ้ามี table_id ให้เชื่อมโยง table ด้วย
@@ -53,8 +53,8 @@ export async function POST(req) {
             ),
         ];
 
-        // สร้าง OrderDetails สำหรับ items และ itemsSet
-        await prisma.orderDetail.createMany({ data: allItems });
+        // สร้าง orderdetails สำหรับ items และ itemsSet
+        await prisma.orderdetail.createMany({ data: allItems });
 
         // อัปเดตจำนวนรวมในคำสั่งซื้อ
         const totalQuantity = allItems.reduce((total, item) => total + item.quantity, 0);
@@ -70,7 +70,7 @@ export async function POST(req) {
 
         // อัปเดต soldQuantity สำหรับ set menu
         await Promise.all(itemsSet.map(set =>
-            prisma.menuSet.update({
+            prisma.menuset.update({
                 where: { id: set.id },
                 data: { soldQuantity: { increment: 1 } },
             })

@@ -4,7 +4,7 @@ export async function GET() {
     try {
         const response = await prisma.employee.findMany({
             where: {
-                roles: {
+                role: {
                     name: 'Shipper'
                 }
             }

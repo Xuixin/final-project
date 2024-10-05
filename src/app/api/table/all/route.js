@@ -11,15 +11,15 @@ export async function GET(request, { params }) {
                 status: 'occupied',
             },
             include: {
-                orders: {
+                order: {
                     include: {
                         customer: true,
-                        orderDetails: {
+                        orderdetail: {
                             include: {
                                 menu: true,
                                 menuset: {
                                     include: {
-                                        details: {
+                                        menusetdetail: {
                                             include: {
                                                 menu: true
                                             }
@@ -40,14 +40,14 @@ export async function GET(request, { params }) {
         };
 
         for (const table of tables) {
-            const ordersForTable = occupiedTables.find(t => t.id === table.id);
+            const orderForTable = occupiedTables.find(t => t.id === table.id);
             const normalMenu = [];
             const setMenu = [];
             const setIds = new Set(); // ใช้ Set เพื่อตรวจสอบว่าเซ็ตเมนูซ้ำหรือไม่
 
-            if (ordersForTable) {
-                for (const order of ordersForTable.orders) {
-                    for (const detail of order.orderDetails) {
+            if (orderForTable) {
+                for (const order of orderForTable.order) {
+                    for (const detail of order.orderdetail) {
                         if (detail) {
                             if (detail.menusetId === null) {
                                 // เป็นเมนูปกติ
@@ -62,9 +62,9 @@ export async function GET(request, { params }) {
                                 // เป็นเซ็ตเมนู และยังไม่ได้เพิ่มในรายการ
                                 setIds.add(detail.menusetId); // เพิ่ม menusetId ลงใน Set เพื่อตรวจสอบซ้ำ
 
-                                const findeOrderDetail = await prisma.orderDetail.findMany({
+                                const findeOrderDetail = await prisma.orderdetail.findMany({
                                     where: {
-                                        orderId: order.id,  // ใช้ order.id แทน response.orders.id
+                                        orderId: order.id,  // ใช้ order.id แทน response.order.id
                                         menusetId: detail.menusetId,
                                     },
                                     include: {
@@ -100,13 +100,13 @@ export async function GET(request, { params }) {
                 table_NO: table.table_NO,
                 status: table.status,
                 type: table.type,
-                order: ordersForTable ? {
-                    orderId: ordersForTable.orders[0]?.id,
-                    status: ordersForTable.orders[0]?.status,
-                    totalPrice: ordersForTable.orders[0]?.totalPrice,
-                    source: ordersForTable.orders[0]?.order_sourceId,
-                    table_NO: ordersForTable.table_NO,
-                    tableId: ordersForTable.id,
+                order: orderForTable ? {
+                    orderId: orderForTable.order[0]?.id,
+                    status: orderForTable.order[0]?.status,
+                    totalPrice: orderForTable.order[0]?.totalPrice,
+                    source: orderForTable.order[0]?.order_sourceId,
+                    table_NO: orderForTable.table_NO,
+                    tableId: orderForTable.id,
                     normalMenu,
                     setMenu
                 } : { status: 'available' }
