@@ -3,14 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 27, 2024 at 07:40 PM
+-- Generation Time: Oct 05, 2024 at 02:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
 SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
-SET time_zone = "+07:00";
+SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -54,7 +54,12 @@ INSERT INTO `attendance` (`id`, `employeeId`, `status`, `createdAt`) VALUES
 (18, 3, 1, '2024-09-22 17:34:58.288'),
 (19, 5, 1, '2024-09-22 17:49:19.599'),
 (20, 5, 1, '2024-09-23 18:09:26.426'),
-(21, 5, 1, '2024-09-25 17:49:20.933');
+(21, 5, 1, '2024-09-25 17:49:20.933'),
+(22, 5, 1, '2024-09-30 16:18:30.255'),
+(23, 4, 1, '2024-09-30 16:53:55.575'),
+(24, 4, 1, '2024-10-01 17:33:18.051'),
+(25, 4, 1, '2024-10-01 17:33:18.045'),
+(26, 4, 1, '2024-10-01 17:33:18.043');
 
 -- --------------------------------------------------------
 
@@ -116,7 +121,9 @@ INSERT INTO `customer` (`id`, `name`, `lastname`, `email`, `address`, `tel`, `pa
 (1, 'imron', 'basor', 'imron@test.com', '36', '0120120120', '$2b$10$k8YXlvM3cUq1v5BYk78nF.dVygMYSb22cDF3NtFga8gzoxnXC2/EC', '2024-08-29 15:39:06.281'),
 (2, 'cus_tes', '1', 'cus1@test', 'a 36 66 58 ', '0650650650', '$2b$10$r5y2zpD0dKOCLFr/fH1iCuFKVWQ5ljVLLifsqonw9h1L8bVQl0g6W', '2024-09-15 14:25:14.948'),
 (3, 'cus2', 'cus2', 'cus2@test', NULL, NULL, '$2b$10$fR6n8tBytdaToGhiosiLueTVKjILhHq4VBYt.CSCFwcBdoFGLW/Ru', '2024-09-17 17:49:04.807'),
-(4, 'cus3', 'cus3', 'cus3@test', '000', '00', '$2b$10$c.Bvp/mfdgK9Jhf/vX8T3ObfXP.Aicrz104fVfNdTL4VaIIxyqtI.', '2024-09-17 17:49:18.657');
+(4, 'cus3', 'cus3', 'cus3@test', '000', '00', '$2b$10$c.Bvp/mfdgK9Jhf/vX8T3ObfXP.Aicrz104fVfNdTL4VaIIxyqtI.', '2024-09-17 17:49:18.657'),
+(6, 'imron', 'basor', 'lulu@cus', NULL, NULL, '$2b$10$v66RGPM2Gv0kInjR2bVv9umqzqPXYmPaX7kCxHWShvVX7VpYjj.xC', '2024-10-01 18:15:34.082'),
+(7, 'arr', 'deng', 'ang@cus', 'arr 16/*22', '0120120120', '$2b$10$OMy48og4SEjBUyZY9WiBXOsryVIziyRSagDhiVbZMY4Ht4VqsvYVC', '2024-10-01 18:17:19.226');
 
 -- --------------------------------------------------------
 
@@ -183,7 +190,35 @@ CREATE TABLE `expense` (
 --
 
 INSERT INTO `expense` (`id`, `category`, `amount`, `date`) VALUES
-(1, 'wage', 310, '2024-09-22 17:39:37.324');
+(1, 'wage', 310, '2024-09-22 17:39:37.324'),
+(2, 'wage', 150, '2024-09-30 16:50:27.463'),
+(3, 'wage', 60, '2024-10-01 17:34:17.086');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ingredient`
+--
+
+CREATE TABLE `ingredient` (
+  `id` int(11) NOT NULL,
+  `name` varchar(191) NOT NULL,
+  `min_quantity` double NOT NULL,
+  `quantity` double NOT NULL,
+  `unit` varchar(191) NOT NULL,
+  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `ingredient`
+--
+
+INSERT INTO `ingredient` (`id`, `name`, `min_quantity`, `quantity`, `unit`, `createdAt`) VALUES
+(1, 'orange', 20, 0, 'ลูก', '2024-10-04 15:41:09.941'),
+(2, 'teh', 2.5, 0, 'kilogram(kg)', '2024-10-04 16:27:32.669'),
+(4, 'limao', 20, 0, 'ลูก', '2024-10-04 17:09:34.379'),
+(5, 'apple', 20, 0, 'ลูก', '2024-10-04 17:10:34.330'),
+(6, 'susu', 25, 0, 'kilogram(kg)', '2024-10-04 17:12:03.365');
 
 -- --------------------------------------------------------
 
@@ -208,9 +243,9 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`id`, `name`, `img`, `price`, `categoryId`, `discountId`, `createdAt`, `soldQuantity`, `status`) VALUES
-(3, 'teh o halia panas', '/No Image Upload', 1, 14, 2, '2024-08-12 15:02:44.172', 13, 'Published'),
-(4, 'teh o panas', '/uploads/1726851270692-orrjbqybp7.jpg', 1, 14, NULL, '2024-08-12 15:03:57.325', 17, 'Published'),
-(5, 'teh o limau panas', '/No Image Upload', 1.5, 14, NULL, '2024-08-12 15:04:51.150', 18, 'Published'),
+(3, 'teh o halia panas', '/No Image Upload', 1, 14, 2, '2024-08-12 15:02:44.172', 16, 'Published'),
+(4, 'teh o panas', '/uploads/1727889413383-4m8vky9f4re.png', 1, 14, NULL, '2024-08-12 15:03:57.325', 19, 'Published'),
+(5, 'teh o limau panas', '/No Image Upload', 1.5, 14, NULL, '2024-08-12 15:04:51.150', 19, 'Published'),
 (6, 'teh tarek', '/No file Uploaded', 2, 14, NULL, '2024-08-12 15:05:14.543', 10, 'Published'),
 (7, 'teh halia panas', '/No file Uploaded', 2.5, 14, NULL, '2024-08-12 15:05:40.443', 6, 'Published'),
 (8, 'teh o ais', '/No file Uploaded', 1.5, 14, NULL, '2024-08-12 15:06:01.411', 5, 'Published'),
@@ -219,10 +254,33 @@ INSERT INTO `menu` (`id`, `name`, `img`, `price`, `categoryId`, `discountId`, `c
 (11, 'teh ais', '/No file Uploaded', 2, 14, NULL, '2024-08-12 15:06:54.593', 3, 'Published'),
 (12, 'teh ais cincau', '/No file Uploaded', 2.5, 14, NULL, '2024-08-12 15:07:15.319', 2, 'Published'),
 (13, 'teh halia ais', '/No file Uploaded', 2.5, 14, NULL, '2024-08-12 15:07:34.828', 2, 'Published'),
-(14, 'test1', '/noImage', 1.5, 11, NULL, '2024-09-05 16:11:30.000', 3, 'Published'),
 (16, 'test3', '/no', 1.6, 12, NULL, '2024-09-05 16:12:43.000', 3, 'Published'),
-(18, 'test5', '/No Image Upload', 1, 7, NULL, '2024-09-14 17:31:04.385', 2, 'Published'),
-(19, 'test5', '/No Image Upload', 1, 7, NULL, '2024-09-14 17:31:10.228', 0, 'Published');
+(19, 'test5', '/No Image Upload', 1, 7, NULL, '2024-09-14 17:31:10.228', 1, 'Published'),
+(20, 'orang juice', '/uploads/1728066655487-yx7bzu83yin.jpg', 4, 12, NULL, '2024-10-04 18:31:03.614', 0, 'Published'),
+(21, 'apple juice', '/uploads/1728112680849-egs1sa5vqul.jpg', 4, 12, NULL, '2024-10-05 07:18:01.118', 0, 'Published');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `menurecipes`
+--
+
+CREATE TABLE `menurecipes` (
+  `id` int(11) NOT NULL,
+  `menuId` int(11) NOT NULL,
+  `ingredientId` int(11) NOT NULL,
+  `quantity` double NOT NULL,
+  `unit` varchar(191) NOT NULL,
+  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `menurecipes`
+--
+
+INSERT INTO `menurecipes` (`id`, `menuId`, `ingredientId`, `quantity`, `unit`, `createdAt`) VALUES
+(5, 4, 4, 1, 'kilogram(kg)', '2024-10-05 08:25:39.981'),
+(6, 4, 2, 0.05, 'kilogram(kg)', '2024-10-05 08:25:39.982');
 
 -- --------------------------------------------------------
 
@@ -245,8 +303,8 @@ CREATE TABLE `menuset` (
 --
 
 INSERT INTO `menuset` (`id`, `name`, `totalMenu`, `price`, `createdAt`, `soldQuantity`, `status`) VALUES
-(1, 'teh party', 7, 8, '2024-08-30 15:03:09.501', 3, 'Draft'),
-(2, '1 orang', 2, 4, '2024-08-30 15:04:57.795', 2, 'Draft'),
+(1, 'teh party', 7, 8, '2024-08-30 15:03:09.501', 4, 'Draft'),
+(2, '1 orang', 2, 4, '2024-08-30 15:04:57.795', 3, 'Draft'),
 (8, 'test set 1', 4, 4, '2024-09-13 17:56:30.175', 2, 'Published');
 
 -- --------------------------------------------------------
@@ -305,15 +363,18 @@ CREATE TABLE `order` (
 INSERT INTO `order` (`id`, `customerId`, `tableId`, `employeeId`, `status`, `quantity`, `totalPrice`, `createdAt`, `order_sourceId`) VALUES
 (29, 1, NULL, NULL, 'Finished', 8, 9, '2024-09-05 09:06:06.450', 1),
 (30, 1, NULL, NULL, 'Finished', 11, 14, '2024-09-05 09:09:30.407', 1),
-(31, NULL, 1, 5, 'Finished', 117, 124, '2024-09-14 02:21:59.000', 2),
+(31, NULL, 1, 4, 'InProgress', 118, 125.6, '2024-09-14 02:21:59.000', 2),
 (32, 2, NULL, NULL, 'Finished', 7, 9.5, '2024-09-15 14:31:36.011', 1),
 (33, 3, NULL, NULL, 'Finished', 6, 7.1, '2024-09-17 17:50:40.672', 1),
 (34, 4, NULL, NULL, 'Finished', 3, 3.5, '2024-09-17 17:52:33.741', 1),
 (36, 4, NULL, NULL, 'Finished', 2, 3.5, '2024-09-17 18:12:07.655', 1),
 (37, 4, NULL, NULL, 'Finished', 1, 2, '2024-09-17 18:15:31.751', 1),
-(40, NULL, 3, 5, 'InProgress', 1, 1, '2024-09-22 18:54:33.705', 2),
+(40, NULL, 3, 4, 'InProgress', 1, 1, '2024-09-22 18:54:33.705', 2),
 (41, NULL, NULL, 5, 'Finished', 1, 1, '2024-09-22 19:13:18.301', 3),
-(42, NULL, 1, NULL, 'InProgress', 3, 5.5, '2024-09-25 19:13:00.435', 2);
+(44, NULL, 4, NULL, 'InQueue', 2, 2.5, '2024-09-29 16:59:58.294', 2),
+(45, NULL, 9, NULL, 'InQueue', 1, 0.3, '2024-09-29 17:35:02.696', 2),
+(46, NULL, NULL, NULL, 'InQueue', 1, 1, '2024-09-30 16:18:21.250', 3),
+(47, 7, NULL, NULL, 'InQueue', 8, 8.3, '2024-10-02 17:58:14.519', 1);
 
 -- --------------------------------------------------------
 
@@ -363,12 +424,12 @@ INSERT INTO `orderdetail` (`id`, `orderId`, `menuId`, `menusetId`, `quantity`, `
 (111, 31, 7, 1, 3, NULL, '2024-09-14 17:40:54.057'),
 (112, 31, 8, 1, 3, NULL, '2024-09-14 17:40:54.057'),
 (113, 31, 10, 1, 3, NULL, '2024-09-14 17:40:54.057'),
-(114, 32, 14, NULL, 1, 1.5, '2024-09-15 14:31:36.087'),
+(114, 32, NULL, NULL, 1, 1.5, '2024-09-15 14:31:36.087'),
 (115, 32, 3, 8, 3, NULL, '2024-09-15 14:31:36.087'),
 (116, 32, 5, 8, 1, NULL, '2024-09-15 14:31:36.087'),
 (117, 32, 13, 2, 1, NULL, '2024-09-15 14:31:36.087'),
 (118, 32, 11, 2, 1, NULL, '2024-09-15 14:31:36.087'),
-(119, 33, 14, NULL, 1, 1.5, '2024-09-17 17:50:40.721'),
+(119, 33, NULL, NULL, 1, 1.5, '2024-09-17 17:50:40.721'),
 (120, 33, 16, NULL, 1, 1.6, '2024-09-17 17:50:40.721'),
 (121, 33, 3, 8, 3, NULL, '2024-09-17 17:50:40.721'),
 (122, 33, 5, 8, 1, NULL, '2024-09-17 17:50:40.721'),
@@ -386,9 +447,19 @@ INSERT INTO `orderdetail` (`id`, `orderId`, `menuId`, `menusetId`, `quantity`, `
 (139, 31, 4, NULL, 1, 1, '2024-09-22 16:17:49.152'),
 (144, 40, 4, NULL, 1, 1, '2024-09-22 18:54:35.793'),
 (145, 41, 4, NULL, 1, 1, '2024-09-22 19:13:18.635'),
-(146, 42, 4, NULL, 1, 1, '2024-09-25 19:13:00.458'),
-(147, 42, 13, NULL, 1, 2.5, '2024-09-25 19:13:00.458'),
-(148, 42, 9, NULL, 1, 2, '2024-09-25 19:13:00.458');
+(153, 44, 5, NULL, 1, 1.5, '2024-09-29 16:59:58.306'),
+(154, 44, 4, NULL, 1, 1, '2024-09-29 16:59:58.306'),
+(155, 45, 3, NULL, 1, 1, '2024-09-29 17:35:02.782'),
+(156, 31, 16, NULL, 1, 1.6, '2024-09-30 16:06:33.088'),
+(157, 46, 19, NULL, 1, 1, '2024-09-30 16:18:21.297'),
+(158, 47, 3, NULL, 1, 1, '2024-10-02 17:58:15.034'),
+(159, 47, 6, 1, 1, NULL, '2024-10-02 17:58:15.034'),
+(160, 47, 4, 1, 1, NULL, '2024-10-02 17:58:15.034'),
+(161, 47, 3, 1, 1, NULL, '2024-10-02 17:58:15.034'),
+(162, 47, 5, 1, 1, NULL, '2024-10-02 17:58:15.034'),
+(163, 47, 7, 1, 1, NULL, '2024-10-02 17:58:15.034'),
+(164, 47, 8, 1, 1, NULL, '2024-10-02 17:58:15.034'),
+(165, 47, 10, 1, 1, NULL, '2024-10-02 17:58:15.034');
 
 -- --------------------------------------------------------
 
@@ -433,14 +504,15 @@ CREATE TABLE `payment` (
 INSERT INTO `payment` (`id`, `orderId`, `amount`, `status`, `createdAt`, `method`, `imgQr`) VALUES
 (7, 29, 9, 'Completed', '2024-09-05 09:06:07.687', 'PayPal', NULL),
 (8, 30, 14, 'Completed', '2024-09-05 09:09:31.046', 'PayPal', NULL),
-(9, 31, 12, 'Refunded', '2024-09-14 17:40:56.211', 'PayPal', NULL),
 (10, 32, 9.5, 'Completed', '2024-09-15 14:31:37.933', 'PayPal', NULL),
 (11, 33, 7.1, 'Completed', '2024-09-17 17:50:41.311', 'PayPal', NULL),
 (12, 34, 3.5, 'Completed', '2024-09-17 17:52:34.594', 'PayPal', NULL),
 (14, 36, 3.5, 'Completed', '2024-09-17 18:12:08.177', 'PayPal', NULL),
 (15, 37, 2, 'Completed', '2024-09-17 18:15:32.512', 'PayPal', NULL),
 (16, 41, 1, 'Completed', '2024-09-25 18:51:48.451', 'Cash', NULL),
-(17, 40, 1, 'Completed', '2024-09-25 18:59:47.507', 'Cash', NULL);
+(17, 40, 1, 'Completed', '2024-09-25 18:59:47.507', 'Cash', NULL),
+(20, 31, 125.6, 'Completed', '2024-10-01 17:07:31.793', 'Cash', NULL),
+(21, 47, 8.3, 'Completed', '2024-10-02 17:58:16.443', 'PayPal', NULL);
 
 -- --------------------------------------------------------
 
@@ -494,7 +566,8 @@ INSERT INTO `shipping` (`id`, `orderId`, `employeeId`, `status`, `createdAt`) VA
 (5, 33, 5, 'Shipped', '2024-09-17 17:50:42.340'),
 (6, 34, 5, 'Shipped', '2024-09-17 17:52:35.226'),
 (8, 36, 5, 'Shipped', '2024-09-17 18:12:08.935'),
-(9, 37, 5, 'Shipped', '2024-09-17 18:15:33.275');
+(9, 37, 5, 'Shipped', '2024-09-17 18:15:33.275'),
+(10, 47, NULL, 'Pending', '2024-10-02 17:58:17.963');
 
 -- --------------------------------------------------------
 
@@ -515,15 +588,15 @@ CREATE TABLE `table` (
 --
 
 INSERT INTO `table` (`id`, `table_NO`, `status`, `createdAt`, `type`) VALUES
-(1, 'in1', 'occupied', '2024-09-20 02:12:37.000', 'inside'),
+(1, 'in1', 'available', '2024-09-20 02:12:37.000', 'inside'),
 (2, 'ot1', 'available', '2024-09-20 02:13:28.000', 'outside'),
-(3, 'in2', 'available', '2024-09-20 02:17:11.000', 'inside'),
-(4, 'in3', 'available', '2024-09-20 02:17:11.000', 'inside'),
+(3, 'in2', 'occupied', '2024-09-20 02:17:11.000', 'inside'),
+(4, 'in3', 'occupied', '2024-09-20 02:17:11.000', 'inside'),
 (5, 'in4', 'available', '2024-09-20 02:17:11.000', 'inside'),
 (6, 'in5', 'available', '2024-09-20 02:17:11.000', 'inside'),
 (7, 'in6', 'available', '2024-09-20 02:17:11.000', 'inside'),
 (8, 'in7', 'available', '2024-09-20 02:17:11.000', 'inside'),
-(9, 'in8', 'available', '2024-09-20 02:17:11.000', 'inside'),
+(9, 'in8', 'occupied', '2024-09-20 02:17:11.000', 'inside'),
 (10, 'in9', 'available', '2024-09-20 02:17:11.000', 'inside'),
 (11, 'in10', 'available', '2024-09-20 02:17:11.000', 'inside'),
 (12, 'ot2', 'available', '2024-09-20 02:17:11.000', 'outside'),
@@ -562,7 +635,11 @@ INSERT INTO `wages` (`id`, `attendanceId`, `amount`, `createdAt`) VALUES
 (7, 18, 50, '2024-09-22 17:39:35.618'),
 (8, 17, 60, '2024-09-22 17:39:35.617'),
 (9, 19, 30, '2024-09-22 17:51:05.843'),
-(10, 16, 60, '2024-09-22 17:54:07.639');
+(10, 16, 60, '2024-09-22 17:54:07.639'),
+(11, 22, 30, '2024-09-30 16:50:22.203'),
+(12, 21, 30, '2024-09-30 16:50:45.500'),
+(13, 23, 60, '2024-09-30 16:56:36.225'),
+(14, 26, 60, '2024-10-01 17:34:15.671');
 
 -- --------------------------------------------------------
 
@@ -596,6 +673,7 @@ INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_na
 ('3f754859-98c5-4265-8e57-436bb29d3f92', 'de712ced884b2d2e606b77c866708649edda5d7491e017864c52824ea39d208e', '2024-09-11 14:28:17.227', '20240911123524_drop_table', NULL, NULL, '2024-09-11 14:28:17.211', 1),
 ('4c323bcf-3084-43df-945d-a64570627db9', 'b24f86f0067c2c268aec5eae3b2e1753d09c2a4377ca843e253e1191278be1b0', '2024-09-14 16:43:11.899', '20240914083413_enum_payment', NULL, NULL, '2024-09-14 16:43:11.882', 1),
 ('4dad3cdd-4f23-4296-8f0c-45f15a964552', '144deca98187b0abddc2c35b94736e7e68aabb7804ccfa57d82de968d98a3d93', '2024-09-22 17:03:46.579', '20240922170346_qrcode', NULL, NULL, '2024-09-22 17:03:46.560', 1),
+('51847ae2-3136-48d2-86dd-06e0eb181d5b', '71f2f54d59a1a105b11a96393ea86d779562bb607d4f71c70573651de6207702', '2024-10-04 14:24:30.181', '20241004142429_i_ngredient', NULL, NULL, '2024-10-04 14:24:30.037', 1),
 ('58d3690e-56c3-4861-a056-45d5f0c795a2', '9bfc1882c13afe7aafc51329c61c5785c12fbf91dfa1bfd54235a4f4ff373298', '2024-09-17 08:36:44.493', '20240917083644_cancel_shipping', NULL, NULL, '2024-09-17 08:36:44.482', 1),
 ('5c68ae5c-9868-4dd4-b579-99dbfac1fe68', '8d808cab50e2b5c5d0dd0c56901f5d7ad8f16dded0d6384aac8080987da08d17', '2024-09-11 14:28:16.881', '20240903180827_add_paypal_fields', NULL, NULL, '2024-09-11 14:28:16.871', 1),
 ('6c70d5a8-b0a8-4d2e-99e5-dbc8a5e12e34', '3ceaa19dc4c92ce1d7ad2fec4bd0ff6b1b2636ae61a2b0a6cd11c78847c45aee', '2024-09-17 08:34:34.023', '20240917083433_refund', NULL, NULL, '2024-09-17 08:34:33.949', 1),
@@ -672,12 +750,26 @@ ALTER TABLE `expense`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `ingredient`
+--
+ALTER TABLE `ingredient`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `menu`
 --
 ALTER TABLE `menu`
   ADD PRIMARY KEY (`id`),
   ADD KEY `Menu_categoryId_fkey` (`categoryId`),
   ADD KEY `Menu_discountId_fkey` (`discountId`);
+
+--
+-- Indexes for table `menurecipes`
+--
+ALTER TABLE `menurecipes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `MenuRecipes_menuId_fkey` (`menuId`),
+  ADD KEY `MenuRecipes_ingredientId_fkey` (`ingredientId`);
 
 --
 -- Indexes for table `menuset`
@@ -767,7 +859,7 @@ ALTER TABLE `_prisma_migrations`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `category`
@@ -779,7 +871,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `discount`
@@ -797,13 +889,25 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT for table `expense`
 --
 ALTER TABLE `expense`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `ingredient`
+--
+ALTER TABLE `ingredient`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `menurecipes`
+--
+ALTER TABLE `menurecipes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `menuset`
@@ -821,13 +925,13 @@ ALTER TABLE `menusetdetail`
 -- AUTO_INCREMENT for table `order`
 --
 ALTER TABLE `order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `orderdetail`
 --
 ALTER TABLE `orderdetail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=166;
 
 --
 -- AUTO_INCREMENT for table `order_source`
@@ -839,7 +943,7 @@ ALTER TABLE `order_source`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -851,7 +955,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `shipping`
 --
 ALTER TABLE `shipping`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `table`
@@ -863,7 +967,7 @@ ALTER TABLE `table`
 -- AUTO_INCREMENT for table `wages`
 --
 ALTER TABLE `wages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
@@ -887,6 +991,13 @@ ALTER TABLE `employee`
 ALTER TABLE `menu`
   ADD CONSTRAINT `Menu_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `category` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `Menu_discountId_fkey` FOREIGN KEY (`discountId`) REFERENCES `discount` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `menurecipes`
+--
+ALTER TABLE `menurecipes`
+  ADD CONSTRAINT `MenuRecipes_ingredientId_fkey` FOREIGN KEY (`ingredientId`) REFERENCES `ingredient` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `MenuRecipes_menuId_fkey` FOREIGN KEY (`menuId`) REFERENCES `menu` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `menusetdetail`
