@@ -36,7 +36,7 @@ export function CartPage({ setPage, tableId }) {
     const [isCreate, setIsCreate] = useState(false)
     const [order, setOrder] = useState(null)
 
-    const toggleDetails = (setId) => {
+    const togglemenusetdetail = (setId) => {
         setExpandedSetId(prevId => (prevId === setId ? null : setId));
     };
 
@@ -47,7 +47,7 @@ export function CartPage({ setPage, tableId }) {
                 setIsCreate(true)
             } else {
                 setIsCreate(false)
-                setOrder(response.data.orders)
+                setOrder(response.data.order)
             }
 
         } catch (error) {
@@ -183,7 +183,7 @@ export function CartPage({ setPage, tableId }) {
                                 <div className="flex flex-col flex-grow">
                                     <h2
                                         className="text-sm font-semibold cursor-pointer"
-                                        onClick={() => toggleDetails(set.id)}  // Toggle details visibility
+                                        onClick={() => togglemenusetdetail(set.id)}  // Toggle menusetdetail visibility
                                     >
                                         {set.name}
                                     </h2>
@@ -208,10 +208,10 @@ export function CartPage({ setPage, tableId }) {
                                     <Button variant='link' className='text-red-500 py-0' onClick={() => removeFromCartSet(set.id)}>remove</Button>
                                 </div>
 
-                                {/* AnimatePresence and motion for the set details */}
+                                {/* AnimatePresence and motion for the set menusetdetail */}
                             </motion.li>
                             <AnimatePresence>
-                                {expandedSetId === set.id && (  // Show details only if this set is expanded
+                                {expandedSetId === set.id && (  // Show menusetdetail only if this set is expanded
                                     <motion.ul
                                         key={set.id}
                                         initial={{ opacity: 0, y: -10 }}
@@ -219,7 +219,7 @@ export function CartPage({ setPage, tableId }) {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ type: "spring", damping: 20, stiffness: 300 }}
                                     >
-                                        {set.details.map((m) => (
+                                        {set.menusetdetail.map((m) => (
                                             <li key={m.menu.id} className="flex justify-between px-5 items-center">
                                                 <img src={m.menu.img} alt={m.menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
 
@@ -254,7 +254,7 @@ export function OrderPage({ setPage, tableId }) {
     const [tableOrder, setTableOrder] = useState([])
     const [expandedSetId, setExpandedSetId] = useState(null);
 
-    const toggleDetails = (setId) => {
+    const togglemenusetdetail = (setId) => {
         setExpandedSetId(prevId => (prevId === setId ? null : setId));
     };
     const { cartCount } = useQr()
@@ -315,10 +315,10 @@ export function OrderPage({ setPage, tableId }) {
                 <div className="space-y-3 p-5 bg-white rounded-lg min-h-32">
                     <h1>Order:
                         <span className="text-xl font-semibold">
-                            #{tableOrder?.orders?.orderId}
+                            #{tableOrder?.order?.orderId}
                         </span>
                     </h1>
-                    <h2>Status: {tableOrder?.orders?.status}</h2>
+                    <h2>Status: {tableOrder?.order?.status}</h2>
                     {tableOrder?.order?.normalMenu.length > 0 && (
                         <ul>
                             {tableOrder?.order.normalMenu.map((menu) => {
@@ -347,7 +347,7 @@ export function OrderPage({ setPage, tableId }) {
                         </ul>
                     )}
 
-                    {tableOrder.orders?.setMenu?.length > 0 && tableOrder.orders?.setMenu?.map((set) => (
+                    {tableOrder.order?.setMenu?.length > 0 && tableOrder.order?.setMenu?.map((set) => (
                         <>
 
                             <motion.li
@@ -358,10 +358,10 @@ export function OrderPage({ setPage, tableId }) {
                                 exit={{ scale: 0.9, opacity: 0 }}
                                 transition={{ type: "spring", damping: 20, stiffness: 300 }}
                             >
-                                <div className="flex flex-col flex-grow" onClick={() => toggleDetails(set.id)} >
+                                <div className="flex flex-col flex-grow" onClick={() => togglemenusetdetail(set.id)} >
                                     <h2
                                         className="text-sm font-semibold cursor-pointer"
-                                    // Toggle details visibility
+                                    // Toggle menusetdetail visibility
                                     >
                                         {set.setName}
                                     </h2>
@@ -374,10 +374,10 @@ export function OrderPage({ setPage, tableId }) {
 
                                 </div>
 
-                                {/* AnimatePresence and motion for the set details */}
+                                {/* AnimatePresence and motion for the set menusetdetail */}
                             </motion.li>
                             <AnimatePresence>
-                                {expandedSetId === set.id && (  // Show details only if this set is expanded
+                                {expandedSetId === set.id && (  // Show menusetdetail only if this set is expanded
                                     <motion.ul
                                         key={set.id}
                                         initial={{ opacity: 0, y: -10 }}
@@ -386,7 +386,7 @@ export function OrderPage({ setPage, tableId }) {
                                         transition={{ type: "spring", damping: 20, stiffness: 300 }}
                                         className='space-y-1'
                                     >
-                                        {set.details.map((m) => (
+                                        {set.menusetdetail.map((m) => (
                                             <li key={m.id} className="flex justify-between px-5 items-center">
                                                 <img src={m.img} alt={m.name} className="w-12 h-12 rounded-md object-cover mr-2" />
 

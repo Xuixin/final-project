@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
       where: { id: Number(id) },
       include: {
         category: true,
-        menuRecipes: {
+        menurecipes: {
           include: {
             ingredient: true
           }
@@ -26,8 +26,13 @@ export async function GET(request, { params }) {
       });
     }
 
+    const result = {
+      menuRecipes: data.menurecipes,
+      ...data
+    }
+
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify(result),
       { status: 200 }
     );
   } catch (error) {
@@ -48,6 +53,7 @@ export async function PUT(request, { params }) {
   const id = params.id;
   const data = await request.json();
   const { name, category, discountId, price, image, status, ingredientIds } = data;
+
 
   try {
     // Prepare data for update
@@ -86,11 +92,11 @@ export async function PUT(request, { params }) {
     // Update associated ingredients if the menu update succeeds
     if (updateMenu.id) {
       // Clear existing ingredients first
-      await prisma.menuRecipes.deleteMany({ where: { menuId: parseInt(updateMenu.id) } });
+      await prisma.menurecipes.deleteMany({ where: { menuId: parseInt(updateMenu.id) } });
 
       // Add new ingredients
       ingredientIds.map(async (ingredient) => {
-        await prisma.menuRecipes.create({
+        await prisma.menurecipes.create({
           data: {
             menu: {
               connect: {
@@ -99,7 +105,7 @@ export async function PUT(request, { params }) {
             },
             ingredient: {
               connect: {
-                id: parseInt(ingredient.id),
+                id: parseInt(ingredient.ingredientId),
               },
             },
             quantity: parseFloat(ingredient.quantity),
@@ -133,7 +139,7 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   const { id } = params;
   try {
-    await prisma.menuRecipes.deleteMany({
+    await prisma.menurecipes.deleteMany({
       where: { menuId: Number(id) }
     })
     await prisma.menu.delete({

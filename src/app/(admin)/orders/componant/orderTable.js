@@ -94,7 +94,7 @@ export function OrderTable({ orders, onSelectOrder }) {
                             return (
                                 <TableRow key={order.id} className={`${order.id === selectedOrderId && 'bg-accent'}`} onClick={() => handleRowClick(order)}>
                                     <TableCell>
-                                        <div className="font-medium">{order.id}</div>
+                                        <div className="font-medium">#{order.id}</div>
                                     </TableCell>
                                     <TableCell className="hidden sm:table-cell">{order.orderSource.source_name}</TableCell>
                                     <TableCell className="hidden sm:table-cell">

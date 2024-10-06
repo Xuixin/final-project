@@ -28,7 +28,13 @@ export async function GET(request, { params }) {
                                 }
                             }
                         }
-                    }
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                    take: 1,
+
+
                 }
             }
         });
@@ -78,7 +84,7 @@ export async function GET(request, { params }) {
                                         setId: menuset.id,
                                         setName: menuset.name,
                                         totalMenu: menuset.totalMenu,
-                                        setPrice: menuset.price * findeOrderDetail[0].quantity,
+                                        setPrice: menuset.price,
                                         details: findeOrderDetail.map(d => ({
                                             d_id: d.id,
                                             id: d.menu?.id,

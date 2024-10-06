@@ -1,7 +1,8 @@
 import {
     CircleAlert,
     ChevronDown,
-    Loader2
+    Loader2,
+    ReceiptText
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -19,6 +20,7 @@ import { fetchAdminInfo } from '@/lib/adminInfo'
 import axios from 'axios';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
+import { Receipt } from "@/components/receipt";
 
 
 export function Pos_details({ table, fetchAllTable, pay, order }) {
@@ -232,6 +234,7 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                     </div>
                     <Separator className='mx-2 my-2' />
                     <div className="flex items-center justify-end w-full space-x-2">
+
                         <Button variant='outline' disabled={table.order.status === 'Inprogress'} className='flex-1' onClick={() => cancelOrder(table)}>
                             {
                                 isLoading ? (
@@ -243,12 +246,19 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                                     'cancel order'
                                 )}
                         </Button>
-                        <Button className='flex-1' onClick={() => {
-                            pay(table.order)
-                            order(null)
-                        }}>
-                            Pay
-                        </Button>
+
+
+                        <Receipt od={table.order} />
+
+
+                        <div className='w-full flex space-x-2'>
+                            <Button className='flex-1' onClick={() => {
+                                pay(table.order)
+                                order(null)
+                            }}>
+                                Pay
+                            </Button>
+                        </div>
                     </div>
 
                 </CardContent>

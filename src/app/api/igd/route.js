@@ -8,14 +8,21 @@ export async function GET(request, {
             include: {
                 _count: {
                     select: {
-                        menuRecipes: true  // This will count the related MenuRecipes entries
+                        menurecipes: true  // This will count the related menurecipes entries
                     }
                 },
-                menuRecipes: true  // Include the actual MenuRecipes records if needed
+                menurecipes: true  // Include the actual menurecipes records if needed
             }
         })
 
-        return new Response(JSON.stringify(igd), {
+        const newData = igd.map(({ menurecipes, ...oldData }) => {
+            return {
+                ...oldData,
+                menuRecipes: menurecipes
+            }
+        })
+
+        return new Response(JSON.stringify(newData), {
             status: 200
         })
     } catch (error) {

@@ -8,6 +8,7 @@ export async function GET(request, { params }) {
         const response = await prisma.table.findUnique({
             where: {
                 id: intId,
+
             },
             include: {
                 order: {
@@ -31,7 +32,12 @@ export async function GET(request, { params }) {
                             },
                         },
                     },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                    take: 1
                 },
+
             },
         });
 

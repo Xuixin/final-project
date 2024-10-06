@@ -63,7 +63,7 @@ export function Details_order({ order, fetchOrders }) {
     };
 
     return (
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden min-h-[100vh]   relative">
             <CardHeader className={`flex flex-row items-start ${headerGb(order.shipping?.status || '')}`}>
                 <div className={`grid gap-0.5 ${textColor(order.shipping?.status || '')}`}>
                     <CardTitle className={`group flex items-center gap-2 text-lg`}>
@@ -196,26 +196,11 @@ export function Details_order({ order, fetchOrders }) {
                     </dl>
                 </div>
             </CardContent>
-            <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
+            <CardFooter className="flex absolute w-full bottom-0 flex-row items-center border-t bg-muted/50 px-6 py-3">
                 <div className="text-xs text-muted-foreground">
-                    Updated <time dateTime={order.updatedAt}>{new Date(order.updatedAt).toLocaleDateString()}</time>
+                    Updated <time dateTime={new Date()}>{new Date().toLocaleDateString()}</time>
                 </div>
-                {/* <Pagination className="ml-auto mr-0 w-auto">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <Button size="icon" variant="outline" className="h-6 w-6">
-                                <ChevronLeft className="h-3.5 w-3.5" />
-                                <span className="sr-only">Previous Order</span>
-                            </Button>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <Button size="icon" variant="outline" className="h-6 w-6">
-                                <ChevronRight className="h-3.5 w-3.5" />
-                                <span className="sr-only">Next Order</span>
-                            </Button>
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination> */}
+
             </CardFooter>
         </Card>
     );

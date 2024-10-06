@@ -55,7 +55,7 @@ export function Posmenu_details({ id }) {
         try {
             const response = await axios.get(`/api/table/${id}`);
             console.log('res', response.data);
-            // เช็คว่า orders มีอยู่ใน response หรือไม่
+            // เช็คว่า order มีอยู่ใน response หรือไม่
             if (response.data.status != 'available') {
                 setTable(response.data);
                 setType(OrderTypes.EXISTING_MENU);
@@ -96,10 +96,10 @@ export function Posmenu_details({ id }) {
     const Exiting_submit = async () => {
         setIsLoading(true)
         try {
-            const response = await axios.put(`/api/order/orderTable/${table.orders.orderId}`, {
+            const response = await axios.put(`/api/order/orderTable/${table.order.orderId}`, {
                 menu: [...cart],
                 menuSet: [...cartSet],
-                order: table?.orders,
+                order: table?.order,
                 status: 'InQueue',
                 totalPrice: calculateTotalPrice(),
                 newItemCount: cartCount()
@@ -268,7 +268,7 @@ export function Posmenu_details({ id }) {
                                 )}
 
                                 {/* Exiting order */}
-                                {(table?.orders?.normalMenu?.length > 0 || table?.orders?.setMenu?.length > 0) && (
+                                {(table?.order?.normalMenu?.length > 0 || table?.order?.setMenu?.length > 0) && (
                                     <>
                                         {/* Old Order Header */}
                                         <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleOldOrder()}>
@@ -287,7 +287,7 @@ export function Posmenu_details({ id }) {
                                                 >
                                                     {/* แสดง normalMenu */}
 
-                                                    {table?.orders?.normalMenu?.map((menu) => (
+                                                    {table?.order?.normalMenu?.map((menu) => (
                                                         <li key={menu.id} className="flex items-center bg-gray-100 rounded-lg p-2 mb-2">
                                                             <img src={menu.image} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
                                                             <div className="flex flex-col flex-grow">
@@ -302,7 +302,7 @@ export function Posmenu_details({ id }) {
                                                     ))}
 
                                                     {/* แสดง setMenu */}
-                                                    {table?.orders?.setMenu?.map((set, index) => (
+                                                    {table?.order?.setMenu?.map((set, index) => (
                                                         <li key={set.id}>
                                                             <ul>
                                                                 <div className="grid items-center grid-cols-2">
@@ -314,14 +314,14 @@ export function Posmenu_details({ id }) {
                                                                                 </div>
                                                                             </TooltipTrigger>
                                                                             <TooltipContent>
-                                                                                <p className="text-md">Set details</p>
+                                                                                <p className="text-md">Set menusetdetail</p>
                                                                             </TooltipContent>
                                                                         </Tooltip>
                                                                     </TooltipProvider>
                                                                     <h2 className="text-end">RM {set.setPrice.toFixed(2)}</h2>
                                                                 </div>
                                                                 {/* แสดงเมนูภายใน setMenu */}
-                                                                {set.details.map((menu) => (
+                                                                {set.menusetdetail.map((menu) => (
                                                                     <li key={menu.id} className="flex items-center bg-gray-100 rounded-lg p-2 mb-2 pl-5">
                                                                         <img src={menu.image} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
                                                                         <div className="flex flex-col flex-grow">
@@ -352,7 +352,7 @@ export function Posmenu_details({ id }) {
                             <li className="flex items-center justify-between font-semibold">
                                 <span className="text-muted-foreground">Total</span>
                                 {table && type === OrderTypes.EXISTING_MENU ? (
-                                    <span>RM {table?.orders?.totalPrice?.toFixed(2)}</span>
+                                    <span>RM {table?.order?.totalPrice?.toFixed(2)}</span>
                                 ) : (
                                     <span>RM {calculateTotalPrice().toFixed(2) || '00.00'}</span>
                                 )}

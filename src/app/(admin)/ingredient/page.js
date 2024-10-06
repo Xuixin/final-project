@@ -53,6 +53,10 @@ export default function Ingredient() {
         fetchIgd()
     }, [])
 
+    useEffect(() => {
+        console.log(igd);
+    }, [igd]);
+
     const handleEditClick = (id) => {
         setSelectedId(id); // Set the selected ID when edit button is clicked
     };
@@ -142,7 +146,7 @@ export default function Ingredient() {
                                                     {i.quantity + ' ' + i.unit}
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">
-                                                    {i._count.menuRecipes} menu
+                                                    {i._count.menurecipes} menu
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">
                                                     <Dialog open={selectedId === i.id} onOpenChange={(open) => {

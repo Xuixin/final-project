@@ -89,8 +89,10 @@ export default function EditMenu({ params }) {
     }, [])
 
     useEffect(() => {
-        console.log(checkedIds);
-    }, [checkedIds]);
+        console.log('ss', checkedIds);
+        console.log('igd', igd);
+    }, [checkedIds, igd]);
+
 
     const handleInputChange = (e) => {
         const { id, value } = e.target
@@ -150,7 +152,8 @@ export default function EditMenu({ params }) {
             console.log(data);
 
             // ส่งข้อมูลเพื่ออัปเดตเมนู
-            await axios.put(`/api/menu/${id}`, data)
+            await (await axios.put(`/api/menu/${id}`, data))
+
             toast({
                 variant: 'success',
                 title: 'Success',

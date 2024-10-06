@@ -19,6 +19,8 @@ import {
 import { CircleAlert, Banknote, QrCode, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+
+
 export function Pay({ order, setOrder, setQueue, fetchAllTable }) {
     const { toast } = useToast();
     const [openSets, setOpenSets] = useState([]);
@@ -65,6 +67,7 @@ export function Pay({ order, setOrder, setQueue, fetchAllTable }) {
         try {
             await axios.post(`/api/payment/${order.orderId}`, { order, paymentMethod, emp: emp.id });
             toast({ variant: 'success', title: 'Payment successful', description: 'Thank you for your payment.' });
+
             setOrder(null);
             setQueue(null);
             fetchAllTable()

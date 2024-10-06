@@ -31,12 +31,19 @@ export default function ReadOrder() {
         fetchOrders();
     }, [fetchOrders]);
 
+    useEffect(() => {
+        console.log('ss', orders);
+    }, [orders])
+
+
+
     const handleFinishOrder = async (order) => {
         try {
             setAnimationCompleted(false); // Set to false to prevent fetching new orders
             const orderId = order.id;
             await axios.put(`/api/order/status/${orderId}`, { status: 'Finished' });
             await axios.put(`/api/igd/order/${orderId}`, { order })
+                .then((response) => console.log("rs ", response.data))
             setFinishedOrderIds([...finishedOrderIds, orderId]);
             // Wait for animation to complete before fetching new orders
             setTimeout(() => {

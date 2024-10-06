@@ -6,10 +6,17 @@ export async function GET(req) {
   try {
     const response = await prisma.discount.findMany({
       include: {
-        menus: true,
+        menu: true,
       },
     })
-    return new Response(JSON.stringify(response), { status: 200 })
+
+    const result = response.map(({ menu, ...rs }) => {
+      return {
+        ...rs,
+        menus: menu.name,
+      }
+    })
+    return new Response(JSON.stringify(result), { status: 200 })
   } catch (error) {
     console.error(error)
     return new Response(JSON.stringify(`faile to get prrmotion :  ${error}`), {

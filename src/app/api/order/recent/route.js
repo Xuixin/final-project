@@ -6,7 +6,7 @@ export async function GET(request) {
   try {
     const data = await prisma.order.findMany({
       include: {
-        orderSource: true,
+        order_source: true,
         customer: true,
       },
       orderBy: {
@@ -15,7 +15,15 @@ export async function GET(request) {
       take: 5,
     })
 
-    return new Response(JSON.stringify(data), { status: 200 })
+    // เปลี่ยนชื่อ order_source เป็น orderSource
+    const newData = data.map(({ order_source, ...oldData }) => {
+      return {
+        ...oldData,
+        orderSource: order_source,
+      }
+    })
+
+    return new Response(JSON.stringify(newData), { status: 200 })  // ใช้ newData แทน data
   } catch (error) {
     console.error(error)
     return new Response(JSON.stringify({ error: 'An error occurred' }), {

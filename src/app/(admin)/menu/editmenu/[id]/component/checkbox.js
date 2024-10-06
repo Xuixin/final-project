@@ -10,12 +10,12 @@ export function CheckboxIdsCom({ igd, checkedIds, setCheckedIds, }) {
             <div key={item.id} className=" space-y-2 my-1">
                 <div className='flex items-center space-x-2'>
                     <Checkbox
-                        checked={checkedIds?.some(cid => cid.id === item.id)} // ตรวจสอบว่ามี id อยู่ใน checkedIds หรือไม่
+                        checked={checkedIds?.some(cid => cid.ingredientId === item.id)} // ตรวจสอบว่ามี id อยู่ใน checkedIds หรือไม่
                         onCheckedChange={(checked) => {
                             if (checked) {
-                                setCheckedIds([...checkedIds, { id: item.id, quantity: null, unit: item.unit }]); // ถ้าถูกเลือก ให้เพิ่ม id ไปยัง checkedIds
+                                setCheckedIds([...checkedIds, { ingredientId: item.id, quantity: null, unit: item.unit }]); // ถ้าถูกเลือก ให้เพิ่ม id ไปยัง checkedIds
                             } else {
-                                setCheckedIds(checkedIds.filter((cid) => cid.id !== item.id)); // ถ้าไม่ถูกเลือก ให้ลบ id ออกจาก checkedIds
+                                setCheckedIds(checkedIds.filter((cid) => cid.ingredientId !== item.id)); // ถ้าไม่ถูกเลือก ให้ลบ id ออกจาก checkedIds
                             }
                         }}
                     />
@@ -27,17 +27,17 @@ export function CheckboxIdsCom({ igd, checkedIds, setCheckedIds, }) {
                     </label>
                 </div>
 
-                {checkedIds.some(cid => cid.id === item.id) && ( // ตรวจสอบว่ามี id ใน checkedIds หรือไม่
+                {checkedIds.some(cid => cid.ingredientId === item.id) && ( // ตรวจสอบว่ามี id ใน checkedIds หรือไม่
                     <div className='flex'>
                         <Input
                             type='number' // แก้ typr เป็น type
                             step={0.01}
                             className="w-[80%]"
-                            value={checkedIds.find(cid => cid.id === item.id)?.quantity || ''} // ดึงค่าปริมาณจาก checkedIds
+                            value={checkedIds.find(cid => cid.ingredientId === item.id)?.quantity || ''} // ดึงค่าปริมาณจาก checkedIds
                             onChange={(e) => {
                                 const quantity = parseFloat(e.target.value); // แปลงค่าที่ป้อนเป็นจำนวน
                                 setCheckedIds(checkedIds.map(cid =>
-                                    cid.id === item.id ? { ...cid, quantity } : cid // อัปเดตค่าปริมาณใน checkedIds
+                                    cid.ingredientId === item.id ? { ...cid, quantity } : cid // อัปเดตค่าปริมาณใน checkedIds
                                 ));
                             }}
                             required
