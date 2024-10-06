@@ -26,6 +26,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { useToast } from "@/components/ui/use-toast"
 import { CheckboxIdsCom } from "./component/checkbox"
+import Link from "next/link"
 
 export default function EditMenu({ params }) {
     const { id } = params
@@ -179,24 +180,27 @@ export default function EditMenu({ params }) {
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
             <form onSubmit={handleSubmit} className="mx-auto grid min-w-[80%]  flex-1 auto-rows-max gap-4">
                 <div className="flex items-center gap-4">
-                    <Button
-                        type="button"  // เพิ่ม type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={() => router.back()}
-                    >
-                        <ChevronLeft className="h-4 w-4" />
-                        <span className="sr-only">Back</span>
-                    </Button>
+                    <Link href={'/menu/allmenu'}>
+                        <Button
+                            type="button"  // เพิ่ม type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            <span className="sr-only">Back</span>
+                        </Button>
+                    </Link>
 
                     <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
                         Edit Menu
                     </h1>
                     <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                        <Button variant="outline" size="sm" onClick={() => router.push('/menu/allmenu')}>
-                            Discard
-                        </Button>
+                        <Link href={'/menu/allmenu'}>
+                            <Button variant="outline" size="sm" type="button" >
+                                Discard
+                            </Button>
+                        </Link>
                         <Button size="sm" type="submit">Save Product</Button>
                     </div>
                 </div>

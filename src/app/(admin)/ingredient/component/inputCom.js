@@ -102,7 +102,7 @@ export function AddIngredient({ fetch }) {
                         Min quantity
                     </Label>
                     <Input
-                        step='0.01'
+                        step='0.001'
                         name='min_quantity'
                         type="number"
                         className="col-span-3"
@@ -121,12 +121,14 @@ export function AddIngredient({ fetch }) {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Unit</SelectLabel>
+                                <SelectItem value="gram(g)">(g)</SelectItem>
                                 <SelectItem value="milligram(mg)">milligram(mg)</SelectItem>
                                 <SelectItem value="kilogram(kg)">kilogram(kg)</SelectItem>
                                 <SelectItem value="milliliter(ml)">milliliter(ml)</SelectItem>
                                 <SelectItem value="ชิ้น">ชิ้น</SelectItem>
                                 <SelectItem value="ส่วน">ส่วน</SelectItem>
                                 <SelectItem value="ลูก">ลูก </SelectItem>
+                                <SelectItem value="teaspoon">teaspoon</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>

@@ -27,6 +27,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { CheckboxIdsCom } from "./component/checkbox";
+import Link from "next/link";
 
 
 export default function AllMenu() {
@@ -163,9 +164,11 @@ export default function AllMenu() {
                         Add Menu
                     </h1>
                     <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                        <Button variant="outline" size="sm" onClick={() => router.push('/menu/allmenu')}>
-                            Discard
-                        </Button>
+                        <Link href={'/menu/allmenu'}>
+                            <Button variant="outline" size="sm" type="none" >
+                                Discard
+                            </Button>
+                        </Link>
                         <Button size="sm" type="submit">Save Product</Button>
                     </div>
                 </div>

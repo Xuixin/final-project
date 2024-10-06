@@ -34,6 +34,8 @@ export function EditIngredient({ fetch, igd_id, set }) {
         unit: ''
     });
 
+
+
     const fetchIGD = async () => {
         if (!igd_id) return; // Ensure igd_id is provided
         try {
@@ -56,6 +58,7 @@ export function EditIngredient({ fetch, igd_id, set }) {
     useEffect(() => {
         fetchIGD();
     }, [igd_id, fetch]);
+
 
 
     const onChange = (e) => {
@@ -98,6 +101,8 @@ export function EditIngredient({ fetch, igd_id, set }) {
         }
     };
 
+
+
     return (
         <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -136,6 +141,7 @@ export function EditIngredient({ fetch, igd_id, set }) {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Unit</SelectLabel>
+                                <SelectItem value="gram(g)">gram(g)</SelectItem>
                                 <SelectItem value="milligram(mg)">milligram(mg)</SelectItem>
                                 <SelectItem value="kilogram(kg)">kilogram(kg)</SelectItem>
                                 <SelectItem value="milliliter(ml)">milliliter(ml)</SelectItem>

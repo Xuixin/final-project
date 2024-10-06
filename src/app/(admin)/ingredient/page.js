@@ -25,6 +25,7 @@ import { useToast } from "@/components/ui/use-toast"
 // Import component
 import { EditIngredient } from "./component/editCom"
 import { AddIngredient } from "./component/inputCom"
+import { Receipt } from "./component/puchase"
 
 export default function Ingredient() {
     const { toast } = useToast()
@@ -88,6 +89,7 @@ export default function Ingredient() {
     return (
         <Tabs defaultValue="all">
             <div className="flex items-center">
+                <Receipt />
                 <div className="ml-auto flex items-center gap-2">
                     <Dialog>
                         <DialogTrigger asChild>
