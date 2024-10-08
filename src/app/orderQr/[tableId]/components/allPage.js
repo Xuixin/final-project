@@ -16,6 +16,7 @@ import axios from "axios"
 import { motion, AnimatePresence, } from "framer-motion"
 import { useQr } from "../../qrContext"
 import { useToast } from "@/components/ui/use-toast"
+import Link from "next/link"
 
 
 export function CartPage({ setPage, tableId }) {
@@ -114,6 +115,19 @@ export function CartPage({ setPage, tableId }) {
         });
 
         setPage('order')
+    }
+
+
+    if (cartCount() === 0) {
+        return (
+            <>
+                <Button className='rounded-full p-3 relative' onClick={() => setPage('menu')}>
+                    <ChevronLeft className='text-white h-5 w-5' strokeWidth={2.5} />
+                </Button>
+                <h1>no menu select</h1>
+
+            </>
+        )
     }
     return (
         <section className='w-full bg-secondary rounded-b-lg mb-5 py-5 space-y-5 bg-white '>
@@ -253,6 +267,15 @@ export function OrderPage({ setPage, tableId }) {
     const [isLoading, setIsLoading] = useState(true)
     const [tableOrder, setTableOrder] = useState([])
     const [expandedSetId, setExpandedSetId] = useState(null);
+
+    if (!tableId || tableOrder) {
+        return (
+            <>
+                <h1>No table or order found</h1>
+                <Button className={`rounded-2xl w-full my-5`} onClick={() => setPage('menu')}>back to menu</Button>
+            </>
+        )
+    }
 
     const togglemenusetdetail = (setId) => {
         setExpandedSetId(prevId => (prevId === setId ? null : setId));

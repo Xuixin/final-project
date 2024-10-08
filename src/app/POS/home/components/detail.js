@@ -83,7 +83,7 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                     duration: 0.4,
                 }}
             >
-                <Card className="overflow-hidden">
+                <Card className="overflow-hidden min-h-[80vh] flex flex-col justify-between">
                     <CardHeader className="flex flex-col items-start">
                         <div className="grid gap-0.5">
                             <CardTitle className="group flex items-center gap-2 text-lg">
@@ -94,17 +94,18 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                             Table: {table.table_NO}
                         </div>
                     </CardHeader>
-                    <Separator className='mx-2' />
-                    <CardContent className="p-6 text-sm min-h-96 flex flex-col">
+                    <Separator className="mx-2" />
+                    <CardContent className="p-6 text-sm min-h-96 flex flex-col flex-grow">
                         <div className="flex items-center justify-center w-full mb-auto">
                             <Link href={`/POS/menu/${table.id}`}>
-                                <Button variant='link' className='underline'>Create new order for this table</Button>
+                                <Button variant="link" className="underline">
+                                    Create new order for this table
+                                </Button>
                             </Link>
                         </div>
-
                     </CardContent>
 
-                    <CardFooter className="flex flex-row items-center justify-end border-t bg-muted/50 px-6 py-3">
+                    <CardFooter className="flex flex-row items-center justify-end border-t bg-muted/50 px-6 py-3 mt-auto">
                         <span className="bg-red-500 rounded-full">
                             <CircleAlert color="#ffffff" absoluteStrokeWidth />
                         </span>
@@ -113,6 +114,7 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
             </motion.div>
         );
     }
+
 
     return (
         <motion.div
@@ -125,7 +127,7 @@ export function Pos_details({ table, fetchAllTable, pay, order }) {
                 duration: 0.4,
             }}
         >
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden min-h-[80vh] flex flex-col justify-between">
                 <CardHeader className="flex flex-row items-start">
                     <div className="grid gap-0.5">
                         <CardTitle className="group flex items-center gap-2 text-lg">

@@ -60,7 +60,7 @@ export function MenuWithPro() {
   }
 
   const handlePrevious = () => {
-    setCurrentIndex((prevIndex) => Math.max(prevIndex - 4, 0))
+    setCurrentIndex((prevIndex) => Math.max(prevIndex - 3, 0))
   }
 
   const handleNext = () => {
@@ -123,13 +123,13 @@ export function MenuWithPro() {
           )}
 
           {/* Display Discounted items */}
-          {menusDiscount.slice(currentIndex, currentIndex + 4).map((item) => {
+          {menusDiscount.slice(currentIndex, currentIndex + 3).map((item) => {
             const discountAmount = getDiscountAmount(item.discountId)
             const finalPrice = item.price - discountAmount
             return (
               <div
                 key={item.id}
-                className='shadow-lg rounded pb-4 relative'
+                className='shadow-lg rounded-sm pb-4 relative'
               >
                 <div className='relative w-full h-36'>
                   <Image
@@ -231,31 +231,34 @@ export const Menuset = () => {
                   <div className='space-y-2 px-3 mt-2'>
                     {item.details.map((menu, index) => {
                       return (
-                        <div
-                          key={index}
-                          className='max-h-16 border-b rounded-lg'
-                        >
-                          <div className='grid grid-cols-3 gap-2 px-2'>
-                            <Image
-                              src={menu.menu.img}
-                              alt={menu.menu.name}
-                              width={48}
-                              height={48}
-                              className='rounded'
-                            />
-                            <h6 className='text-sm font-medium leading-none flex items-center'>
-                              {menu.menu.name}
-                            </h6>
-                            <p className='text-sm flex items-center justify-end'>
-                              X {menu.quantity}
-                            </p>
+                        <>
+                          <div
+                            key={index}
+                            className='max-h-16  rounded-lg'
+                          >
+                            <div className='grid grid-cols-3 gap-2 px-2'>
+                              <Image
+                                src={menu.menu.img}
+                                alt={menu.menu.name}
+                                width={60}
+                                height={60}
+                                className='rounded'
+                              />
+                              <h6 className='text-sm font-medium leading-none flex items-center'>
+                                {menu.menu.name}
+                              </h6>
+                              <p className='text-sm flex items-center justify-end'>
+                                X {menu.quantity}
+                              </p>
+                            </div>
                           </div>
-                        </div>
+                          <Separator />
+                        </>
                       )
                     })}
                   </div>
-                  <Separator className='my-4' />
                 </div>
+                <Separator className='my-4' />
               </ScrollArea>
             )
           })}

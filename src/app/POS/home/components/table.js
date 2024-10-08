@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export function Table({ Tabletype, setSelectedTable, pay }) {
     return (
-        <div className='w-full grid grid-cols-5 p-5 gap-4'>
+        <div className='w-full grid grid-cols-4 p-5 gap-4'>
             {Tabletype.map((table) => {
                 const { id, table_NO, status } = table
                 const imageSrc = status === 'available' ? '/uploads/0.png' : '/uploads/1.png'

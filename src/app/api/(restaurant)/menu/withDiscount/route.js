@@ -6,7 +6,7 @@ export async function GET(request, { params }) {
     try {
         const response = await prisma.menu.findMany({
             where: {
-                discountId:{
+                discountId: {
                     not: null
                 }
             }
