@@ -117,7 +117,7 @@ export function OrderTable({ orders, onSelectOrder }) {
                                     )}
                                     {order.orderSource.id !== 1 ? (
                                         <TableCell >
-                                            <Badge className="text-xs" variant={'destructive'}>
+                                            <Badge className="text-xs" variant={'secondary'}>
                                                 not online
                                             </Badge>
                                         </TableCell>

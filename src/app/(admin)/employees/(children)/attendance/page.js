@@ -79,7 +79,7 @@ export default function Attendance() {
     return {
       ...emp,
       status: att ? att.status : false,
-      wageperday: emp.roles.wageperday,
+      wageperday: emp.role.wageperday,
       paymentStatus: att && att.wages?.length > 0 ? 'Paid' : 'Not Paid',
       attendanceId: att ? att.id : null, // เพิ่ม attendanceId
     }
@@ -168,9 +168,8 @@ export default function Attendance() {
             <PopoverTrigger asChild>
               <Button
                 variant={'outline'}
-                className={`w-[280px] justify-start text-left font-normal ${
-                  !date ? 'text-muted-foreground' : ''
-                }`}
+                className={`w-[280px] justify-start text-left font-normal ${!date ? 'text-muted-foreground' : ''
+                  }`}
               >
                 <CalendarIcon className='mr-2 h-4 w-4' />
                 {date ? (

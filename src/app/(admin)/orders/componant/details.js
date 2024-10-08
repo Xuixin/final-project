@@ -119,18 +119,22 @@ export function Details_order({ order, fetchOrders }) {
                                     acc[item.menusetId].push(item);
                                     return acc;
                                 }, {})
-                        ).map(([setId, items]) => (
-                            <li key={setId}>
-                                <strong>Set {setId}</strong>
-                                <ul>
-                                    {items.map(item => (
-                                        <li key={item.id} className="pl-3 flex items-center justify-between">
-                                            <span>{item.menu.name} x {item.quantity}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </li>
-                        ))}
+                        ).map(([setId, items]) => {
+                            console.log('object', typeof (items), items);
+                            return (
+                                <li key={setId}>
+                                    <strong>Set {setId}</strong>
+                                    <ul>
+                                        {
+                                            items.entries(item => (
+                                                <li key={item.id} className="pl-3 flex items-center justify-between">
+                                                    <span>{item.menu.name} x {item.quantity}</span>
+                                                </li>
+                                            ))}
+                                    </ul>
+                                </li>
+                            )
+                        })}
                     </ul>
                     <Separator className="my-2" />
                     <ul className="grid gap-3">

@@ -268,13 +268,14 @@ export function OrderPage({ setPage, tableId }) {
     const [tableOrder, setTableOrder] = useState([])
     const [expandedSetId, setExpandedSetId] = useState(null);
 
-    if (!tableId || tableOrder) {
+    if (!tableId || !tableOrder) {
         return (
             <>
                 <h1>No table or order found</h1>
                 <Button className={`rounded-2xl w-full my-5`} onClick={() => setPage('menu')}>back to menu</Button>
             </>
         )
+
     }
 
     const togglemenusetdetail = (setId) => {

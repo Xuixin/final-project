@@ -10,11 +10,12 @@ export async function GET(request) {
 
         const result = response.map((rp) => {
             const pc = (rp.min_quantity - rp.quantity) * 1.5
-            const unittext = rp.unit === 'gram(g)' ? `${pc / 1000} kg` : `${pc} ${rp.unit}`
+            const unittext = rp.unit === 'gram(g)' ? `${pc / 1000}` : `${pc}`
             return {
                 id: rp.id,
                 name: rp.name,
-                puchase: unittext,
+                puchase: Number(unittext),
+                unit: rp.unit === 'gram(g)' ? 'kg' : rp.unit
             }
         })
 
