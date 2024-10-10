@@ -16,7 +16,7 @@ export async function POST(request) {
                 email,
                 address,
                 password: hashedPassword,
-                roles: {
+                role: {
                     connect: { id: parseInt(roleId) }
                 }
             }

@@ -63,20 +63,34 @@ model employee {
 }
 
 model expense {
-  id       Int              @id @default(autoincrement())
-  category expense_category
-  amount   Float
-  date     DateTime         @default(now())
+  id              Int              @id @default(autoincrement())
+  category        expense_category
+  amount          Float
+  description     String?
+  date            DateTime         @default(now())
+  expense_details expense_detail[]
+}
+
+model expense_detail {
+  id           Int         @id @default(autoincrement())
+  expenseId    Int?
+  expense      expense?    @relation(fields: [expenseId], references: [id], map: "Expens_expens_dt_fkey")
+  ingredientId Int?
+  ingredient   ingredient? @relation(fields: [ingredientId], references: [id], map: "Igd_ingredientId_fkey")
+  quantity     Float
+  unit         String
+  createdAt    DateTime    @default(now())
 }
 
 model ingredient {
-  id           Int           @id @default(autoincrement())
-  name         String
-  min_quantity Float
-  quantity     Float
-  unit         String
-  createdAt    DateTime      @default(now())
-  menurecipes  menurecipes[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  min_quantity    Float
+  quantity        Float
+  unit            String
+  createdAt       DateTime         @default(now())
+  expense_details expense_detail[]
+  menurecipes     menurecipes[]
 }
 
 model menu {
@@ -237,7 +251,8 @@ model wages {
 
 enum expense_category {
   wage
-  food
+  ingredient
+  other
 }
 
 enum table_status {

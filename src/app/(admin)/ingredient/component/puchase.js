@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ReceiptText } from "lucide-react";
 import axios from "axios";
 import {
     Dialog,
@@ -24,9 +23,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
+
+
 
 export const Receipt = () => {
     const printRef = useRef();
+    const { toast } = useToast();
     const [purchase, setPurchase] = useState([]);
     const [updatedPurchase, setUpdatedPurchase] = useState([]);
     const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -37,18 +41,29 @@ export const Receipt = () => {
         month: 'short',
         year: 'numeric'
     });
+    const [formPurchase, setFormPurchase] = useState({
+        amount: 0,
+        category: 'ingredient',
+        description: null,
+
+    })
+
+    const fetchPuchase = async () => {
+        await axios.get('/api/igd/puchase')
+            .then((response) => {
+                setPurchase(response.data);
+                setUpdatedPurchase(response.data.map((p, index) => {
+                    console.log(index, p);
+                    return ({ ...p, newValue: p.puchase })
+                }));
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
 
     useEffect(() => {
-        const fetchPuchase = async () => {
-            await axios.get('/api/igd/puchase')
-                .then((response) => {
-                    setPurchase(response.data);
-                    setUpdatedPurchase(response.data.map(p => ({ ...p, newValue: p.puchase })));
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        };
+
         fetchPuchase();
     }, []);
 
@@ -65,65 +80,43 @@ export const Receipt = () => {
             setAlertMessage("พบค่าที่น้อยกว่าค่าขั้นต่ำของวัตถุดิบ กรุณายืนยันการเปลี่ยนแปลง");
             setIsAlertOpen(true);
         } else {
-            receipt();
+            handlePurchaseSubmit();
         }
     };
 
-    const receipt = () => {
-        const printContent = printRef.current.innerHTML;
-        const printWindow = window.open("", "", "width=400");
+    const handlePurchaseSubmit = () => {
+        //
+        console.log('form', formPurchase);
+        console.log('ingredient', updatedPurchase);
 
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Receipt</title>
-                    <style>
-                        body {
-                            font-family: 'Courier New', Courier, monospace;
-                            padding: 20px;
-                        }
-                        h1 {
-                            text-align: center;
-                            font-size: 24px;
-                            margin-bottom: 20px;
-                        }
-                        .info {
-                            display: flex;
-                            justify-content: space-between;
-                            margin : 0 auto;
-                        }
-                        hr {
-                            border: none;
-                            border-top: 1px dashed black;
-                            margin: 20px 0;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-bottom: 20px;
-                        }
-                        td {
-                            padding: 5px 0;
-                        }
-                        .total-section {
-                            margin-top: 20px;
-                        }
-                        .thankyou {
-                            text-align: center;
-                            margin-top: 30px;
-                            font-size: 20px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    ${printContent}
-                </body>
-            </html>
-        `);
+        try {
+            axios.post('/api/expense/purchase', { expense: formPurchase, expense_details: updatedPurchase })
+                .then((response) => {
+                    toast({
+                        variant: 'success',
+                        title: 'บันท��กการ��ื้อวัตถุดิบสำเร็จ',
+                        description: 'การ��ื้อวัตถุดิบที่เลือกสำเร็จแล้ว'
+                    });
+                    setFormPurchase({ amount: 0, category: 'ingredient', description: null });
+                    setUpdatedPurchase([]);
+                    setIsAlertOpen(false);
+                    fetchPuchase();
+                })
 
-        printWindow.document.close();
-        printWindow.print();
+        } catch (error) {
+            console.error("error", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'เกิดข้อ��ิดพลา��ในการบันท��กการ��ื้อวัตถุดิบ'
+            })
+            return;
+
+        }
     };
+
+
+
 
     return (
         <div>
@@ -164,12 +157,36 @@ export const Receipt = () => {
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Purchase</DialogTitle>
+                        <div className="flex space-x-2">
+                            <Input
+                                type="number"
+                                placeholder="Enter purchase price"
+                                value={formPurchase.amount}
+                                onChange={(e) =>
+                                    setFormPurchase({ ...formPurchase, amount: e.target.value })
+                                }
+                                className='w-[70%]'
+                            />
+                            <Input
+                                type="text"
+                                value={formPurchase.category}
+                                disabled
+                                className={'w-[30%]'}
+                            />
+
+
+
+
+                        </div>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <ScrollArea className="grid gap-4 py-4 h-[532px]">
                         {updatedPurchase.map((p) => (
-                            <div className="grid grid-cols-4 items-center gap-4 " key={p.id}>
+                            <div className="grid grid-cols-4 items-center gap-4 py-2" key={p.id}>
                                 <Label htmlFor="name" className="text-right">
                                     {p.name}
+                                    <span className="text-red-400">
+                                        {`(${p.quantity})`}
+                                    </span>
                                 </Label>
                                 <div className='w-full flex col-span-3'>
                                     <Input
@@ -189,10 +206,10 @@ export const Receipt = () => {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                    </ScrollArea>
                     <DialogFooter>
                         <Button variant='outline' className='flex-1' onClick={handleConfirm}>
-                            Show Ingredient to Purchase
+                            submit
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -207,7 +224,7 @@ export const Receipt = () => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction onClick={receipt}>ยืนยัน</AlertDialogAction>
+                        <AlertDialogAction onClick={handlePurchaseSubmit}>ยืนยัน</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

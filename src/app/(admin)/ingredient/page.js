@@ -5,13 +5,7 @@ import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { MoreHorizontal, PlusCircle } from "lucide-react"
 import {
@@ -26,12 +20,15 @@ import { useToast } from "@/components/ui/use-toast"
 import { EditIngredient } from "./component/editCom"
 import { AddIngredient } from "./component/inputCom"
 import { Receipt } from "./component/puchase"
+import { Input } from "@/components/ui/input"
+import { PrintIgd } from "./component/printIgd"
 
 export default function Ingredient() {
     const { toast } = useToast()
     const [isLoading, setIsloading] = useState(false)
     const [igd, setIgd] = useState([])
     const [selectedId, setSelectedId] = useState(null); // State to track selected ingredient ID
+
 
     const fetchIgd = async () => {
         setIsloading(true)
@@ -54,9 +51,6 @@ export default function Ingredient() {
         fetchIgd()
     }, [])
 
-    useEffect(() => {
-        console.log(igd);
-    }, [igd]);
 
     const handleEditClick = (id) => {
         setSelectedId(id); // Set the selected ID when edit button is clicked
@@ -86,10 +80,16 @@ export default function Ingredient() {
 
 
 
+
+
+
     return (
         <Tabs defaultValue="all">
             <div className="flex items-center">
-                <Receipt />
+                <div className={'flex space-x-3'}>
+                    <PrintIgd />
+                    <Receipt />
+                </div>
                 <div className="ml-auto flex items-center gap-2">
                     <Dialog>
                         <DialogTrigger asChild>

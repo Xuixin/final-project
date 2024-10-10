@@ -144,7 +144,7 @@ export default function Employee() {
       </div>
       <TabsContent value="all" className="min-h-[500px]">
         <Card x-chunk="dashboard-06-chunk-0">
-          <CardContent className="m-5 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 ">
+          <CardContent className="m-5 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 ">
             <TableLoop employee={employees} func={onDelete} />
           </CardContent>
         </Card>
