@@ -66,7 +66,7 @@ export default function EditMenuSet({ params }) {
         totalMenu: set.totalMenu,
         price: set.price,
         status: set.status,
-        menu: set.details.map((detail) => ({
+        menu: set.menusetdetail.map((detail) => ({
           ...detail.menu,
           quantity: detail.quantity,
         })),

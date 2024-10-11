@@ -13,13 +13,14 @@ export async function GET(request, { params }) {
     const data = await prisma.menuset.findUnique({
       where: { id: Number(id) },
       include: {
-        details: {
+        menusetdetail: {
           include: {
             menu: true,
           },
         },
       },
     })
+
     return new Response(JSON.stringify(data), {
       status: 200,
     })

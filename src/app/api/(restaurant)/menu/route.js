@@ -54,7 +54,7 @@ export async function POST(req) {
 
     if (newData.id) {
       ingredientIds.map(async (i) => {
-        await prisma.menuRecipes.create({
+        await prisma.menurecipes.create({
           data: {
             menu: {
               connect: {
