@@ -1,0 +1,319 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table attendance {
+  id Int [pk, increment]
+  employeeId Int [not null]
+  status Boolean [not null]
+  createdAt DateTime [default: `now()`, not null]
+  employee employee [not null]
+  wages wages [not null]
+}
+
+Table category {
+  id Int [pk, increment]
+  name String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  menu menu [not null]
+}
+
+Table customer {
+  id Int [pk, increment]
+  name String [not null]
+  lastname String [not null]
+  email String [unique, not null]
+  address String
+  tel String
+  password String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  order order [not null]
+}
+
+Table discount {
+  id Int [pk, increment]
+  name String [unique, not null]
+  discount Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  menu menu [not null]
+}
+
+Table employee {
+  id Int [pk, increment]
+  name String [not null]
+  lastname String [not null]
+  address String
+  email String [unique, not null]
+  password String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  roleId Int [not null]
+  attendance attendance [not null]
+  role role [not null]
+  order order [not null]
+  shipping shipping [not null]
+}
+
+Table expense {
+  id Int [pk, increment]
+  category expense_category [not null]
+  amount Float [not null]
+  description String
+  date DateTime [default: `now()`, not null]
+  expense_details expense_detail [not null]
+}
+
+Table expense_detail {
+  id Int [pk, increment]
+  expenseId Int
+  expense expense
+  ingredientId Int
+  ingredient ingredient
+  quantity Float [not null]
+  unit String [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table ingredient {
+  id Int [pk, increment]
+  name String [not null]
+  min_quantity Float [not null]
+  quantity Float [not null]
+  unit String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  expense_details expense_detail [not null]
+  menurecipes menurecipes [not null]
+}
+
+Table menu {
+  id Int [pk, increment]
+  name String [not null]
+  img String
+  price Float [not null]
+  categoryId Int [not null]
+  discountId Int
+  createdAt DateTime [default: `now()`, not null]
+  soldQuantity Int [not null, default: 0]
+  status menu_status [not null, default: 'Draft']
+  category category [not null]
+  discount discount
+  menurecipes menurecipes [not null]
+  menusetdetail menusetdetail [not null]
+  orderdetail orderdetail [not null]
+}
+
+Table menurecipes {
+  id Int [pk, increment]
+  menuId Int [not null]
+  ingredientId Int [not null]
+  quantity Float [not null]
+  unit String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  ingredient ingredient [not null]
+  menu menu [not null]
+}
+
+Table menuset {
+  id Int [pk, increment]
+  name String [not null]
+  totalMenu Int [not null]
+  price Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  soldQuantity Int [not null, default: 0]
+  status menuset_status [not null, default: 'Draft']
+  menusetdetail menusetdetail [not null]
+  orderdetail orderdetail [not null]
+}
+
+Table menusetdetail {
+  id Int [pk, increment]
+  menusetId Int [not null]
+  menuId Int [not null]
+  quantity Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  menu menu [not null]
+  menuset menuset [not null]
+}
+
+Table order {
+  id Int [pk, increment]
+  customerId Int
+  tableId Int
+  employeeId Int
+  status order_status [not null, default: 'InQueue']
+  quantity Int [not null]
+  totalPrice Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  order_sourceId Int [not null]
+  customer customer
+  employee employee
+  order_source order_source [not null]
+  table table
+  orderdetail orderdetail [not null]
+  payment payment
+  shipping shipping
+}
+
+Table order_source {
+  id Int [pk, increment]
+  source_name String [unique, not null]
+  order order [not null]
+}
+
+Table orderdetail {
+  id Int [pk, increment]
+  orderId Int [not null]
+  menuId Int
+  menusetId Int
+  quantity Int [not null]
+  price Float
+  createdAt DateTime [default: `now()`, not null]
+  menu menu
+  menuset menuset
+  order order [not null]
+
+  indexes {
+    (orderId, menuId, menusetId) [unique]
+  }
+}
+
+Table payment {
+  id Int [pk, increment]
+  orderId Int [unique, not null]
+  amount Float [not null]
+  status payment_status [not null, default: 'InComplete']
+  createdAt DateTime [default: `now()`, not null]
+  method payment_method [not null, default: 'PayPal']
+  imgQr String
+  order order [not null]
+}
+
+Table role {
+  id Int [pk, increment]
+  name String [not null]
+  wageperday Int [not null]
+  wagepermonth Int [not null]
+  employee employee [not null]
+}
+
+Table shipping {
+  id Int [pk, increment]
+  orderId Int [unique, not null]
+  employeeId Int
+  status shipping_status [not null, default: 'Pending']
+  createdAt DateTime [default: `now()`, not null]
+  employee employee
+  order order [not null]
+}
+
+Table table {
+  id Int [pk, increment]
+  table_NO String [not null]
+  status table_status [not null, default: 'available']
+  createdAt DateTime [default: `now()`, not null]
+  type table_type [not null]
+  order order [not null]
+}
+
+Table wages {
+  id Int [pk, increment]
+  attendanceId Int [not null]
+  amount Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  attendance attendance [not null]
+}
+
+Enum expense_category {
+  wage
+  ingredient
+  other
+}
+
+Enum table_status {
+  available
+  occupied
+}
+
+Enum payment_status {
+  InComplete
+  Completed
+  Refunded
+}
+
+Enum shipping_status {
+  Pending
+  Shipped
+  Delivered
+  Cancelled
+}
+
+Enum order_status {
+  InQueue
+  InProgress
+  Finished
+  Cancelled
+}
+
+Enum table_type {
+  inside
+  outside
+}
+
+Enum payment_method {
+  Cash
+  PayPal
+  QRCode
+}
+
+Enum menuset_status {
+  Draft
+  Published
+  Archived
+}
+
+Enum menu_status {
+  Draft
+  Published
+  Archived
+}
+
+Ref: attendance.employeeId > employee.id
+
+Ref: employee.roleId > role.id
+
+Ref: expense_detail.expenseId > expense.id
+
+Ref: expense_detail.ingredientId > ingredient.id
+
+Ref: menu.categoryId > category.id
+
+Ref: menu.discountId > discount.id
+
+Ref: menurecipes.ingredientId > ingredient.id
+
+Ref: menurecipes.menuId > menu.id
+
+Ref: menusetdetail.menuId > menu.id
+
+Ref: menusetdetail.menusetId > menuset.id
+
+Ref: order.customerId > customer.id
+
+Ref: order.employeeId > employee.id
+
+Ref: order.order_sourceId > order_source.id
+
+Ref: order.tableId > table.id
+
+Ref: orderdetail.menuId > menu.id
+
+Ref: orderdetail.menusetId > menuset.id
+
+Ref: orderdetail.orderId > order.id
+
+Ref: payment.orderId - order.id
+
+Ref: shipping.employeeId > employee.id
+
+Ref: shipping.orderId - order.id
+
+Ref: wages.attendanceId > attendance.id

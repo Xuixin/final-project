@@ -2,8 +2,7 @@
 import Image from "next/image";
 import {
     ChevronLeft,
-    Upload,
-    X
+
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
