@@ -22,23 +22,21 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
   const handleCheckout = async () => {
     try {
       // 1. อัปเดตข้อมูลที่อยู่ลูกค้า
-      await axios.post(`/api/customer/${customerId}`, { userData })
+      const response = await axios.post(`/api/customer/${customerId}`, userData)
+      const customer = response.data
 
       // 2. สร้าง Order และ Order Detail
-      const orderResponse = await fetch('/api/order/online', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerId,
-          items,
-          itemsSet,
-          totalPrice,
-          status: 'InQueue',
-        }),
-      })
+      const orderResponse = await axios.post('/api/order/online', {
+        cid: customer.id,
+        items,
+        itemsSet,
+        totalPrice,
+        status: 'InQueue',
+      }
+      )
+      console.log(orderResponse);
 
-      const { orderId, totalPrice: orderTotalPrice } =
-        await orderResponse.json()
+      const { orderId, totalPrice: orderTotalPrice } = orderResponse.data
 
       if (!orderId) throw new Error('Failed to create order.')
 
@@ -55,6 +53,8 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
         status: 'Pending',
       })
 
+      console.log('orderId', orderId);
+
       const paymentResponse = await fetch('/api/payment/paypal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,6 +64,8 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
 
 
       const { id: paypalOrderId } = await paymentResponse.json()
+
+
 
       if (paypalOrderId) {
         window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${paypalOrderId}`

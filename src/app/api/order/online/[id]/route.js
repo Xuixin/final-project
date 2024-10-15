@@ -11,12 +11,12 @@ export async function GET(request, { params }) {
             },
             include: {
                 customer: true,
-                orderDetails: {
+                orderdetail: {
                     include: {
                         menu: true,
                         menuset: {
                             include: {
-                                details: {
+                                menusetdetail: {
                                     include: {
                                         menu: true
                                     }
@@ -37,7 +37,7 @@ export async function GET(request, { params }) {
             const setmenu = [];
             const setIds = new Set(); // ใช้ Set เพื่อตรวจสอบว่าเซ็ตเมนูซ้ำหรือไม่
 
-            order.orderDetails.forEach(detail => {
+            order.orderdetail.forEach(detail => {
                 if (detail.menusetId === null) {
                     // เป็นเมนูปกติ
                     normalmenu.push({
@@ -54,7 +54,7 @@ export async function GET(request, { params }) {
                         setName: detail.menuset.name,
                         totalMenu: detail.menuset.totalMenu,
                         setPrice: detail.price,
-                        details: detail.menuset.details.map(d => ({
+                        details: detail.menuset.menusetdetail.map(d => ({
                             id: d.menu.id,
                             name: d.menu.name,
                             quantity: detail.quantity

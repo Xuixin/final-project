@@ -27,7 +27,7 @@ export async function POST(request, { params }) {
 
   const userData = await request.json()
 
-  console.log('userData', userData);
+
 
   try {
     const updateResponse = await prisma.customer.update({
@@ -41,6 +41,7 @@ export async function POST(request, { params }) {
         address: userData.address,
       },
     })
+
 
     return new Response(JSON.stringify(updateResponse), {
       status: 200,

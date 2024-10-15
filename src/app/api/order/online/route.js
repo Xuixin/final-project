@@ -4,8 +4,8 @@ const prisma = new PrismaClient()
 
 export async function POST(req) {
   try {
-    const { customerId, items, itemsSet, totalPrice, status } = await req.json()
-    console.log('totalPrice:', totalPrice)
+    const { cid, items, itemsSet, totalPrice, status } = await req.json()
+    console.log('totalPrice:', cid)
 
     // 1. สร้างคำสั่งซื้อใหม่
     const order = await prisma.order.create({
@@ -14,7 +14,7 @@ export async function POST(req) {
         quantity: 0,
         totalPrice: parseFloat(totalPrice),
         customer: {
-          connect: { id: parseInt(customerId) },
+          connect: { id: parseInt(cid) },
         },
         order_source: {
           connect: { id: 1 },
@@ -42,7 +42,7 @@ export async function POST(req) {
     ]
 
     // 3. สร้าง orderdetail สำหรับ items และ itemsSet
-    await prisma.orderDetail.createMany({
+    await prisma.orderdetail.createMany({
       data: allItems,
     })
 
@@ -70,7 +70,7 @@ export async function POST(req) {
 
     // 6. อัปเดต soldQuantity สำหรับ set menu ตามจำนวนเซ็ตที่ขาย
     for (const set of itemsSet) {
-      await prisma.menuSet.update({
+      await prisma.menuset.update({
         where: { id: set.id },
         data: {
           soldQuantity: {
@@ -129,7 +129,7 @@ export async function GET() {
             },
             menuset: {
               include: {
-                orderdetail: {
+                menusetdetail: {
                   include: {
                     menu: true,
                   },
