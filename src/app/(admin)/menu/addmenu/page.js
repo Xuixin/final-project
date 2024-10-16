@@ -222,7 +222,7 @@ export default function AllMenu() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Product Option</CardTitle>
+                                <CardTitle>Ingredient</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <CheckboxIdsCom igd={igd} checkedIds={checkedIds} setCheckedIds={setCheckedIds} />

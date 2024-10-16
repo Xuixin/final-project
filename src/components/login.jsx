@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
+import Link from "next/link";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -64,14 +65,21 @@ export default function SignIn() {
   };
 
   return (
-    <main className="mx-10 my-20 ">
-      <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-1 xl:min-h-[800px]">
+    <main className="mx-10 my-5 bg-red-50 relative"
+      style={{
+        backgroundImage: `url("/banner.jpg")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+      }}
+    >
+      <div className="absolute inset-0 backdrop-blur-lg"></div>
+      <div className="relative w-full  lg:grid lg:min-h-[600px] lg:grid-cols-1 xl:min-h-[800px]">
         <div className="flex items-center justify-center py-12">
-          <div className="mx-auto grid w-[660px] gap-6 border p-10 rounded">
+          <div className="mx-auto bg-white  grid w-[660px] gap-6 border p-10 rounded">
             <div className="grid gap-2 text-center">
               <h1 className="text-3xl font-bold">Sign In</h1>
             </div>
-            <div className="">
+            <div className="bg-white ">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -116,9 +124,17 @@ export default function SignIn() {
                     )}
                   />
 
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading ? "Loading..." : "Submit"}
-                  </Button>
+                  {/* link to sign up */}
+                  <div className="flex items-center justify-start mt-4">
+
+                    Don't have an account? <Link href={''}> <Button variant='link'> Sign up</Button></Link>
+
+                  </div>
+                  <div className="flex items-center justify-end">
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading ? "Loading..." : "Submit"}
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </div>

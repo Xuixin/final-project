@@ -21,3 +21,13 @@ export async function POST(req) {
         await prisma.$disconnect(); // Disconnect Prisma Client
     }
 }
+
+export async function GET(req, res) {
+    try {
+        const customers = await prisma.customer.findMany()
+        return new Response(JSON.stringify(customers))
+    } catch (error) {
+        console.log('error', error.message);
+        return new Response(JSON.stringify({ message: 'error'.error.message }))
+    }
+}

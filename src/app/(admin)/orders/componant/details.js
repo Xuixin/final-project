@@ -140,11 +140,11 @@ export function Details_order({ order, fetchOrders }) {
                     <ul className="grid gap-3">
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span>${order.totalPrice}</span>
+                            <span>RM {order.totalPrice}</span>
                         </li>
                         <li className="flex items-center justify-between font-semibold">
                             <span className="text-muted-foreground">Total</span>
-                            <span>${order.totalPrice}</span>
+                            <span>RM {order.totalPrice}</span>
                         </li>
                     </ul>
                 </div>
