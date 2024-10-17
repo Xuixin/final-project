@@ -9,7 +9,8 @@ import {
   LineChart,
   Settings,
   ShoppingCart,
-  ShoppingBasket
+  ShoppingBasket,
+  UserRound
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -37,40 +38,110 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 import Bread from '../../components/breadcrump'
+import { useEffect, useState } from 'react'
+
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname() // รับตำแหน่งปัจจุบันของผู้ใช้
+  const router = useRouter() // รับ��ู้ใช้ในส่วนของเว็บ
+
+  const [role, setRole] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+
+  const CheckRoleAdmin = async () => {
+    const role = localStorage.getItem('role')
+    if (role === null) {
+      router.push('/adminLogin')
+      return
+    }
+
+    if (role === 'owner') {
+      setRole(true)
+      setShowDropdown(true)
+    } else {
+      setRole(false)
+      setShowDropdown(true)
+    }
+  }
+
+
+  useEffect(() => {
+    CheckRoleAdmin()
+  }, [])
+
+
+  const handelLogout = () => {
+    localStorage.removeItem('role')
+    router.push('/adminLogin')
+  }
+
 
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
       {/* sidebar */}
-      <aside className='fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex'>
+      <aside className='fixed inset-y-0 left-0 z-20 hidden w-14 flex-col border-r bg-background sm:flex'>
         <TooltipProvider>
           <nav className='flex flex-col items-center gap-4 px-2 sm:py-5'>
-            <Link
-              href='/dashboard'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/dashboard')
-                ? 'bg-accent'
-                : 'text-muted-foreground'
-                } transition-colors hover:text-foreground`}
-            >
-              <Home className='h-5 w-5' />
-              <span className='sr-only'>Dashboard</span>
-            </Link>
 
-            <Link
-              href='/orders'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/orders')
-                ? 'bg-accent'
-                : 'text-muted-foreground'
-                } transition-colors hover:text-foreground`}
-            >
-              <ShoppingCart className='h-5 w-5' />
-              <span className='sr-only'>Orders</span>
-            </Link>
+            {role === true && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href='/dashboard'
+                    className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/dashboard')
+                      ? 'bg-accent'
+                      : 'text-muted-foreground'
+                      } transition-colors hover:text-foreground`}
+                  >
+                    <Home className='h-5 w-5' />
+                    <span className='sr-only'>Dashboard</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side={"right"} >Dashboard</TooltipContent>
+              </Tooltip>
+            )}
+
+
+            <Tooltip >
+              <TooltipTrigger asChild>
+                <Link
+                  href='/customer'
+                  className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/customer')
+                    ? 'bg-accent'
+                    : 'text-muted-foreground'
+                    } transition-colors hover:text-foreground`}
+                >
+
+                  <UserRound className='h-5 w-5' />
+                  <span className='sr-only'>customer</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side={"right"}>customer</TooltipContent>
+            </Tooltip>
+
+            <Tooltip >
+              <TooltipTrigger asChild>
+                <Link
+                  href='/orders'
+                  className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/orders')
+                    ? 'bg-accent'
+                    : 'text-muted-foreground'
+                    } transition-colors hover:text-foreground`}
+                >
+                  <ShoppingCart className='h-5 w-5' />
+                  <span className='sr-only'>Orders</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side={"right"}>Orders</TooltipContent>
+            </Tooltip>
+
+
+
+
+
 
             <Menubar className='border-none'>
               <MenubarMenu>
@@ -94,36 +165,61 @@ export default function AdminLayout({ children }) {
               </MenubarMenu>
             </Menubar>
 
-            <Link
-              href='/ingredient'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/ingredient')
-                ? 'bg-accent'
-                : 'text-muted-foreground'
-                } transition-colors hover:text-foreground`}
-            >
-              <ShoppingBasket className='h-5 w-5' />
-              <span className='sr-only'>Employees</span>
-            </Link>
 
-            <Link
-              href='/employees'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/employee')
-                ? 'bg-accent'
-                : 'text-muted-foreground'
-                } transition-colors hover:text-foreground`}
-            >
-              <Users2 className='h-5 w-5' />
-              <span className='sr-only'>Employees</span>
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href='/ingredient'
+                  className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/ingredient')
+                    ? 'bg-accent'
+                    : 'text-muted-foreground'
+                    } transition-colors hover:text-foreground`}
+                >
+                  <ShoppingBasket className='h-5 w-5' />
+                  <span className='sr-only'>Ingredient</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side={"right"}>Ingredient</TooltipContent>
+            </Tooltip>
 
-            <Link
-              href='/discount'
-              className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/discount') ? 'bg-accent' : 'text-muted-foreground'
-                } transition-colors hover:text-foreground`}
-            >
-              <CirclePercent className='h-5 w-5' />
-              <span className='sr-only'>Discounts</span>
-            </Link>
+            {role === true && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href='/employees'
+                    className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/employee')
+                      ? 'bg-accent'
+                      : 'text-muted-foreground'
+                      } transition-colors hover:text-foreground`}
+                  >
+                    <Users2 className='h-5 w-5' />
+                    <span className='sr-only'>Employees</span>
+                  </Link>
+
+                </TooltipTrigger>
+                <TooltipContent side={"right"}>Employees</TooltipContent>
+              </Tooltip>
+            )}
+
+
+
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href='/discount'
+                  className={`group flex h-9 w-9 items-center justify-center rounded-lg ${pathname.startsWith('/discount') ? 'bg-accent' : 'text-muted-foreground'
+                    } transition-colors hover:text-foreground`}
+                >
+                  <CirclePercent className='h-5 w-5' />
+                  <span className='sr-only'>Discounts</span>
+                </Link>
+
+              </TooltipTrigger>
+              <TooltipContent side={"right"}>Discounts</TooltipContent>
+            </Tooltip>
+
+
           </nav>
 
           <nav className='mt-auto flex flex-col items-center gap-4 px-2 sm:py-5'>
@@ -216,12 +312,18 @@ export default function AdminLayout({ children }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              {showDropdown !== false ? (
+                <>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem>Support</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <Button className={'w-full'} variant='outline' onClick={handelLogout}>Logout</Button>
+                </>
+              ) : (
+                <DropdownMenuItem>signin</DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

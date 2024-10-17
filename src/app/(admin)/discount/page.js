@@ -50,37 +50,41 @@ const TableLoop = ({ promotions, onDelete }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {promotions.map((pro, index) => (
-          <TableRow key={pro.id}>
-            <TableCell className="font-medium">{index + 1}</TableCell>
-            <TableCell>{pro.name}</TableCell>
-            <TableCell> ลด <span className="text-red-500">{pro.discount}</span></TableCell>
-            <TableCell>Menu</TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button aria-haspopup="true" size="icon" variant="ghost">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Toggle menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <Link href={`/discount/adddiscount/${pro.id}`}>
-                    <DropdownMenuItem className="cursor-pointer">
-                      Edit
+        {promotions.map((pro, index) => {
+          console.log(pro.id);
+          return (
+
+            <TableRow key={pro.id}>
+              <TableCell className="font-medium">{index + 1}</TableCell>
+              <TableCell>{pro.name}</TableCell>
+              <TableCell> ลด <span className="text-red-500">{pro.discount}</span></TableCell>
+              <TableCell>Menu</TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <Link href={`/discount/adddiscount/${pro.id}`}>
+                      <DropdownMenuItem className="cursor-pointer">
+                        Edit
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuItem
+                      onClick={() => onDelete(pro.id)} // Call onDelete with pro.id
+                    >
+                      Delete
                     </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuItem
-                    onClick={() => onDelete(pro.id)} // Call onDelete with pro.id
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
-        ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          )
+        })}
       </TableBody>
     </Table>
   );
@@ -110,7 +114,7 @@ export default function Menupro() {
     }
 
     try {
-      await axios.delete(`/api/menupro/${id}`);
+      await axios.delete(`/api/promotion/${id}`);
       setPromotions((prevMenupros) =>
         prevMenupros.filter((pro) => pro.id !== id)
       ); // Update the state to remove the deleted item

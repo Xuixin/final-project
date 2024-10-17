@@ -99,13 +99,14 @@ export const Receipt = ({ od }) => {
                 <table>
                     <tbody>
                         <tr>
-                            <td>ID</td>
-                            <td style={{ textAlign: "right" }}>{order.id}</td>
+                            <td>Date</td>
+                            <td style={{ textAlign: "right" }}>{od.createAt}</td>
                         </tr>
                         <tr>
-                            <td>Date</td>
-                            <td style={{ textAlign: "right" }}>{order.date}</td>
+                            <td>ORDER ID</td>
+                            <td style={{ textAlign: "right" }}>{od.orderId}</td>
                         </tr>
+
                         <tr>
                             <td>Manager</td>
                             <td style={{ textAlign: "right" }}>{order.manager}</td>

@@ -78,11 +78,6 @@ export default function Ingredient() {
         }
     }
 
-
-
-
-
-
     return (
         <Tabs defaultValue="all">
             <div className="flex items-center">

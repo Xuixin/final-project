@@ -107,6 +107,7 @@ export async function GET(request, { params }) {
                 status: table.status,
                 type: table.type,
                 order: orderForTable ? {
+                    createAt: orderForTable.createdAt,
                     orderId: orderForTable.order[0]?.id,
                     status: orderForTable.order[0]?.status,
                     totalPrice: orderForTable.order[0]?.totalPrice,

@@ -31,6 +31,9 @@ export async function POST(req) {
 export async function GET() {
   try {
     const data = await prisma.employee.findMany({
+      where: {
+        roleId: { not: 5 }
+      },
       include: {
         role: true,
       },
