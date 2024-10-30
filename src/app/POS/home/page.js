@@ -47,12 +47,10 @@ export default function PosPage() {
     fetchAlltable()
   }, [])
 
-  useEffect(() => {
-    console.log("allTable", allTable.inside);
-  }, [allTable]);
 
   useEffect(() => {
     console.log("selectedOrder", selectedOrder);
+
   }, [selectedOrder])
 
   useEffect(() => {

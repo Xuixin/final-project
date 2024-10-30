@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { usePos } from '../../context'
-
-// import components
 import Image from 'next/image'
 import { Loader } from './components/loading'
 import { Button } from '@/components/ui/button'
@@ -14,6 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { AnimatePresence, motion } from 'framer-motion'
 import { Posmenu_details } from './components/details'
+import { Search, Package, Utensils } from 'lucide-react'
 
 export default function Menu({ params }) {
     const { id } = params
@@ -22,7 +21,6 @@ export default function Menu({ params }) {
     const [menu, setMenu] = useState([])
     const [menuSet, setMenuSet] = useState([])
     const [selectedCategory, setSelectedCategory] = useState(null)
-    const [selectedMenuSet, setSelectedMenuSet] = useState(null)  // ใช้สำหรับเก็บ menuSet ที่ถูกเลือก
     const [searchTerm, setSearchTerm] = useState('')
     const { addToCart, addToCartSet } = usePos()
     const [tableId, setTableId] = useState(id)
@@ -87,17 +85,19 @@ export default function Menu({ params }) {
         .filter((category) => category.menu.length > 0)
 
     return (
-        <section className='grid flex-1 items-start gap-4 p-4 bg-primary-foreground h-screen sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'>
+        <section className='grid flex-1 items-start gap-4 p-4 bg-primary-foreground min-h-screen sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'>
             <div className='grid auto-rows-max items-start pt-2 gap-4 md:gap-8 lg:col-span-2'>
-                <Card className='h-[45rem]'>
+                <Card className='h-[calc(100vh-5rem)]'>
                     <CardHeader>
-                        <CardTitle className='flex'>
+                        <CardTitle className='flex items-center'>
+                            <Utensils className="mr-2" />
                             Menu
-                            <div className='ml-auto'>
+                            <div className='ml-auto relative'>
+                                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
                                 <Input
                                     type='text'
                                     placeholder='Search menu...'
-                                    className='border p-2 rounded'
+                                    className='pl-8 pr-4 py-2 border rounded-full'
                                     value={searchTerm}
                                     onChange={handleSearch}
                                 />
@@ -106,94 +106,87 @@ export default function Menu({ params }) {
                     </CardHeader>
                     <Separator className='mb-5' />
 
-                    <CardContent className='flex-grow'>
-                        <ScrollArea className="h-[30rem]">
-                            {loading ? (
-                                <Loader />
-                            ) : (
-                                isSet ? (
-                                    <div className='grid grid-cols-3 gap-5 justify-items-center'>
-                                        {menuSet.map((set) => (
-                                            <motion.div
-                                                key={set.id}
-                                                className="w-48 rounded-lg overflow-hidden bg-gray-100 text-center shadow-md pt-2"
-                                                whileTap={{ scale: 0.95, boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)" }}
-                                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                                                onClick={() => addToCartSet({ ...set, quantity: 1 })}
-                                            >
-                                                <div className="font-semibold text-md flex justify-between px-5 w-full" >
-                                                    <h1 className='font-semibold text-lg text-start'>{set.name} </h1>
-                                                    <h3 className="font-semibold text-lg ">{set.price.toFixed(2)}</h3>
-                                                </div>
-
-                                                {/* AnimatePresence และ motion.div ใช้สำหรับแสดง/ซ่อน details */}
-
-                                                <ScrollArea className='w-full h-48 py-2 px-5 bg-white mt-2'>
-                                                    <ul
-                                                        initial={{ opacity: 0, height: 0 }}
-                                                        animate={{ opacity: 1, height: 'auto' }}
-                                                        exit={{ opacity: 0, height: 0 }}
-                                                        transition={{ duration: 0.3 }}
-                                                        className="overflow-hidden"
-                                                    >
-                                                        {set.details.map((m) => (
-                                                            <li key={m.id} className='py-2 text-start flex justify-between'>
-                                                                <p>{m.menu.name} </p>
-                                                                <p className="text-end">
-                                                                    <span className="text-sm font-semibold">X</span>
-                                                                    {m.quantity}
-                                                                </p>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </ScrollArea>
-
-                                            </motion.div>
-                                        ))}
-                                    </div>
+                    <CardContent className='flex-grow overflow-hidden'>
+                        <ScrollArea className="h-[calc(100vh-20rem)]">
+                            <AnimatePresence mode="wait">
+                                {loading ? (
+                                    <Loader />
                                 ) : (
-                                    <div className='grid grid-cols-3 gap-5 justify-items-center'>
-                                        {filteredItems.length === 0 ? (
-                                            <p className='text-sm text-gray-500'>No menu found.</p>
+                                    <motion.div
+                                        key={isSet ? 'set' : 'menu'}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 justify-items-center'
+                                    >
+                                        {isSet ? (
+                                            menuSet.map((set) => (
+                                                <motion.div
+                                                    key={set.id}
+                                                    className="w-full max-w-xs rounded-lg overflow-hidden bg-white shadow-lg hover:shadow-xl transition-shadow duration-300"
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => addToCartSet({ ...set, quantity: 1 })}
+                                                >
+                                                    <div className="p-4">
+                                                        <h2 className="text-xl font-bold mb-2">{set.name}</h2>
+                                                        <p className="text-gray-600 mb-4">RM {set.price.toFixed(2)}</p>
+                                                        <ScrollArea className="h-32 w-full">
+                                                            <ul className="space-y-2">
+                                                                {set.details.map((m) => (
+                                                                    <li key={m.id} className="flex justify-between items-center">
+                                                                        <span>{m.menu.name}</span>
+                                                                        <span className="text-sm font-semibold">x{m.quantity}</span>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </ScrollArea>
+                                                    </div>
+                                                </motion.div>
+                                            ))
                                         ) : (
                                             filteredItems[0]?.menu.map((item) => (
                                                 <motion.div
                                                     key={item.id}
-                                                    className="w-48 rounded-lg overflow-hidden bg-gray-100 text-center shadow-md"
-                                                    whileTap={{ scale: 0.95, boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)" }}
-                                                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                                    className="w-full max-w-xs rounded-lg overflow-hidden bg-white shadow-lg hover:shadow-xl transition-shadow duration-300"
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
                                                     onClick={() => addToCart({ ...item, quantity: 1 })}
                                                 >
-                                                    <div className="relative w-full h-32">
+                                                    <div className="relative w-full h-48">
                                                         <Image
                                                             src={item.img}
                                                             alt={item.name}
-                                                            fill
-                                                            className="object-cover"
+                                                            layout="fill"
+                                                            objectFit="cover"
                                                         />
                                                     </div>
-                                                    <div className="py-2 bg-gray-200">
-                                                        <p className="text-black text-sm font-semibold">{item.name}</p>
+                                                    <div className="p-4">
+                                                        <h2 className="text-lg font-semibold">{item.name}</h2>
+                                                        <p className="text-gray-600">RM {item.price.toFixed(2)}</p>
                                                     </div>
                                                 </motion.div>
                                             ))
                                         )}
-                                    </div>
-                                )
-                            )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </ScrollArea>
                     </CardContent>
 
                     <Separator className='my-5' />
-                    <CardFooter className='mb-4 flex items-center'>
+                    <CardFooter className='mb-4 flex items-center overflow-x-auto'>
                         <Button
-                            variant={isSet ? 'default' : 'outline'} className='mx-2'
+                            variant={isSet ? 'default' : 'outline'}
+                            className='mx-2 whitespace-nowrap'
                             onClick={() => {
                                 setIsSet(true)
                                 setSelectedCategory(null)
                             }}
                         >
-                            Set
+                            <Package className="mr-2 h-4 w-4" />
+                            Set Menu
                         </Button>
                         {menu.map((category) => (
                             <Button
@@ -202,14 +195,12 @@ export default function Menu({ params }) {
                                     setSelectedCategory(category.id)
                                     setIsSet(false)
                                 }}
-                                className={`ml-2 rounded-lg ${selectedCategory === category.id ? ' text-white' : ''}`}
-                                variant={selectedCategory === category.id ? '' : 'outline'}
+                                className={`ml-2 rounded-lg whitespace-nowrap ${selectedCategory === category.id ? 'text-white' : ''}`}
+                                variant={selectedCategory === category.id ? 'default' : 'outline'}
                             >
                                 {category.name}
                             </Button>
                         ))}
-
-
                     </CardFooter>
                 </Card>
             </div>

@@ -217,9 +217,11 @@ export default function Customerlayout({ children }) {
             </>
           ) : (
             <>
-              <Button variant='outline' className='mx-3'>
-                Sign In
-              </Button>
+              <Link href='/login'>
+                <Button variant='outline' className='mx-3'>
+                  Sign In
+                </Button>
+              </Link>
               <Button >
                 Sign Up
               </Button>

@@ -1,5 +1,4 @@
-'use client'
-
+"use client"
 import { MoreHorizontal, PlusCircle } from 'lucide-react'
 import {
     Card,
@@ -43,26 +42,26 @@ const TableLoop = ({ menuSet, onDelete, router }) => {
             </TableHeader>
             <TableBody>
                 {menuSet.map((set, index) => (
-                    <TableRow key={set.id}>
+                    <TableRow key={set.id} className="hover:bg-base-300 transition-colors">
                         <TableCell className='font-medium'>{index + 1}</TableCell>
                         <TableCell>{set.name}</TableCell>
                         <TableCell>
                             {set.details.map((detail, index) => (
-                                <div key={index}>
-                                    {detail.menu.name} X {detail.quantity}
+                                <div key={index} className="flex items-center gap-1">
+                                    {detail.menu.name} <span className="text-muted-foreground">x{detail.quantity}</span>
                                 </div>
                             ))}
                         </TableCell>
-
                         <TableCell>{set.totalMenu}</TableCell>
-                        <TableCell>RM {set.price}</TableCell>
-                        <TableCell>
+                        <TableCell>RM {set.price.toFixed(2)}</TableCell>
+                        <TableCell className="flex justify-end">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         aria-haspopup='true'
                                         size='icon'
                                         variant='ghost'
+                                        title="More actions"
                                     >
                                         <MoreHorizontal className='h-4 w-4' />
                                         <span className='sr-only'>Toggle menu</span>
@@ -70,10 +69,10 @@ const TableLoop = ({ menuSet, onDelete, router }) => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align='end'>
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem className='cursor-pointer' onClick={() => router.push(`/menuset/editmenuset/${set.id}`)}>
+                                    <DropdownMenuItem className='cursor-pointer hover:bg-base-300 transition-colors' onClick={() => router.push(`/menuset/editmenuset/${set.id}`)}>
                                         Edit
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onDelete(set.id)}>
+                                    <DropdownMenuItem className='cursor-pointer hover:bg-base-300 transition-colors' onClick={() => onDelete(set.id)}>
                                         Delete
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -113,11 +112,9 @@ export default function MenuType() {
         setTriggerSelected(filteredMenuSet)
     }
 
-
     useEffect(() => {
         onTrigger(triggerValue,)
     }, [triggerValue])
-
 
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this item?')) {
@@ -139,7 +136,7 @@ export default function MenuType() {
 
     return (
         <Tabs defaultValue='all'>
-            <div className='flex items-center'>
+            <div className='flex items-center mb-4'>
                 <TabsList>
                     <TabsTrigger value="all" onClick={() => setTriggerValue('all')}>All</TabsTrigger>
                     <TabsTrigger value="Published" onClick={() => setTriggerValue('Published')}>Published</TabsTrigger>

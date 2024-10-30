@@ -127,7 +127,7 @@ export default function SignIn() {
                   {/* link to sign up */}
                   <div className="flex items-center justify-start mt-4">
 
-                    Don't have an account? <Link href={''}> <Button variant='link'> Sign up</Button></Link>
+                    Don't have an account? <Link href={'/register'}> <Button variant='link'> Sign up</Button></Link>
 
                   </div>
                   <div className="flex items-center justify-end">

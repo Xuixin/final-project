@@ -1,436 +1,508 @@
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ShoppingCart, Plus, Minus } from "lucide-react"
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ShoppingCart, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
+import cn from 'classnames';
+import Image from "next/image";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import { useQr } from "../../qrContext";
+import { useToast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
+
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
-import Image from "next/image"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { useState, useEffect } from "react"
-import axios from "axios"
+    CardDescription
+} from "@/components/ui/card";
 
-import { motion, AnimatePresence, } from "framer-motion"
-import { useQr } from "../../qrContext"
-import { useToast } from "@/components/ui/use-toast"
-import Link from "next/link"
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function OrderPage({ setPage, tableId }) {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(true);
+    const [tableOrder, setTableOrder] = useState(null);
+    const [expandedSetId, setExpandedSetId] = useState(null);
+    const { cartCount } = useQr();
+
+    const toggleMenuSetDetail = (setId) => {
+        setExpandedSetId(prevId => (prevId === setId ? null : setId));
+    };
+
+    const fetchOrder = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`/api/table/${tableId}`);
+            setTableOrder(response.data);
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: 'Error fetching order',
+                description: 'Please try again later',
+                variant: 'destructive'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrder();
+    }, []);
+
+    if (!tableId || !tableOrder) {
+        return (
+            <Card className="flex flex-col items-center justify-center mt-20 h-screen">
+                <CardContent className="pt-6">
+                    <h1 className="text-2xl font-bold mb-4 text-center">No table or order found</h1>
+                    <Button
+                        className="w-full bg-primary hover:bg-primary/90 transition-colors"
+                        onClick={() => setPage('menu')}
+                    >
+                        Back to menu
+                    </Button>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="space-y-4 p-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+            </div>
+        );
+    }
+
+    if (tableOrder.status === 'available') {
+        return (
+            <Card className="w-full max-w-md mx-auto flex flex-col items-center justify-center h-screen shadow-lg">
+                <CardContent className="pt-6">
+                    <h1 className="text-2xl font-bold mb-4 text-center">This table is not available</h1>
+                    <Button
+                        className="w-full bg-primary hover:bg-primary/90 transition-colors"
+                        onClick={() => setPage('menu')}
+                    >
+                        Back to menu
+                    </Button>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="min-h-screen bg-gradient-to-b from-secondary/50 to-secondary pb-6"
+        >
+            {/* Header Navigation */}
+            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
+                <div className="max-w-md mx-auto w-full flex justify-between items-center px-4 py-3">
+                    <Button
+                        variant="ghost"
+                        className="rounded-full p-3 hover:bg-secondary transition-colors"
+                        onClick={() => setPage('menu')}
+                    >
+                        <ChevronLeft className="h-5 w-5" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        className="rounded-full p-3 hover:bg-secondary transition-colors relative"
+                        onClick={() => setPage('cart')}
+                    >
+                        {cartCount() > 0 && (
+                            <Badge
+                                variant="destructive"
+                                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0"
+                            >
+                                {cartCount()}
+                            </Badge>
+                        )}
+                        <ShoppingCart className="h-5 w-5" />
+                    </Button>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="max-w-md mx-auto px-4 mt-4">
+                <ScrollArea className="h-[calc(100vh-8rem)]">
+                    <Card className="mb-4 shadow-lg border-secondary">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-xl">
+                                <span>Order: #{tableOrder?.order?.orderId}</span>
+                                <Badge
+                                    className={cn(
+                                        "capitalize",
+                                        tableOrder?.order?.status === 'completed' && "bg-green-500",
+                                        tableOrder?.order?.status === 'pending' && "bg-yellow-500",
+                                        tableOrder?.order?.status === 'processing' && "bg-blue-500"
+                                    )}
+                                >
+                                    {tableOrder?.order?.status}
+                                </Badge>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {tableOrder?.order?.normalMenu.length > 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold border-b pb-2">Regular Items</h3>
+                                    <div className="space-y-3">
+                                        {tableOrder.order.normalMenu.map((menu) => (
+                                            <OrderItem key={menu.id} item={menu} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {tableOrder.order?.setMenu?.length > 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold border-b pb-2">Set Menu Items</h3>
+                                    <div className="space-y-3">
+                                        {tableOrder.order.setMenu.map((set) => (
+                                            <SetMenuItem
+                                                key={set.id}
+                                                set={set}
+                                                isExpanded={expandedSetId === set.id}
+                                                onToggle={() => toggleMenuSetDetail(set.id)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </ScrollArea>
+            </div>
+        </motion.section>
+    );
+}
+
+function OrderItem({ item }) {
+    return (
+        <motion.div
+            className="flex items-center bg-gray-100 rounded-lg p-2"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+        >
+            <Image src={item.img} alt={item.name} width={48} height={48} className="rounded-md object-cover mr-2" />
+            <div className="flex-grow">
+                <h2 className="text-sm font-semibold">{item.name}</h2>
+                <p className="text-sm text-gray-600">
+                    RM {((item.discount ? item.price - item.discount.discount : item.price) * item.quantity).toFixed(2)}
+                </p>
+            </div>
+            <Badge variant="secondary">{item.quantity}</Badge>
+        </motion.div>
+    );
+}
+
+function SetMenuItem({ set, isExpanded, onToggle }) {
+    return (
+        <Card>
+            <CardHeader className="cursor-pointer" onClick={onToggle}>
+                <CardTitle className="flex justify-between items-center">
+                    <span>{set.setName}</span>
+                    <Button variant="ghost" size="sm">
+                        {isExpanded ? <ChevronUp /> : <ChevronDown />}
+                    </Button>
+                </CardTitle>
+            </CardHeader>
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <CardContent>
+                            {set.menusetdetail.map((item) => (
+                                <OrderItem key={item.id} item={item} />
+                            ))}
+                        </CardContent>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </Card>
+    );
+}
+
+function OrderSkeleton() {
+    return (
+        <Card className="w-full">
+            <CardContent className="pt-6 space-y-4">
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+            </CardContent>
+        </Card>
+    );
+}
+
+const MenuItemCard = ({ item, isSet, onAdd, onMinus, onRemove, onToggleDetails }) => {
+    return (
+        <Card className="mb-4 overflow-hidden">
+            <CardContent className="p-4">
+                <div className="flex items-center">
+                    <div className="relative w-20 h-20 mr-4">
+                        <Image
+                            src={item.img}
+                            alt={item.name}
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-md"
+                        />
+                    </div>
+                    <div className="flex-grow">
+                        <CardTitle className="text-lg mb-1">{item.name}</CardTitle>
+                        <CardDescription className="text-sm mb-2">
+                            RM {((isSet ? item.price : (item.discountId ? item.price - item.discount.discount : item.price)) * item.quantity).toFixed(2)}
+                        </CardDescription>
+                        <div className="flex items-center">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="p-1"
+                                onClick={() => onMinus(item)}
+                            >
+                                <Minus className="h-4 w-4" />
+                            </Button>
+                            <span className="mx-2 font-semibold">{item.quantity}</span>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="p-1"
+                                onClick={() => onAdd(item)}
+                            >
+                                <Plus className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex flex-col items-end">
+                        <Button
+                            variant="ghost"
+                            className="text-red-500 p-1"
+                            onClick={() => onRemove(item.id)}
+                        >
+                            Remove
+                        </Button>
+                        {isSet && (
+                            <Button
+                                variant="ghost"
+                                className="p-1 mt-2"
+                                onClick={() => onToggleDetails(item.id)}
+                            >
+                                Details
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
 
 export function CartPage({ setPage, tableId }) {
-    const { toast } = useToast()
+    const { toast } = useToast();
     const {
         clearCart,
         calculateTotalPrice,
         cart,
         cartSet,
+        addToCart,
         addToCartSet,
         minusFromCart,
         minusFromCartSet,
         removeFromCart,
         removeFromCartSet,
         cartCount
-    } = useQr()
+    } = useQr();
     const [expandedSetId, setExpandedSetId] = useState(null);
-    const [isCreate, setIsCreate] = useState(false)
-    const [order, setOrder] = useState(null)
+    const [isCreate, setIsCreate] = useState(false);
+    const [order, setOrder] = useState(null);
 
-    const togglemenusetdetail = (setId) => {
+    const toggleSetDetails = (setId) => {
         setExpandedSetId(prevId => (prevId === setId ? null : setId));
     };
 
-    const fetchingOrder = async () => {
-        try {
-            const response = await axios.get(`/api/table/${tableId}`)
-            if (response.data.status === 'available') {
-                setIsCreate(true)
-            } else {
-                setIsCreate(false)
-                setOrder(response.data.order)
+    useEffect(() => {
+        const fetchOrder = async () => {
+            try {
+                const response = await axios.get(`/api/table/${tableId}`);
+                setIsCreate(response.data.status === 'available');
+                if (response.data.status !== 'available') {
+                    setOrder(response.data.order);
+                }
+            } catch (error) {
+                console.error(error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Error fetching order',
+                    description: 'Please try again later',
+                });
             }
+        };
+        fetchOrder();
+    }, [tableId, toast]);
 
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchingOrder()
-    }, [])
-
-    useEffect(() => {
-        console.log(order);
-    }, [order])
-
-    const onsubmit = async () => {
-        const Data = {
+    const handleSubmit = async () => {
+        const orderData = {
             items: cart,
             itemsSet: cartSet,
             totalPrice: calculateTotalPrice(),
             status: 'InQueue',
             source_id: 2,
             table_id: tableId
+        };
+
+        try {
+            await axios.post('/api/order/dineIn', orderData);
+            toast({
+                variant: 'success',
+                title: 'Order Placed',
+                description: 'Your order has been placed successfully',
+            });
+            clearCart();
+            setPage('order');
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Error Placing Order',
+                description: 'Failed to place order',
+            });
         }
+    };
 
-        await axios.post('/api/order/dineIn', Data)
-            .then((response) => {
-                toast({
-                    variant: 'success',
-                    title: 'Order Placed',
-                    description: 'Your order has been placed successfully',
-                })
-                clearCart()
-                setPage('order')
-            })
-            .catch((error) => {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error Placing Order',
-                    description: 'Failed to place order',
-                })
-                console.error(error)
-            })
-
-        setPage('order')
-    }
-
-    const onUpdate = async () => {
-        const response = await axios.put(`/api/order/orderTable/${order.orderId}`, {
-            menu: [...cart],
-            menuSet: [...cartSet],
-            order: order,
-            status: 'InQueue',
-            totalPrice: calculateTotalPrice(),
-            newItemCount: cartCount()
-        })
-
-        clearCart()
-
-        toast({
-            variant: "success",
-            title: "Success",
-            description: "updating success"
-        });
-
-        setPage('order')
-    }
-
+    const handleUpdate = async () => {
+        try {
+            await axios.put(`/api/order/orderTable/${order.orderId}`, {
+                menu: [...cart],
+                menuSet: [...cartSet],
+                order: order,
+                status: 'InQueue',
+                totalPrice: calculateTotalPrice(),
+                newItemCount: cartCount()
+            });
+            clearCart();
+            toast({
+                variant: "success",
+                title: "Success",
+                description: "Order updated successfully"
+            });
+            setPage('order');
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Error Updating Order',
+                description: 'Failed to update order',
+            });
+        }
+    };
 
     if (cartCount() === 0) {
         return (
-            <>
-                <Button className='rounded-full p-3 relative' onClick={() => setPage('menu')}>
-                    <ChevronLeft className='text-white h-5 w-5' strokeWidth={2.5} />
-                </Button>
-                <h1>no menu select</h1>
-
-            </>
-        )
-    }
-    return (
-        <section className='w-full bg-secondary rounded-b-lg mb-5 py-5 space-y-5 bg-white '>
-            <div className='w-full flex justify-between items-center px-3 mb-5'>
-                {/* Category selection */}
-                <Button className='rounded-full p-3 relative' onClick={() => setPage('menu')}>
-                    <ChevronLeft className='text-white h-5 w-5' strokeWidth={2.5} />
-                </Button>
-
-
+            <div className="flex flex-col items-center justify-center h-screen">
+                <h1 className="text-2xl font-semibold mb-4">Your cart is empty</h1>
+                <Button onClick={() => setPage('menu')}>Back to Menu</Button>
             </div>
+        );
+    }
 
-            {/* Scrollable Menu Area */}
-            <ScrollArea className='w-full h-[40rem]'>
-                <ul className='px-5'>
-                    {cart.length > 0 && (
-                        cart.map((menu) => {
-                            return (
-                                <motion.li
-                                    key={menu.id}
-                                    className="flex items-center bg-gray-100 rounded-lg p-2 mb-2"
-                                    initial={{ scale: 0.9, opacity: 0 }}  // เริ่มต้นที่ขนาดเล็กและโปร่งใส
-                                    animate={{ scale: 1, opacity: 1 }}   // ขยายขนาดเป็นปกติและทำให้เห็นได้ชัดเจน
-                                    exit={{ scale: 0.9, opacity: 0 }}
-                                    transition={{ type: "spring", damping: 20, stiffness: 300 }} // ปรับค่า damping และ stiffness ให้การเคลื่อนไหวดูนุ่มนวล
-                                >
-                                    <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
-                                    <div className="flex flex-col flex-grow">
-                                        <h2 className="text-sm font-semibold">{menu.name}</h2>
-                                        <h2 className="text-md">RM {(menu.discountId ? (menu.price - menu.discount.discount) * menu.quantity : menu.price * menu.quantity).toFixed(2)}</h2>
-                                    </div>
-                                    <div className="text-end grid  justify-items-center">
-                                        <div className='flex gap-1 items-end'>
-                                            <motion.button
-                                                className='rounded-full bg-primary w-5 h-5 flex items-center justify-center'
-                                                onClick={() => addToCart({ ...menu, quantity: 1 })}
-                                            >
-                                                <Plus className='text-white w-4' />
-                                            </motion.button>
-                                            <h2 className="font-semibold">{menu.quantity}</h2>
-                                            <motion.button
-                                                className='rounded-full bg-primary w-5 h-5 flex items-center justify-center'
-                                                onClick={() => minusFromCart({ ...menu })}
-                                            >
-                                                <Minus className='text-white w-4' />
-                                            </motion.button>
-                                        </div>
-                                        <Button variant='link' className='text-red-500 py-0' onClick={() => removeFromCart(menu.id)}>remove</Button>
-                                    </div>
-                                </motion.li>
-                            )
-                        })
-                    )}
+    return (
+        <div className="bg-gray-100 mt-20 pb-20">
+            <header className="bg-white shadow-md p-4 flex items-center justify-between sticky top-0 z-10">
+                <Button variant="ghost" onClick={() => setPage('menu')}>
+                    <ChevronLeft className="mr-2" /> Back to Menu
+                </Button>
+                <h1 className="text-xl font-semibold">Your Cart</h1>
+            </header>
 
-
-                    {cartSet.length > 0 && cartSet.map((set) => (
-                        <>
-
-                            <motion.li
-                                key={set.id}
-                                className="flex items-center bg-gray-100 rounded-lg p-2 mb-2"
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.9, opacity: 0 }}
-                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                            >
-                                <div className="flex flex-col flex-grow">
-                                    <h2
-                                        className="text-sm font-semibold cursor-pointer"
-                                        onClick={() => togglemenusetdetail(set.id)}  // Toggle menusetdetail visibility
-                                    >
-                                        {set.name}
-                                    </h2>
-                                    <h2 className="text-md">RM {set.price.toFixed(2)}</h2>
-                                </div>
-                                <div className="text-end grid justify-items-center">
-                                    <div className='flex gap-1 items-end'>
-                                        <motion.button
-                                            className='rounded-full bg-primary w-5 h-5 flex items-center justify-center'
-                                            onClick={() => addToCartSet({ ...set, quantity: 1 })}
-                                        >
-                                            <Plus className='text-white w-4' />
-                                        </motion.button>
-                                        <h2 className="font-semibold">{set.quantity}</h2>
-                                        <motion.button
-                                            className='rounded-full bg-primary w-5 h-5 flex items-center justify-center'
-                                            onClick={() => minusFromCartSet(set)}
-                                        >
-                                            <Minus className='text-white w-4' />
-                                        </motion.button>
-                                    </div>
-                                    <Button variant='link' className='text-red-500 py-0' onClick={() => removeFromCartSet(set.id)}>remove</Button>
-                                </div>
-
-                                {/* AnimatePresence and motion for the set menusetdetail */}
-                            </motion.li>
-                            <AnimatePresence>
-                                {expandedSetId === set.id && (  // Show menusetdetail only if this set is expanded
-                                    <motion.ul
-                                        key={set.id}
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                                    >
-                                        {set.menusetdetail.map((m) => (
-                                            <li key={m.menu.id} className="flex justify-between px-5 items-center">
-                                                <img src={m.menu.img} alt={m.menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
-
-                                                <h2 className="text-sm font-semibold">{m.menu.name}</h2>
-                                                <h2 className="text-md">
-                                                    X {m.quantity}
-                                                </h2>
-
-                                            </li>
-                                        ))}
-                                    </motion.ul>
-                                )}
-
-                            </AnimatePresence>
-                        </>
+            <ScrollArea className="h-[calc(100vh-180px)] p-4">
+                <AnimatePresence>
+                    {cart.map((item) => (
+                        <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <MenuItemCard
+                                item={item}
+                                isSet={false}
+                                onAdd={addToCart}
+                                onMinus={minusFromCart}
+                                onRemove={removeFromCart}
+                            />
+                        </motion.div>
                     ))}
-                </ul>
 
+                    {cartSet.map((set) => (
+                        <motion.div
+                            key={set.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <MenuItemCard
+                                item={set}
+                                isSet={true}
+                                onAdd={addToCartSet}
+                                onMinus={minusFromCartSet}
+                                onRemove={removeFromCartSet}
+                                onToggleDetails={toggleSetDetails}
+                            />
+                            <AnimatePresence>
+                                {expandedSetId === set.id && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="bg-gray-50 p-4 rounded-md mb-4"
+                                    >
+                                        <h3 className="font-semibold mb-2">Set Contents:</h3>
+                                        <ul>
+                                            {set.menusetdetail.map((item) => (
+                                                <li key={item.menu.id} className="flex justify-between items-center mb-2">
+                                                    <span>{item.menu.name}</span>
+                                                    <span>x{item.quantity}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
             </ScrollArea>
-            {isCreate ? (
-                <Button className={`rounded-2xl w-full my-5 sticky`} onClick={() => onsubmit()}>submit order</Button>
-            ) : (
-                <Button className={`rounded-2xl w-full my-5 sticky`} onClick={() => onUpdate()}>update order</Button>
-            )}
-        </section>
-    )
-}
 
-export function OrderPage({ setPage, tableId }) {
-    const { toast } = useToast()
-    const [isLoading, setIsLoading] = useState(true)
-    const [tableOrder, setTableOrder] = useState([])
-    const [expandedSetId, setExpandedSetId] = useState(null);
-
-    if (!tableId || !tableOrder) {
-        return (
-            <>
-                <h1>No table or order found</h1>
-                <Button className={`rounded-2xl w-full my-5`} onClick={() => setPage('menu')}>back to menu</Button>
-            </>
-        )
-
-    }
-
-    const togglemenusetdetail = (setId) => {
-        setExpandedSetId(prevId => (prevId === setId ? null : setId));
-    };
-    const { cartCount } = useQr()
-
-    const fetchOrder = async () => {
-        setIsLoading(true)
-        try {
-            const response = await axios.get(`/api/table/${tableId}`)
-            setTableOrder(response.data)
-        } catch (error) {
-            console.error(error)
-            toast({
-                title: 'Error fetching order',
-                description: 'Please try again later',
-                variant: 'destructive'
-            })
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchOrder()
-    }, [])
-
-    if (isLoading) {
-        return (
-            <h1>loading....</h1>
-        )
-    }
-
-
-    return (
-        <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            classNam='w-full bg-secondary rounded-b-lg mb-5 py-5'
-        >
-            <div className='w-full flex  justify-between items-center  px-3 py-5'>
-                <Button className='rounded-full p-3 relative' onClick={() => setPage('menu')}>
-                    <ChevronLeft className='text-white h-5 w-5' strokeWidth={2.5} />
-                </Button>
-
-
-                {/* Cart Button with animated cart count */}
-                <Button className='rounded-full p-3 relative' onClick={() => setPage('cart')}>
-                    {cartCount() > 0 && (
-                        <span className="bg-white text-primary rounded-full absolute top-1 right-1 h-4 w-4 flex items-center justify-center">
-                            {cartCount()}
-                        </span>
-                    )}
-                    <ShoppingCart className='text-white h-5 w-5' strokeWidth={2.5} />
-                </Button>
-            </div>
-
-            {/* Scrollable Menu Area */}
-            <ScrollArea className='w-full h-[40rem]  px-4'>
-                <div className="space-y-3 p-5 bg-white rounded-lg min-h-32">
-                    <h1>Order:
-                        <span className="text-xl font-semibold">
-                            #{tableOrder?.order?.orderId}
-                        </span>
-                    </h1>
-                    <h2>Status: {tableOrder?.order?.status}</h2>
-                    {tableOrder?.order?.normalMenu.length > 0 && (
-                        <ul>
-                            {tableOrder?.order.normalMenu.map((menu) => {
-                                return (
-                                    <motion.li
-                                        key={menu.id}
-                                        className="flex items-center bg-gray-100 rounded-lg p-2 mb-2"
-                                        initial={{ scale: 0.9, opacity: 0 }}  // เริ่มต้นที่ขนาดเล็กและโปร่งใส
-                                        animate={{ scale: 1, opacity: 1 }}   // ขยายขนาดเป็นปกติและทำให้เห็นได้ชัดเจน
-                                        exit={{ scale: 0.9, opacity: 0 }}
-                                        transition={{ type: "spring", damping: 20, stiffness: 300 }} // ปรับค่า damping และ stiffness ให้การเคลื่อนไหวดูนุ่มนวล
-                                    >
-                                        <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
-                                        <div className="flex flex-col flex-grow">
-                                            <h2 className="text-sm font-semibold">{menu.name}</h2>
-                                            <h2 className="text-md">RM {(menu.discount ? (menu.price - menu.discount.discount) * menu.quantity : menu.price * menu.quantity).toFixed(2)}</h2>
-                                        </div>
-                                        <div className="text-end grid  justify-items-center">
-                                            <div className='flex gap-1 items-end'>
-                                                <h2 className="font-semibold">{menu.quantity}</h2>
-                                            </div>
-                                        </div>
-                                    </motion.li>
-                                )
-                            })}
-                        </ul>
-                    )}
-
-                    {tableOrder.order?.setMenu?.length > 0 && tableOrder.order?.setMenu?.map((set) => (
-                        <>
-
-                            <motion.li
-                                key={set.id}
-                                className="flex items-center bg-gray-100 rounded-lg p-2 mb-2"
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.9, opacity: 0 }}
-                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                            >
-                                <div className="flex flex-col flex-grow" onClick={() => togglemenusetdetail(set.id)} >
-                                    <h2
-                                        className="text-sm font-semibold cursor-pointer"
-                                    // Toggle menusetdetail visibility
-                                    >
-                                        {set.setName}
-                                    </h2>
-                                    <h2 className="text-md">RM {set.setPrice.toFixed(2)}</h2>
-                                </div>
-                                <div className="text-end grid justify-items-center">
-                                    <div className='flex gap-1 items-end'>
-                                        <h2 className="font-semibold">OPEN</h2>
-                                    </div>
-
-                                </div>
-
-                                {/* AnimatePresence and motion for the set menusetdetail */}
-                            </motion.li>
-                            <AnimatePresence>
-                                {expandedSetId === set.id && (  // Show menusetdetail only if this set is expanded
-                                    <motion.ul
-                                        key={set.id}
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                                        className='space-y-1'
-                                    >
-                                        {set.menusetdetail.map((m) => (
-                                            <li key={m.id} className="flex justify-between px-5 items-center">
-                                                <img src={m.img} alt={m.name} className="w-12 h-12 rounded-md object-cover mr-2" />
-
-                                                <h2 className="text-sm font-semibold">{m.name}</h2>
-                                                <h2 className="text-md">
-                                                    X {m.quantity}
-                                                </h2>
-
-                                            </li>
-                                        ))}
-                                    </motion.ul>
-                                )}
-
-                            </AnimatePresence>
-                        </>
-                    ))}
-
-
+            <div className="fixed bottom-0 left-0 right-0 bg-white shadow-md p-4">
+                <div className="flex justify-between items-center mb-4">
+                    <span className="text-lg font-semibold">Total:</span>
+                    <span className="text-xl font-bold">RM {calculateTotalPrice().toFixed(2)}</span>
                 </div>
-            </ScrollArea>
-        </motion.section>
-    )
+                <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={isCreate ? handleSubmit : handleUpdate}
+                >
+                    {isCreate ? "Place Order" : "Update Order"}
+                </Button>
+            </div>
+        </div>
+    );
 }

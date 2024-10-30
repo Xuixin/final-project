@@ -1,9 +1,11 @@
+
+
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TabsContent } from '@/components/ui/tabs'
-import { Calendar as CalendarIcon } from 'lucide-react'
+import { Calendar as CalendarIcon, Users, DollarSign, Clock } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import {
   Popover,
@@ -19,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { format } from 'date-fns'
@@ -160,106 +163,162 @@ export default function Attendance() {
     setIsLoading(false)
   }
 
+  // Calculate statistics
+  const totalEmployees = employees.length
+  const presentEmployees = combinedData.filter(emp => emp.status).length
+  const totalWages = combinedData.reduce((total, emp) => total + (emp.status ? emp.wageperday : 0), 0)
+
   return (
-    <>
-      <div className='flex justify-between px-56'>
-        <div className='w-full flex items-center justify-end gap-2'>
+    <div className="container mx-auto py-6 space-y-8">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-white">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-full bg-blue-100">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Total Employees</p>
+                <h3 className="text-2xl font-bold">{totalEmployees}</h3>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-full bg-green-100">
+                <Clock className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Present Today</p>
+                <h3 className="text-2xl font-bold">{presentEmployees}</h3>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-full bg-purple-100">
+                <DollarSign className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Total Wages</p>
+                <h3 className="text-2xl font-bold">RM {totalWages.toFixed(2)}</h3>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Content */}
+      <Card className="bg-white shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
+          <CardTitle className="text-2xl font-bold">Attendance Management</CardTitle>
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                variant={'outline'}
-                className={`w-[280px] justify-start text-left font-normal ${!date ? 'text-muted-foreground' : ''
-                  }`}
+                variant="outline"
+                className={`w-[240px] justify-start text-left font-normal ${!date ? 'text-muted-foreground' : ''}`}
               >
-                <CalendarIcon className='mr-2 h-4 w-4' />
-                {date ? (
-                  format(date, 'MMMM dd, yyyy')
-                ) : (
-                  <span>Pick a date</span>
-                )}
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, 'MMMM dd, yyyy') : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className='w-auto p-0'>
+            <PopoverContent className="w-auto p-0" align="end">
               <Calendar
-                mode='single'
+                mode="single"
                 selected={date}
                 onSelect={setDate}
                 initialFocus
+                className="rounded-md border"
               />
             </PopoverContent>
           </Popover>
-        </div>
-      </div>
-      <div className='w-full flex justify-center'>
-        <TabsContent
-          value='all'
-          className='min-h-[500px] min-w-[800px]'
-        >
-          <Card className='dashboard-06-chunk-0 h-full'>
-            <CardContent className='m-5 grid grid-cols-1 justify-center items-center'>
-              <div>
-                วันที่{' '}
-                {new Date(date).toLocaleDateString('en-GB', {
-                  timeZone: 'Asia/Bangkok',
-                })}
-              </div>
-              <Table className='w-full'>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee Name</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className='text-right'>Wage per Day</TableHead>
-                    <TableHead className='text-right'>Payment Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {combinedData.length > 0 ? (
-                    combinedData.map((emp) => (
-                      <TableRow key={emp.id}>
-                        <TableCell className='font-medium'>
-                          {emp.name} {emp.lastname}
-                        </TableCell>
-                        <TableCell>
-                          {emp.status ? 'Present' : 'Absent'}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          {emp.wageperday}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          {emp.paymentStatus}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4}>
-                        No attendance records for this date
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={2}>Total</TableCell>
-                    <TableCell className='text-right'>
-                      {combinedData.reduce(
-                        (total, emp) =>
-                          total + (emp.status ? emp.wageperday : 0),
-                        0
-                      )}
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead className="w-[300px]">Employee Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="">Wage per Day</TableHead>
+                <TableHead className="text-right">Payment Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {combinedData.length > 0 ? (
+                combinedData.map((emp) => (
+                  <TableRow key={emp.id} className="hover:bg-gray-50">
+                    <TableCell className="font-medium">
+                      {emp.name} {emp.lastname}
                     </TableCell>
-                    <TableCell className='text-right'>
-                      <Button onClick={() => PayAll()}>
-                        {isLoading ? 'paying...' : 'pay'}
-                      </Button>
+                    <TableCell>
+                      <Badge
+                        variant={emp.status ? "success" : "secondary"}
+                        className={`${emp.status ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
+                      >
+                        {emp.status ? 'Present' : 'Absent'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-left font-medium">
+                      RM {emp.wageperday.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={emp.paymentStatus === 'Paid' ? "outline" : "secondary"}
+                        className={`${emp.paymentStatus === 'Paid' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}
+                      >
+                        {emp.paymentStatus}
+                      </Badge>
                     </TableCell>
                   </TableRow>
-                </TableFooter>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </div>
-    </>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-gray-500 py-8">
+                    No attendance records for this date
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TableRow className="bg-gray-50">
+                <TableCell colSpan={2} className="font-semibold">Total Wages for Today</TableCell>
+                <TableCell className="text-left font-bold">
+                  RM {combinedData.reduce(
+                    (total, emp) => total + (emp.status ? emp.wageperday : 0),
+                    0
+                  ).toFixed(2)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    onClick={() => PayAll()}
+                    disabled={isLoading || combinedData.filter(emp => emp.status && emp.paymentStatus !== 'Paid').length === 0}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center">
+                        <Clock className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        <DollarSign className="mr-2 h-4 w-4" />
+                        Pay All
+                      </span>
+                    )}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

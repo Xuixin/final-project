@@ -1,234 +1,265 @@
 'use client'
-import { fetchAdminInfo } from "@/lib/adminInfo";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import axios from 'axios';
+
+import { fetchAdminInfo } from "@/lib/adminInfo"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import axios from 'axios'
 import {
-    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import { useToast } from "@/components/ui/use-toast"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { CircleAlert, Banknote, QrCode, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/tooltip"
+import { Badge } from "@/components/ui/badge"
+import { CircleAlert, Banknote, QrCode, ChevronDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
+const PaymentMethodButton = ({
+    selected,
+    onClick,
+    icon: Icon,
+    label
+}) => (
+    <motion.button
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", damping: 15 }}
+        onClick={onClick}
+        className={`
+      rounded-lg flex items-center gap-2 font-medium px-4 py-3
+      transition-all duration-200 ease-in-out
+      ${selected
+                ? 'bg-primary text-primary-foreground shadow-lg'
+                : 'border border-primary/20 text-primary hover:bg-primary/10'
+            }
+    `}
+    >
+        <Icon className="w-4 h-4" />
+        <span>{label}</span>
+    </motion.button>
+)
 
+const MenuItem = ({ img, name, price, quantity }) => (
+    <motion.li
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="flex items-center bg-card rounded-lg p-3 border shadow-sm"
+    >
+        <div className="h-14 w-14 rounded-md overflow-hidden mr-3 bg-muted">
+            <img
+                src={img}
+                alt={name}
+                className="w-full h-full object-cover"
+            />
+        </div>
+        <div className="flex-grow">
+            <h3 className="font-medium text-foreground">{name}</h3>
+            <p className="text-sm text-muted-foreground">
+                RM {(price * quantity).toFixed(2)}
+            </p>
+        </div>
+        <div className="text-end flex flex-col items-center">
+            <span className="text-xs text-muted-foreground">QTY</span>
+            <span className="font-semibold">{quantity}</span>
+        </div>
+    </motion.li>
+)
 
 export function Pay({ order, setOrder, setQueue, fetchAllTable }) {
-    const { toast } = useToast();
-    const [openSets, setOpenSets] = useState([]);
+    const { toast } = useToast()
+    const [openSets, setOpenSets] = useState([])
     const [isLoading, setIsLoading] = useState(false)
-    const [orders, setOrders] = useState([]);
-    const [isHydrated, setIsHydrated] = useState(false);
+    const [orders, setOrders] = useState([])
+    const [isHydrated, setIsHydrated] = useState(false)
     const [paymentMethod, setPaymentMethod] = useState('Cash')
-    const [emp, setemp] = useState(null)
-
-
-    const toggleSetMenu = (index) => {
-        setOpenSets((prevState) => {
-            if (prevState.includes(index)) {
-                return prevState.filter((i) => i !== index); // Close setMenu
-            } else {
-                return [...prevState, index]; // Open setMenu
-            }
-        });
-    };
+    const [emp, setEmp] = useState(null)
 
     useEffect(() => {
-        setIsHydrated(true); // Set as hydrated after mount
+        setIsHydrated(true)
         const fetchAdmin = async () => {
-            const data = await fetchAdminInfo();
-            setemp(data);
+            const data = await fetchAdminInfo()
+            setEmp(data)
         }
-
-        fetchAdmin();
+        fetchAdmin()
         setOrders(order)
-    }, [order]);
+    }, [order])
 
-    useEffect(() => {
-        console.log('emp', emp);
-    }, [emp]);
+    if (!isHydrated) return null
 
-    if (!isHydrated) {
-        // Avoid rendering mismatch during server-side rendering
-        return null;
-    }
-
-    const onPay = async () => {
-        setIsLoading(true);
-
+    const handlePay = async () => {
+        setIsLoading(true)
         try {
-            await axios.post(`/api/payment/${order.orderId}`, { order, paymentMethod, emp: emp.id });
-            toast({ variant: 'success', title: 'Payment successful', description: 'Thank you for your payment.' });
+            await axios.post(`/api/payment/${order.orderId}`, {
+                order,
+                paymentMethod,
+                emp: emp?.id
+            })
 
-            setOrder(null);
-            setQueue(null);
+            toast({
+                variant: 'default',
+                title: 'Payment Successful',
+                description: 'Thank you for your payment.',
+            })
+
+            setOrder(null)
+            setQueue(null)
             fetchAllTable()
         } catch (error) {
-            toast({ variant: 'destructive', title: 'Payment failed', description: error.message });
+            toast({
+                variant: 'destructive',
+                title: 'Payment Failed',
+                description: error.message
+            })
         } finally {
             setPaymentMethod('Cash')
             setIsLoading(false)
         }
     }
 
+    const toggleSetMenu = (index) => {
+        setOpenSets(prev =>
+            prev.includes(index)
+                ? prev.filter(i => i !== index)
+                : [...prev, index]
+        )
+    }
+
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0, x: -100 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{
                 type: "spring",
-                bounce: 0.3,
-                duration: 0.4,
+                damping: 20,
+                stiffness: 300
             }}
+            className="w-full max-w-md mx-auto"
         >
-            <Card className="overflow-hidden">
-                <CardHeader className="flex flex-cols items-start">
-                    <div className="grid gap-0.5">
-                        <CardTitle className="group flex items-center gap-2 text-lg">
-                            Bill
-                        </CardTitle>
-                    </div>
-                    <CardDescription>
-                        {order.source == 3 ? (
-                            <span className="text-red-500">Takeaway Payment</span>
-                        ) : (
-                            < span className="text-blue-500">Table : {order.table_NO}</span>
-                        )}
-                    </CardDescription>
-                </CardHeader>
-                <Separator className="mx-2" />
-                <CardContent className="p-6 text-sm min-h-80 flex flex-col">
-                    <div className="grid gap-3">
-                        <div className='space-x-3 flex'>
-                            <motion.button
-                                whileTap={{ scale: 0.7 }}
-                                transition={{ type: "spring", damping: 10 }}
-                                onClick={() => setPaymentMethod('Cash')} // ตั้ง payment method
-                                className={`rounded-lg flex flex-col justify-center text-sm font-semibold px-5 py-2 transition-colors duration-300 ease-in-out ${paymentMethod === 'Cash' ? 'bg-primary text-white' : 'border border-primary text-primary'}`}
-                            >
-                                <span className="flex justify-center pl-1">
-                                    <Banknote />
-                                </span>
-                                Cash
-                            </motion.button>
-
-                            <motion.button
-                                whileTap={{ scale: 0.7 }}
-                                transition={{ type: "spring", damping: 10 }}
-                                onClick={() => setPaymentMethod('QRCode')} // ตั้ง payment method
-                                className={`rounded-lg flex flex-col justify-center text-sm font-semibold px-5 py-2 transition-colors duration-300 ease-in-out ${paymentMethod === 'QRCode' ? 'bg-primary text-white' : 'border border-primary text-primary'}`}
-                            >
-                                <span className="flex justify-center pl-3">
-                                    <QrCode />
-                                </span>
-                                QRCode
-                            </motion.button>
-
-
-
+            <Card className="overflow-hidden border-2">
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle className="text-xl font-semibold">
+                                Bill Details
+                            </CardTitle>
+                            <CardDescription>
+                                {order.source === 3 ? (
+                                    <Badge variant="destructive">Takeaway</Badge>
+                                ) : (
+                                    <Badge variant="default">Table {order.table_NO}</Badge>
+                                )}
+                            </CardDescription>
                         </div>
-
-                        <ScrollArea className='h-40 py-3 px-3 shadow-inner' >
-                            <ul className="grid gap-3 mb-auto">
-                                {orders.normalMenu.map((menu) => (
-                                    <li key={menu.id} className="flex items-center bg-gray-100 rounded-lg p-2 mb-2">
-                                        <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
-                                        <div className="flex flex-col flex-grow">
-                                            <h2 className="text-md font-semibold">{menu.name}</h2>
-                                            <h2 className="text-sm">RM {(menu.price * menu.quantity).toFixed(2)}</h2>
-                                        </div>
-                                        <div className="text-end flex flex-col items-center">
-                                            <h2 className="text-sm">QTY</h2>
-                                            <h2 className="font-semibold text-md">{menu.quantity}</h2>
-                                        </div>
-                                    </li>
-                                ))}
-
-                                {orders.setMenu.map((set, index) => (
-                                    <li key={set.id}>
-                                        <ul>
-                                            <div className="grid items-center grid-cols-2">
-                                                <TooltipProvider>
-                                                    <Tooltip>
-                                                        <TooltipTrigger>
-                                                            <div className="flex" onClick={() => toggleSetMenu(index)}>
-                                                                <h2 className="text-md font-semibold">SET {index + 1}</h2>
-                                                                <span className="text-sm text-center">
-                                                                    <ChevronDown size={16} />
-                                                                </span>
-                                                            </div>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>Set details</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TooltipProvider>
-                                                <h2 className="text-end">RM {set.setPrice.toFixed(2)}</h2>
-                                            </div>
-                                            <AnimatePresence>
-                                                {openSets.includes(index) && (
-                                                    <motion.div
-                                                        initial={{ height: 0, opacity: 0 }}
-                                                        animate={{ height: "auto", opacity: 1 }}
-                                                        exit={{ height: 0, opacity: 0 }}
-                                                        transition={{ duration: 0.3 }}
-                                                        className="flex flex-col pl-5"
-                                                    >
-                                                        {set.details.map((menu) => (
-                                                            <li key={menu.id} className="flex items-center bg-gray-100 rounded-lg p-2 mb-2">
-                                                                <img src={menu.img} alt={menu.name} className="w-12 h-12 rounded-md object-cover mr-2" />
-                                                                <div className="flex flex-col flex-grow">
-                                                                    <h2 className="text-md font-semibold">{menu.name}</h2>
-                                                                </div>
-                                                                <div className="text-end flex flex-col items-center">
-                                                                    <h2 className="text-sm">QTY</h2>
-                                                                    <h2 className="font-semibold text-md">{menu.quantity}</h2>
-                                                                </div>
-                                                            </li>
-                                                        ))}
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </ul>
-                                    </li>
-                                ))}
-                            </ul>
-
-                        </ScrollArea>
                     </div>
-                    <Separator />
-                    <div className="flex justify-between items-center my-3">
-                        <p className='text-lg font-semibold'>Total</p>
-                        <p className='text-md font-semibold'>
-                            RM
-                            <span className="text-lg">
-                                {orders.totalPrice.toFixed(2)}
+                </CardHeader>
+
+                <CardContent className="space-y-6">
+                    <div className="flex gap-3">
+                        <PaymentMethodButton
+                            selected={paymentMethod === 'Cash'}
+                            onClick={() => setPaymentMethod('Cash')}
+                            icon={Banknote}
+                            label="Cash"
+                        />
+                        <PaymentMethodButton
+                            selected={paymentMethod === 'QRCode'}
+                            onClick={() => setPaymentMethod('QRCode')}
+                            icon={QrCode}
+                            label="QR Code"
+                        />
+                    </div>
+
+                    <ScrollArea className="h-[320px] rounded-md border p-4">
+                        <div className="space-y-4">
+                            {orders.normalMenu.map((menu) => (
+                                <MenuItem key={menu.id} {...menu} />
+                            ))}
+
+                            {orders.setMenu.map((set, index) => (
+                                <div key={set.id} className="space-y-2">
+                                    <div
+                                        onClick={() => toggleSetMenu(index)}
+                                        className="flex justify-between items-center cursor-pointer p-2 hover:bg-accent rounded-md"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-medium">SET {index + 1}</h3>
+                                            <ChevronDown
+                                                className={`w-4 h-4 transition-transform duration-200 ${openSets.includes(index) ? 'rotate-180' : ''
+                                                    }`}
+                                            />
+                                        </div>
+                                        <span className="font-medium">
+                                            RM {set.setPrice.toFixed(2)}
+                                        </span>
+                                    </div>
+
+                                    <AnimatePresence>
+                                        {openSets.includes(index) && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="pl-4 space-y-2"
+                                            >
+                                                {set.details.map((menu) => (
+                                                    <MenuItem key={menu.id} {...menu} />
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+
+                    <div>
+                        <Separator className="my-4" />
+                        <div className="flex justify-between items-center py-2">
+                            <span className="text-lg font-semibold">Total Amount</span>
+                            <span className="text-xl font-bold">
+                                RM {orders.totalPrice.toFixed(2)}
                             </span>
-                        </p>
+                        </div>
+                        <Separator className="my-4" />
                     </div>
-                    <div className='mt-auto'>
-                        <Separator className="my-2" />
-                    </div>
-                    <div className='flex-1'>
-                        <Button className='w-full' onClick={onPay} disabled={isLoading}>
-                            {isLoading ? 'Paying..' : 'Pay'}
-                        </Button>
-                    </div>
+
+                    <Button
+                        className="w-full"
+                        size="lg"
+                        onClick={handlePay}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Processing Payment...' : 'Confirm Payment'}
+                    </Button>
                 </CardContent>
-                <CardFooter className="flex flex-row items-center justify-end border-t bg-muted/50 px-6 py-3">
-                    <span className="bg-red-500 rounded-full">
-                        <CircleAlert color="#ffffff" absoluteStrokeWidth />
-                    </span>
+
+                <CardFooter className="bg-muted/50 p-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <CircleAlert className="w-4 h-4" />
+                        <span>Payment is final and cannot be reversed</span>
+                    </div>
                 </CardFooter>
             </Card>
-        </motion.div >
-    );
+        </motion.div>
+    )
 }

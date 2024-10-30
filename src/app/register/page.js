@@ -48,7 +48,14 @@ export default function RegisterForm() {
     }
 
     return (
-        <section className="flex justify-center items-center min-h-screen relative">
+        <section className="flex justify-center items-center min-h-screen relative" style={{
+            backgroundImage: `url("/banner.jpg")`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+        }}
+        >
+            <div className="absolute inset-0 backdrop-blur-lg"></div>
+
             {error && (
                 <div className="absolute right-5 top-5">
                     <Alert variant="destructive">
@@ -60,7 +67,7 @@ export default function RegisterForm() {
                     </Alert>
                 </div>
             )}
-            <Card className="mx-auto max-w-sm my-auto">
+            <Card className="relative mx-auto max-w-sm my-auto">
                 <CardHeader>
                     <CardTitle className="text-2xl">Register</CardTitle>
                     <CardDescription>
@@ -72,9 +79,7 @@ export default function RegisterForm() {
                         <div className="grid gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="name">First Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
+                                <Input id="name" type="text"
                                     placeholder="First Name"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
@@ -83,9 +88,7 @@ export default function RegisterForm() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="lastname">Last Name</Label>
-                                <Input
-                                    id="lastname"
-                                    type="text"
+                                <Input id="lastname" type="text"
                                     placeholder="Last Name"
                                     value={lastname}
                                     onChange={(e) => setLastname(e.target.value)}
@@ -94,9 +97,7 @@ export default function RegisterForm() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
+                                <Input id="email" type="email"
                                     placeholder="m@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -105,9 +106,7 @@ export default function RegisterForm() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
+                                <Input id="password" type="password"
                                     placeholder="Password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}

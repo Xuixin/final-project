@@ -31,19 +31,25 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('/api/auth/signin', JSON.stringify({email, password}))
+      const response = await axios.post('/api/auth/signin', JSON.stringify({ email, password }))
 
       const { token } = await response.data
       login(token)
 
-    }catch(err){
+    } catch (err) {
       console.error(err)
       setError('Invalid email or password')
     }
   }
 
   return (
-    <section className="flex justify-center items-center min-h-screen relative">
+    <section className="flex justify-center items-center min-h-screen relative" style={{
+      backgroundImage: `url("/banner.jpg")`,
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover',
+    }}
+    >
+      <div className="absolute inset-0 backdrop-blur-lg"></div>
       {error && (
         <div className="absolute right-5 top-5">
           <Alert variant="destructive">
@@ -55,7 +61,7 @@ export default function LoginForm() {
           </Alert>
         </div>
       )}
-      <Card className="mx-auto max-w-sm my-auto">
+      <Card className="mx-auto max-w-sm my-auto relative">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -104,7 +110,7 @@ export default function LoginForm() {
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apost have an account?{" "}
-              <Link href="#" className="underline">
+              <Link href="/register" className="underline">
                 Sign up
               </Link>
             </div>

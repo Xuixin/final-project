@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
+import { ShoppingCart } from 'lucide-react'
 
 
 
@@ -152,7 +153,10 @@ export const Receipt = () => {
 
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button variant="outline">Purchase</Button>
+                    <Button variant="outline" size="sm">
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        สั่งซื้อวัตถุดิบ
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>

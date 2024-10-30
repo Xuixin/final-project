@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 export async function POST(req) {
   try {
     const { cid, items, itemsSet, totalPrice, status } = await req.json()
-    console.log('totalPrice:', cid)
+    console.log('totalPrice:', totalPrice)
 
     // 1. สร้างคำสั่งซื้อใหม่
     const order = await prisma.order.create({
@@ -31,7 +31,7 @@ export async function POST(req) {
         orderId: order.id,
       })),
       ...itemsSet.flatMap((set) =>
-        set.orderdetail.map((detail) => ({
+        set.details.map((detail) => ({
           menuId: detail.menuId,
           menusetId: set.id,
           quantity: detail.quantity,
@@ -85,7 +85,7 @@ export async function POST(req) {
       { status: 200 }
     )
   } catch (err) {
-    console.error(err.message)
+    console.error(err)
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
     })

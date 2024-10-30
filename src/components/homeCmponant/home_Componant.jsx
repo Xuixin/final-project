@@ -1,122 +1,124 @@
 'use client';
+
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
-// UI import
+import { useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CircleArrowRight } from 'lucide-react';
-import ReactTypingEffect from 'react-typing-effect';
-import { motion, useInView, useAnimation, Variant } from "framer-motion";
+import { motion, useInView, useAnimation } from "framer-motion";
 
 export const Hero = () => {
   const router = useRouter();
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const mainControls = useAnimation();
 
+  useEffect(() => {
+    if (isInView) {
+      mainControls.start("visible");
+    }
+  }, [isInView]);
 
   return (
     <section
-      className="flex justify-end items-center min-h-96 mb-8 shadow-lg rounded-b-[30%] relative"
-      style={{
-        backgroundImage: `url("/banner.jpg")`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-      }}
+      ref={ref}
+      className="relative flex items-center justify-center min-h-screen mb-8 overflow-hidden"
     >
-      <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm rounded-b-[30%]"></div>
-      <div className="relative px-4 grid h-full rounded-lg text-white">
-        <div className="w-full">
-          <h1 className="text-4xl font-semibold flex">
-            Welcome to Our <AnimatedText
-              once
-              text="Restaurant"
-              el="span"
-              className="text-4xl mx-2 text-primary"
-            />
-          </h1>
-          <p className="my-4 text-gray-300">
-            Discover our specialties, delicious dishes, and unparalleled service.
-          </p>
-        </div>
-        <div className="space-x-5">
-          <Button
-            className="rounded-full gap-2 uppercase text-white px-4 py-2 text-sm"
-            onClick={() => router.push('/menu')}
-          >
-            Order now
-            <CircleArrowRight />
-          </Button>
-        </div>
-      </div>
+      <Image
+        src="/banner.jpg"
+        alt="Restaurant banner"
+        layout="fill"
+        objectFit="cover"
+        quality={100}
+        className="absolute z-0"
+      />
+      <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10"></div>
+
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 75 },
+          visible: { opacity: 1, y: 0 },
+        }}
+        initial="hidden"
+        animate={mainControls}
+        transition={{ duration: 0.5, delay: 0.25 }}
+        className="relative z-20 text-center text-white px-4 max-w-4xl"
+      >
+        <h1 className="text-5xl font-bold mb-6">
+          Welcome to Our <AnimatedText text="Restaurant" className="text-primary" />
+        </h1>
+        <p className="text-xl mb-8 text-gray-300">
+          Discover our specialties, delicious dishes, and unparalleled service.
+        </p>
+        <Button
+          className="rounded-full text-lg font-semibold px-8 py-4"
+          onClick={() => router.push('/menu')}
+        >
+          Order Now <CircleArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-10"
+      ></motion.div>
     </section>
   );
 };
 
+const AnimatedText = ({ text, className }) => {
+  const letters = Array.from(text);
 
-const AnimatedText = ({
-  text,
-  el: Wrapper = "p",
-  className,
-  once,
-  repeatDelay,
-  animation,
-}) => {
-  const controls = useAnimation();
-  const textArray = Array.isArray(text) ? text : [text];
-  const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.5, once });
+  const container = {
+    hidden: { opacity: 0 },
+    visible: (i = 1) => ({
+      opacity: 1,
+      transition: { staggerChildren: 0.03, delayChildren: 0.04 * i },
+    }),
+  };
 
-  useEffect(() => {
-    let timeout;
-    const show = () => {
-      controls.start("visible");
-      if (repeatDelay) {
-        timeout = setTimeout(async () => {
-          await controls.start("hidden");
-          controls.start("visible");
-        }, repeatDelay);
-      }
-    };
-
-    if (isInView) {
-      show();
-    } else {
-      controls.start("hidden");
-    }
-
-    return () => clearTimeout(timeout);
-  }, [isInView]);
+  const child = {
+    visible: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100,
+      },
+    },
+    hidden: {
+      opacity: 0,
+      x: -20,
+      y: 10,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100,
+      },
+    },
+  };
 
   return (
-    <Wrapper className={className}>
-      <span className="sr-only">{textArray.join(" ")}</span>
-      <motion.span
-        ref={ref}
-        initial="hidden"
-        animate={controls}
-        variants={{
-          visible: { transition: { staggerChildren: 0.1 } },
-          hidden: {},
-        }}
-        aria-hidden
-      >
-        {textArray.map((line, lineIndex) => (
-          <span className="block" key={`${line}-${lineIndex}`}>
-            {line.split(" ").map((word, wordIndex) => (
-              <span className="inline-block" key={`${word}-${wordIndex}`}>
-                {word.split("").map((char, charIndex) => (
-                  <motion.span
-                    key={`${char}-${charIndex}`}
-                    className="inline-block"
-                    variants={animation}
-                  >
-                    {char}
-                  </motion.span>
-                ))}
-                <span className="inline-block">&nbsp;</span>
-              </span>
-            ))}
-          </span>
-        ))}
-      </motion.span>
-    </Wrapper>
+    <motion.span
+      style={{ display: "inline-block" }}
+      variants={container}
+      initial="hidden"
+      animate="visible"
+      className={className}
+    >
+      {letters.map((letter, index) => (
+        <motion.span
+          key={index}
+          variants={child}
+          style={{ display: "inline-block" }}
+        >
+          {letter === " " ? "\u00A0" : letter}
+        </motion.span>
+      ))}
+    </motion.span>
   );
 };

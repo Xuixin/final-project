@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 //import ui
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,15 +20,22 @@ import { useToast } from '../ui/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 import { useRouter } from 'next/navigation'
 import { parseJwt } from '@/lib/jwt'
+import { ScrollArea } from '../ui/scroll-area'
+import { Separator } from '../ui/separator'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+
+} from "@/components/ui/alert"
+
 
 export function OrderDetails({ order, fetchOrder }) {
-  // เพิ่ม fetchOrder
   const { toast } = useToast()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
   const deleteOrder = async () => {
-    setIsLoading(true)
     if (order.status === 'InProgress') {
       toast({
         variant: 'destructive',
@@ -37,142 +44,115 @@ export function OrderDetails({ order, fetchOrder }) {
       })
       return
     }
+
+    setIsLoading(true)
     try {
       await axios.post(`/api/order/online/cancel/${order.orderId}`)
       toast({
         variant: 'success',
-        title: 'ยกเลิกออเดอร์แล้ว.',
+        title: 'ยกเลิกออเดอร์แล้ว',
+        description: 'ออเดอร์ของคุณถูกยกเลิกเรียบร้อยแล้ว',
       })
       await fetchOrder()
       router.refresh()
-      setIsLoading(false)
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Failed to delete order.',
+        title: 'เกิดข้อผิดพลาด',
+        description: 'ไม่สามารถยกเลิกออเดอร์ได้ กรุณาลองใหม่อีกครั้ง',
       })
+    } finally {
       setIsLoading(false)
     }
   }
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
   return (
-    <>
-      <DialogContent className='max-w-[425px] lg:max-h-[425px] lg:overflow-auto'>
-        <DialogHeader className={'grid grid-cols-2'}>
-          <div>
-            <DialogTitle>OL{order.orderId}</DialogTitle>
-            <DialogDescription>
-              Order At{' '}
-              {new Date(order.createdAt).toLocaleDateString('en-US', {
-                month: 'short', // ใช้ 'short' เพื่อแสดงชื่อเดือนย่อ (เช่น Feb)
-                day: '2-digit', // แสดงวันเป็น 2 หลัก (เช่น 04)
-                year: 'numeric', // แสดงปีแบบเต็ม (เช่น 2024)
-              })}
-            </DialogDescription>
-          </div>
-
+    <DialogContent className="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle className="flex justify-between items-center">
+          <span>ออเดอร์ #{order.orderId}</span>
           {order.status === 'InQueue' && (
-            <div className='flex justify-end'>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={deleteOrder}
+              disabled={isLoading}
+            >
               {isLoading ? (
-                <Button
-                  disabled
-                  variant={'destructive'}
-                  className='w-[40%]'
-                >
+                <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  cancelling
-                </Button>
+                  กำลังยกเลิก
+                </>
               ) : (
-                <Button
-                  variant='destructive'
-                  className='w-[40%]'
-                  onClick={() => deleteOrder()}
-                >
-                  Cancel
-                </Button>
+                'ยกเลิกออเดอร์'
               )}
-            </div>
+            </Button>
           )}
+        </DialogTitle>
+        <DialogDescription>
+          สั่งเมื่อ {formatDate(order.createdAt)}
+        </DialogDescription>
+      </DialogHeader>
 
-
-        </DialogHeader>
-        {order.normalmenu.length > 0 && (
-          <DialogDescription>Menu</DialogDescription>
+      <ScrollArea className="h-[50vh] pr-4">
+        {order.status === 'InQueue' && (
+          <Alert className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>โปรดทราบ</AlertTitle>
+            <AlertDescription>
+              คุณสามารถยกเลิกออเดอร์ได้เฉพาะเมื่อสถานะเป็น "รอดำเนินการ" เท่านั้น
+            </AlertDescription>
+          </Alert>
         )}
 
-        <div className='grid gap-4 py-4 px-5'>
-          {order.normalmenu.length > 0 &&
-            order.normalmenu.map((menu) => {
-              return (
-                <div
-                  key={menu.id}
-                  className='grid grid-cols-4 items-center gap-4'
-                >
-                  <Label
-                    htmlFor='name'
-                    className='text-left col-span-3'
-                  >
-                    {menu.name}
-                  </Label>
-                  <Label
-                    htmlFor='name'
-                    className='text-right '
-                  >
-                    X {menu.quantity}
-                  </Label>
-                </div>
-              )
-            })}
-        </div>
         {order.normalmenu.length > 0 && (
-          <DialogDescription>Menuset</DialogDescription>
+          <>
+            <h4 className="text-sm font-medium mb-2">รายการอาหาร</h4>
+            {order.normalmenu.map((menu) => (
+              <div key={menu.id} className="flex justify-between items-center py-2">
+                <span>{menu.name}</span>
+                <span className="font-medium">x{menu.quantity}</span>
+              </div>
+            ))}
+            <Separator className="my-4" />
+          </>
         )}
-        <div className='grid gap-4 py-4'>
-          {order.setmenu.length > 0 &&
-            order.setmenu.map((set) => {
-              return (
-                <div
-                  key={set.setId}
-                  className='grid grid-cols-4 items-start gap-4'
-                >
-                  <Label
-                    htmlFor='name'
-                    className=' text-start'
-                  >
-                    {set.setName}
-                  </Label>
-                  <div className='col-span-3'>
-                    {set.details.map((menu) => {
-                      return (
-                        <div
-                          key={menu.id}
-                          className='grid gap-2 grid-cols-2'
-                        >
-                          <Label
-                            htmlFor='name'
-                            className='text-left'
-                          >
-                            {menu.name}
-                          </Label>
-                          <Label
-                            htmlFor='name'
-                            className='text-right'
-                          >
-                            X {menu.quantity}
-                          </Label>
-                        </div>
-                      )
-                    })}
+
+        {order?.setmenu?.length > 0 && (
+          <>
+            <h4 className="text-sm font-medium mb-2">ชุดอาหาร</h4>
+            {order.setmenu.map((set) => (
+              <div key={set.setId} className="mb-4">
+                <h5 className="font-medium">{set.setName}</h5>
+                {set.details.map((menu) => (
+                  <div key={menu.id} className="flex justify-between items-center py-1 pl-4">
+                    <span className="text-sm">{menu.name}</span>
+                    <span className="text-sm font-medium">x{menu.quantity}</span>
                   </div>
-                </div>
-              )
-            })}
-        </div>
-      </DialogContent>
-    </>
+                ))}
+              </div>
+            ))}
+          </>
+        )}
+      </ScrollArea>
+
+      <div className="mt-4 flex justify-between items-center font-medium">
+        <span>ยอดรวมทั้งสิ้น</span>
+        <span>฿{order.totalPrice.toFixed(2)}</span>
+      </div>
+    </DialogContent>
   )
 }
-
 
 export function EditProfile() {
   const router = useRouter();

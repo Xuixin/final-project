@@ -7,6 +7,8 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
   const [error, setError] = useState(null)
   const { cart, cartSet } = useAppContext()
 
+
+
   const items = cart.map(({ id, name, price, quantity }) => ({
     id,
     name,
@@ -19,6 +21,8 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
     details,
   }))
 
+  const tt = totalPrice()
+
   const handleCheckout = async () => {
     try {
       // 1. อัปเดตข้อมูลที่อยู่ลูกค้า
@@ -30,7 +34,7 @@ export default function CheckoutButton({ customerId, userData, totalPrice }) {
         cid: customer.id,
         items,
         itemsSet,
-        totalPrice,
+        totalPrice: tt,
         status: 'InQueue',
       }
       )

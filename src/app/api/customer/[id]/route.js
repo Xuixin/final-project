@@ -4,6 +4,7 @@ const prisma = new PrismaClient()
 
 export async function GET(request, { params }) {
   const { id } = params
+
   try {
     const user = await prisma.customer.findUnique({
       where: {
@@ -26,8 +27,6 @@ export async function POST(request, { params }) {
   const { id } = params
 
   const userData = await request.json()
-
-
 
   try {
     const updateResponse = await prisma.customer.update({

@@ -2,8 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ReceiptText } from "lucide-react";
 import axios from "axios";
-
-import { TableFooter } from "@/components/ui/table";
+import { Printer } from "lucide-react";
 
 export const PrintIgd = () => {
     const printRef = useRef();
@@ -144,7 +143,10 @@ export const PrintIgd = () => {
 
             </div>
             <div >
-                <Button onClick={receipt} className={'px-3 min-w-24 font-semibold'}>print</Button>
+                <Button variant="outline" size="sm" onClick={receipt}>
+                    <Printer className="mr-2 h-4 w-4" />
+                    พิมพ์รายการ
+                </Button>
             </div>
 
         </div>

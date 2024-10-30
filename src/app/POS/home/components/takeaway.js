@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 
 // import ui
-import { Loader2, PackageOpen, PartyPopper } from "lucide-react";
+import { Loader2, PackageOpen, PartyPopper, X, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,12 +12,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
-const OrderRow = ({ order, renderButton, }) => (
+
+const OrderRow = ({ order, renderButton }) => (
     <TableRow key={order.id} >
         <TableCell>#{order.id}</TableCell>
-        <TableCell>{order.quantity}</TableCell>
-        <TableCell className='text-center'>{renderButton}</TableCell>
+        <TableCell className="text-center">{order.quantity}</TableCell>
+        <TableCell className='text-center'>{renderButton(order.status, order)}</TableCell>
         <Separator />
     </TableRow >
 );
@@ -46,46 +53,69 @@ export function TakeAway({ pay, order }) {
         fetchTakeAwayOrder()
     }, [])
 
+    const renderButton = (status, od) => {
+        return (
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger> <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${status === 'Finished'
+                            ? 'bg-green-100 text-green-800 cursor-pointer'
+                            : 'bg-gray-100 text-gray-800'
+                            }`}
+                        onClick={status === 'Finished' ? () => {
+                            pay(od);
+                            order(null);
+                        } : undefined}
+
+
+                    >
+                        {status === 'Finished' ? (
+                            <Check className="w-3 h-3 mr-1" />
+                        ) : (
+                            <X className="w-3 h-3 mr-1" />
+                        )}
+                        {status}
+                    </span></TooltipTrigger>
+                    <TooltipContent>
+                        <p>Click to pay</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+
+        )
+    }
+
 
     return (
         <Card className='min-h-96 shadow-md'>
-            <CardHeader>
+            <CardHeader className="bg-primary text-primary-foreground">
                 <CardTitle>Takeaway</CardTitle>
             </CardHeader>
             <Separator />
-            <CardContent className='px-2'>
+            <CardContent className='p-6'>
                 {isLoading ? (
-                    <div className="flex w-full justify-center items-center min-h-72">
+                    <div className="flex w-full justify-center items-center min-h-[18rem]">
                         <div className='items-center flex flex-col'>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             <h1 className='text-gray-500'>loading</h1>
                         </div>
                     </div>
                 ) : (
-                    <ScrollArea className='h-72 w-full rounded-lg mt-1'>
-                        <Table className='rounded-lg'>
-                            <TableHeader className='bg-primary rounded-lg'>
-                                <TableHead className='text-white'>#ID</TableHead>
-                                <TableHead className='text-white'>Quantity</TableHead>
-                                <TableHead className='text-white text-center'>State</TableHead>
+                    <ScrollArea className='h-[18rem] w-full rounded-md border'>
+                        <Table >
+                            <TableHeader >
+                                <TableRow>
+                                    <TableHead >#ID</TableHead>
+                                    <TableHead className='text-center'>Quantity</TableHead>
+                                    <TableHead className="text-center">State</TableHead>
+                                </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {ordersTakeAway.map((od) => (
                                     <OrderRow
                                         key={od.id}
                                         order={od}
-                                        renderButton={od.status === 'Finished' ? (
-                                            <Button variant='success' onClick={() => {
-                                                pay(od)
-                                                order(null)
-                                            }} >
-                                                Pay
-                                            </Button>
-                                        ) : (
-                                            <Button variant='secondary' disabled>
-                                                {od.status}
-                                            </Button>
-                                        )}
+                                        renderButton={renderButton}
                                     />
                                 ))}
                             </TableBody>
